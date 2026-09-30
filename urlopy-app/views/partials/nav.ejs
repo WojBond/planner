@@ -1,0 +1,20 @@
+<div class="topbar">
+  <div class="brand">Planer urlopow <span class="muted" style="font-weight:400; font-size:0.75rem;">v<%= appVersion %></span></div>
+  <nav>
+    <a href="/">Kalendarz</a>
+    <a href="/profile">Moj profil</a>
+    <% if (currentUser && currentUser.role === 'admin') { %>
+      <a href="/admin/users">Uzytkownicy</a>
+      <a href="/admin/groups">Dzialy</a>
+    <% } %>
+    <% if (currentUser) { %>
+      <span class="user-badge">
+        <span class="color-dot" style="background: <%= currentUser.color %>"></span>
+        <%= currentUser.name %> (<%= currentUser.role === 'admin' ? 'administrator' : 'uzytkownik' %>)
+      </span>
+      <form method="POST" action="/logout" style="margin:0;">
+        <button class="btn secondary" type="submit">Wyloguj</button>
+      </form>
+    <% } %>
+  </nav>
+</div>

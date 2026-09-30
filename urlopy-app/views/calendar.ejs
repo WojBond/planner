@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <title>Kalendarz - Planer urlopow</title>
+  <%- include('partials/head') %>
+  <script src="/vendor/fullcalendar.min.js"></script>
+</head>
+<body>
+  <%- include('partials/nav') %>
+  <div class="container">
+    <div class="card" style="display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <h1 style="margin-bottom:4px;">Kalendarz urlopow</h1>
+        <p class="muted" style="margin:0;">
+          <% if (currentUser.role === 'admin') { %>
+            Widzisz zdarzenia wszystkich uzytkownikow.
+          <% } else { %>
+            Widzisz swoje zdarzenia oraz zdarzenia swojego dzialu.
+          <% } %>
+        </p>
+      </div>
+      <button class="btn" id="btnAdd">+ Nowe zdarzenie</button>
+    </div>
+
+    <div id="calendar"></div>
+  </div>
+
+  <div class="modal-backdrop" id="modalAdd">
+    <div class="modal">
+      <h2>Nowe zdarzenie</h2>
+      <div id="formError" class="alert error" style="display:none;"></div>
+      <form id="eventForm">
+        <div class="form-row">
+          <label for="startDate">Od</label>
+          <input type="date" id="startDate" name="startDate" required />
+        </div>
+        <div class="form-row">
+          <label for="endDate">Do</label>
+          <input type="date" id="endDate" name="endDate" required />
+        </div>
+        <div class="form-row">
+          <label for="type">Typ</label>
+          <select id="type" name="type" required>
+            <% eventTypes.forEach(function(t) { %>
+              <option value="<%= t.value %>"><%= t.label %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="note">Notatka (opcjonalnie)</label>
+          <textarea id="note" name="note" rows="2"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn secondary" id="btnCancel">Anuluj</button>
+          <button type="submit" class="btn">Zapisz</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalView">
+    <div class="modal">
+      <h2 id="viewTitle"></h2>
+      <p><strong>Typ:</strong> <span id="viewType"></span></p>
+      <p><strong>Termin:</strong> <span id="viewDates"></span></p>
+      <p id="viewNoteWrap"><strong>Notatka:</strong> <span id="viewNote"></span></p>
+      <div class="modal-actions">
+        <button type="button" class="btn secondary" id="btnCloseView">Zamknij</button>
+        <button type="button" class="btn danger" id="btnDeleteEvent" style="display:none;">Usun</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const modalAdd = document.getElementById('modalAdd');
+    const modalView = document.getElementById('modalView');
+    const formError = document.getElementById('formError');
+    let selectedEventId = null;
+
+    document.getElementById('btnAdd').addEventListener('click', () => {
+      formError.style.display = 'none';
+      document.getElementById('eventForm').reset();
+      modalAdd.classList.add('open');
+    });
+    document.getElementById('btnCancel').addEventListener('click', () => modalAdd.classList.remove('open'));
+    document.getElementById('btnCloseView').addEventListener('click', () => modalView.classList.remove('open'));
+
+    document.getElementById('eventForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        startDate: document.getElementById('startDate').value,
+        endDate: document.getElementById('endDate').value,
+        type: document.getElementById('type').value,
+        note: document.getElementById('note').value,
+      };
+      const res = await fetch('/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        formError.textContent = body.error || 'Wystapil blad.';
+        formError.style.display = 'block';
+        return;
+      }
+      modalAdd.classList.remove('open');
+      calendar.refetchEvents();
+    });
+
+    document.getElementById('btnDeleteEvent').addEventListener('click', async () => {
+      if (!selectedEventId) return;
+      if (!confirm('Usunac to zdarzenie?')) return;
+      await fetch('/events/' + selectedEventId + '/delete', { method: 'POST' });
+      modalView.classList.remove('open');
+      calendar.refetchEvents();
+    });
+
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      height: 'auto',
+      locale: 'pl',
+      firstDay: 1,
+      headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridYear,listYear' },
+      events: '/api/events',
+      eventClick: (info) => {
+        const p = info.event.extendedProps;
+        selectedEventId = info.event.id;
+        document.getElementById('viewTitle').textContent = p.userName;
+        document.getElementById('viewType').textContent = p.typeLabel;
+        document.getElementById('viewDates').textContent =
+          info.event.startStr + ' - ' + new Date(new Date(info.event.endStr).getTime() - 86400000).toISOString().slice(0,10);
+        document.getElementById('viewNoteWrap').style.display = p.note ? 'block' : 'none';
+        document.getElementById('viewNote').textContent = p.note;
+        document.getElementById('btnDeleteEvent').style.display = p.canDelete ? 'inline-block' : 'none';
+        modalView.classList.add('open');
+      },
+    });
+    calendar.render();
+  </script>
+</body>
+</html>

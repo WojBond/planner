@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <title>Dzialy - Planer urlopow</title>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <%- include('partials/nav') %>
+  <div class="container">
+    <div class="card">
+      <h1>Dzialy (grupy)</h1>
+      <% if (error) { %><div class="alert error"><%= error %></div><% } %>
+      <table>
+        <thead><tr><th>Nazwa</th><th></th></tr></thead>
+        <tbody>
+          <% groups.forEach(function(g) { %>
+            <tr>
+              <td><%= g.name %></td>
+              <td>
+                <form method="POST" action="/admin/groups/<%= g.id %>/delete" style="margin:0;"
+                      onsubmit="return confirm('Usunac dzial &quot;<%= g.name %>&quot;?');">
+                  <button class="btn danger" type="submit">Usun</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Dodaj dzial</h2>
+      <form method="POST" action="/admin/groups">
+        <div class="form-row">
+          <label for="name">Nazwa dzialu</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <button class="btn" type="submit">Dodaj</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

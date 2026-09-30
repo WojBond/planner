@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <title>Uzytkownicy - Planer urlopow</title>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <%- include('partials/nav') %>
+  <div class="container">
+    <div class="card">
+      <h1>Uzytkownicy</h1>
+      <% if (error) { %><div class="alert error"><%= error %></div><% } %>
+      <table>
+        <thead>
+          <tr>
+            <th>Kolor</th><th>Imie i nazwisko</th><th>E-mail</th><th>Dzial</th><th>Rola</th><th>Akcje</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(function(u) { %>
+            <tr>
+              <td><span class="color-dot" style="background: <%= u.color %>"></span></td>
+              <td><%= u.name %></td>
+              <td><%= u.email %></td>
+              <td><%= u.groupName %></td>
+              <td><%= u.role === 'admin' ? 'Administrator' : 'Uzytkownik' %></td>
+              <td>
+                <details>
+                  <summary class="muted" style="cursor:pointer;">Edytuj</summary>
+                  <form method="POST" action="/admin/users/<%= u.id %>" style="margin-top:8px;">
+                    <div class="form-row">
+                      <label>Imie i nazwisko</label>
+                      <input type="text" name="name" value="<%= u.name %>" />
+                    </div>
+                    <div class="form-row">
+                      <label>Dzial</label>
+                      <select name="groupId">
+                        <% groups.forEach(function(g) { %>
+                          <option value="<%= g.id %>" <%= g.id === u.groupId ? 'selected' : '' %>><%= g.name %></option>
+                        <% }) %>
+                      </select>
+                    </div>
+                    <div class="form-row">
+                      <label>Rola</label>
+                      <select name="role">
+                        <option value="user" <%= u.role === 'user' ? 'selected' : '' %>>Uzytkownik</option>
+                        <option value="admin" <%= u.role === 'admin' ? 'selected' : '' %>>Administrator</option>
+                      </select>
+                    </div>
+                    <div class="form-row">
+                      <label>Nowe haslo (opcjonalnie)</label>
+                      <input type="password" name="password" placeholder="pozostaw puste, aby nie zmieniac" />
+                    </div>
+                    <button class="btn" type="submit">Zapisz</button>
+                  </form>
+                </details>
+                <form method="POST" action="/admin/users/<%= u.id %>/delete" style="margin-top:8px;"
+                      onsubmit="return confirm('Usunac uzytkownika <%= u.name %>?');">
+                  <button class="btn danger" type="submit">Usun</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Dodaj uzytkownika</h2>
+      <form method="POST" action="/admin/users">
+        <div class="form-row">
+          <label for="name">Imie i nazwisko</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div class="form-row">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div class="form-row">
+          <label for="password">Haslo startowe</label>
+          <input type="password" id="password" name="password" required minlength="6" />
+        </div>
+        <div class="form-row">
+          <label for="groupId">Dzial</label>
+          <select id="groupId" name="groupId" required>
+            <% groups.forEach(function(g) { %>
+              <option value="<%= g.id %>"><%= g.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="role">Rola</label>
+          <select id="role" name="role">
+            <option value="user">Uzytkownik</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="color">Kolor paska</label>
+          <input type="color" id="color" name="color" value="#2563eb" />
+        </div>
+        <button class="btn" type="submit">Dodaj uzytkownika</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

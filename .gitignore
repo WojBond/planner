@@ -1,0 +1,19 @@
+# Bazy danych
+*.sqlite
+*.sqlite3
+*.db
+**/data/db.json
+
+# Logi
+*.log
+**/logs/*.log
+
+# Zaleznosci
+node_modules/
+
+# Sekrety / konfiguracja lokalna
+.env
+**/.env
+
+# Claude Code - ustawienia lokalne (nie wspoldzielone)
+**/.claude/settings.local.json

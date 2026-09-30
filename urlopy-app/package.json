@@ -1,0 +1,20 @@
+{
+  "name": "urlopy-app",
+  "version": "1.0.0",
+  "description": "Lokalna aplikacja do planowania urlopow z logowaniem, grupami/dzialami i powiadomieniami e-mail",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node src/app.js"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "nodemailer": "^10.0.12"
+  }
+}
