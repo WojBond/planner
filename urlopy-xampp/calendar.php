@@ -68,7 +68,8 @@ include __DIR__ . '/includes/header.php';
       <?php else: ?>
         Widzisz swoje zdarzenia oraz zdarzenia swojego dzialu.
       <?php endif; ?>
-      Kliknij pusty dzien, aby dodac zdarzenie, albo istniejacy pasek, aby je edytowac.
+      Kliknij pusty dzien (albo przeciagnij po kilku dniach), aby dodac zdarzenie z gotowym zakresem dat,
+      a istniejacy pasek, aby go edytowac.
       W widoku Rok mozesz tez przeciagac paski, aby przesunac urlop, albo ciagnac za ich brzegi, aby zmienic liczbe dni.
     </p>
 
@@ -155,13 +156,13 @@ function resetEventForm() {
   document.getElementById('eventUnapprove').style.display = 'none';
 }
 
-function openCreateModal(dateStr) {
+function openCreateModal(dateStr, endDateStr) {
   editingEventId = null;
   resetEventForm();
   document.getElementById('eventModalTitle').textContent = 'Nowe zdarzenie';
   if (dateStr) {
     document.getElementById('startDate').value = dateStr;
-    document.getElementById('endDate').value = dateStr;
+    document.getElementById('endDate').value = endDateStr || dateStr;
   }
   modalAdd.classList.add('open');
 }
@@ -411,6 +412,60 @@ function visibleEvents() {
 // --- Widok roczny ---
 function daysInMonth(year, month) { return new Date(year, month, 0).getDate(); }
 
+// Zaznaczanie zakresu dni przeciagnieciem po pustym miejscu w wierszu
+// miesiaca - wypelnia formularz nowego zdarzenia zaznaczonymi datami.
+let selectState = null;
+
+function dayFromPoint(clientX, clientY, track, dCount) {
+  const el = document.elementFromPoint(clientX, clientY);
+  if (el && el.classList && el.classList.contains('year-day-cell') && el.closest('.year-track') === track && el.dataset.day) {
+    return Math.min(dCount, parseInt(el.dataset.day, 10));
+  }
+  // Kursor wyjechal poza komorki (np. nad/pod wiersz) - dolicz po pozycji poziomej.
+  const rect = track.getBoundingClientRect();
+  const pxPerDay = rect.width / 31;
+  const day = Math.ceil((clientX - rect.left) / pxPerDay);
+  return Math.min(dCount, Math.max(1, day));
+}
+
+function updateSelectionHighlight() {
+  if (!selectState) return;
+  const lo = Math.min(selectState.startDay, selectState.currentDay);
+  const hi = Math.max(selectState.startDay, selectState.currentDay);
+  for (let d = 1; d <= selectState.dCount; d++) {
+    const cell = selectState.cellsByDay[d];
+    if (cell) cell.classList.toggle('selecting', d >= lo && d <= hi);
+  }
+}
+
+function startDaySelect(e, month, dCount, track, cellsByDay, day) {
+  if (e.button !== undefined && e.button !== 0) return;
+  e.preventDefault();
+  selectState = { month, dCount, track, cellsByDay, startDay: day, currentDay: day };
+  updateSelectionHighlight();
+  document.addEventListener('mousemove', onDaySelectMove);
+  document.addEventListener('mouseup', onDaySelectEnd);
+}
+
+function onDaySelectMove(e) {
+  if (!selectState) return;
+  selectState.currentDay = dayFromPoint(e.clientX, e.clientY, selectState.track, selectState.dCount);
+  updateSelectionHighlight();
+}
+
+function onDaySelectEnd(e) {
+  document.removeEventListener('mousemove', onDaySelectMove);
+  document.removeEventListener('mouseup', onDaySelectEnd);
+  if (!selectState) return;
+  const state = selectState;
+  selectState = null;
+  Object.values(state.cellsByDay).forEach(cell => cell.classList.remove('selecting'));
+
+  const lo = Math.min(state.startDay, state.currentDay);
+  const hi = Math.max(state.startDay, state.currentDay);
+  openCreateModal(dateToStr(currentYear, state.month, lo), dateToStr(currentYear, state.month, hi));
+}
+
 // Stan aktywnego przeciagania (przesuwanie / zmiana rozmiaru pasków).
 let dragState = null;
 
@@ -546,6 +601,7 @@ function renderYear() {
     const cells = document.createElement('div');
     cells.className = 'year-day-cells';
     const dCount = daysInMonth(currentYear, m);
+    const cellsByDay = {};
     for (let d = 1; d <= 31; d++) {
       const cell = document.createElement('div');
       cell.className = 'year-day-cell';
@@ -555,9 +611,10 @@ function renderYear() {
         const dow = new Date(currentYear, m - 1, d).getDay();
         if (dow === 0 || dow === 6) cell.classList.add('weekend');
         cell.classList.add('clickable');
-        cell.title = 'Dodaj zdarzenie';
-        const cellDateStr = dateToStr(currentYear, m, d);
-        cell.addEventListener('click', () => openCreateModal(cellDateStr));
+        cell.title = 'Dodaj zdarzenie (przeciagnij, aby zaznaczyc kilka dni)';
+        cell.dataset.day = d;
+        cellsByDay[d] = cell;
+        cell.addEventListener('mousedown', (e) => startDaySelect(e, m, dCount, track, cellsByDay, d));
       }
       cells.appendChild(cell);
     }
@@ -671,13 +728,18 @@ function ensureFullCalendar() {
     firstDay: 1,
     headerToolbar: false,
     initialView: 'dayGridMonth',
+    selectable: true,
+    selectMirror: true,
     events: (info, success) => success(visibleEvents()),
     eventClick: (info) => {
       const data = popoverDataFromFcEvent(info.event);
       if (data.extendedProps.canEdit) openEditModal(data);
       else showPopover(data, info.el.getBoundingClientRect());
     },
-    dateClick: (info) => openCreateModal(info.dateStr),
+    select: (info) => {
+      openCreateModal(info.startStr, addDays(info.endStr, -1));
+      fcCalendar.unselect();
+    },
     datesSet: (info) => { document.getElementById('navLabel').textContent = info.view.title; },
   });
   fcCalendar.render();

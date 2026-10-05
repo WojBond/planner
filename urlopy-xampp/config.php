@@ -1,8 +1,17 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopow" pod XAMPP.
 
-define('APP_VERSION', '1.5.0');
+define('APP_VERSION', '1.6.0');
 define('APP_CHANGELOG', [
+    '1.6.0' => [
+        'date' => '2026-10-05',
+        'changes' => [
+            'Zaznaczanie kilku dni przeciagnieciem po pustym miejscu w kalendarzu',
+            '(widok Rok i Miesiac) automatycznie wypelnia zakres dat "od-do" w',
+            'formularzu nowego zdarzenia. Zwykle klikniecie pojedynczego dnia',
+            'dziala jak dotychczas.',
+        ],
+    ],
     '1.5.0' => [
         'date' => '2026-10-05',
         'changes' => [

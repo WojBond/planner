@@ -1,6 +1,6 @@
 # Planer urlopow (wersja pod XAMPP: PHP + SQLite)
 
-**Wersja: 1.5.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
+**Wersja: 1.6.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
 widoczny tez w interfejsie obok nazwy aplikacji).
 
 To jest wersja aplikacji "Planer urlopow" przystosowana do uruchomienia na
@@ -43,7 +43,10 @@ wystarczaja, a ograniczenie zakresu upraszcza kod.
 ### Dodawanie i edycja klikniemem
 
 **Klikniecie pustego dnia** (w widoku Rok albo Miesiac) otwiera formularz
-nowego zdarzenia z juz wpisana data. **Klikniecie istniejacego zdarzenia**,
+nowego zdarzenia z juz wpisana data. **Przeciagniecie po kilku dniach**
+(w dowolnym kierunku, w obrebie tego samego wiersza/miesiaca w widoku Rok)
+zaznacza cale od-do na raz i tak samo otwiera formularz z gotowym zakresem.
+**Klikniecie istniejacego zdarzenia**,
 ktore mozesz edytowac (wlasne, albo dowolne dla admina, i nie jest jeszcze
 zatwierdzone), otwiera ten sam formularz wypelniony aktualnymi danymi
 (typ, zakres dat, notatka) — zmien co trzeba i kliknij "Zapisz". Z tego
