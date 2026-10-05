@@ -295,6 +295,7 @@ table th, table td {
 .year-day-cell.out-of-month { background: repeating-linear-gradient(45deg, #f7f7f8, #f7f7f8 4px, #efefef 4px, #efefef 8px); }
 .year-day-cell.clickable { cursor: pointer; }
 .year-day-cell.clickable:hover { background: #dbeafe; }
+.year-day-cell.selecting { background: #93c5fd; }
 
 .year-event-bar {
   position: absolute;
