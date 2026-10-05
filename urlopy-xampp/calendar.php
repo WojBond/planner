@@ -68,7 +68,8 @@ include __DIR__ . '/includes/header.php';
       <?php else: ?>
         Widzisz swoje zdarzenia oraz zdarzenia swojego dzialu.
       <?php endif; ?>
-      W widoku Rok mozesz przeciagac paski, aby przesunac urlop, albo ciagnac za ich brzegi, aby zmienic liczbe dni.
+      Kliknij pusty dzien, aby dodac zdarzenie, albo istniejacy pasek, aby je edytowac.
+      W widoku Rok mozesz tez przeciagac paski, aby przesunac urlop, albo ciagnac za ich brzegi, aby zmienic liczbe dni.
     </p>
 
     <div class="view-panel" id="panelMonth"><div id="calendar"></div></div>
@@ -79,7 +80,7 @@ include __DIR__ . '/includes/header.php';
 
 <div class="modal-backdrop" id="modalAdd">
   <div class="modal">
-    <h2>Nowe zdarzenie</h2>
+    <h2 id="eventModalTitle">Nowe zdarzenie</h2>
     <div id="formError" class="alert error" style="display:none;"></div>
     <form id="eventForm">
       <div class="form-row">
@@ -103,6 +104,9 @@ include __DIR__ . '/includes/header.php';
         <textarea id="note" name="note" rows="2"></textarea>
       </div>
       <div class="modal-actions">
+        <button type="button" class="btn danger" id="eventDelete" style="display:none;">Usun</button>
+        <button type="button" class="btn secondary" id="eventUnapprove" style="display:none;">Cofnij zatwierdzenie</button>
+        <button type="button" class="btn" id="eventApprove" style="display:none;">Zatwierdz</button>
         <button type="button" class="btn secondary" id="btnCancel">Anuluj</button>
         <button type="submit" class="btn">Zapisz</button>
       </div>
@@ -140,11 +144,43 @@ let currentView = 'year';
 const modalAdd = document.getElementById('modalAdd');
 const formError = document.getElementById('formError');
 
-document.getElementById('btnAdd').addEventListener('click', () => {
-  formError.style.display = 'none';
+// --- Modal dodawania / edycji zdarzenia (ten sam formularz dla obu trybow) ---
+let editingEventId = null;
+
+function resetEventForm() {
   document.getElementById('eventForm').reset();
+  formError.style.display = 'none';
+  document.getElementById('eventDelete').style.display = 'none';
+  document.getElementById('eventApprove').style.display = 'none';
+  document.getElementById('eventUnapprove').style.display = 'none';
+}
+
+function openCreateModal(dateStr) {
+  editingEventId = null;
+  resetEventForm();
+  document.getElementById('eventModalTitle').textContent = 'Nowe zdarzenie';
+  if (dateStr) {
+    document.getElementById('startDate').value = dateStr;
+    document.getElementById('endDate').value = dateStr;
+  }
   modalAdd.classList.add('open');
-});
+}
+
+function openEditModal(ev) {
+  editingEventId = ev.id;
+  resetEventForm();
+  document.getElementById('eventModalTitle').textContent = 'Edytuj zdarzenie';
+  document.getElementById('startDate').value = ev.start;
+  document.getElementById('endDate').value = ev.endInclusive;
+  document.getElementById('type').value = ev.extendedProps.type;
+  document.getElementById('note').value = ev.extendedProps.note || '';
+  document.getElementById('eventDelete').style.display = ev.extendedProps.canDelete ? 'inline-block' : 'none';
+  document.getElementById('eventApprove').style.display = ev.extendedProps.canApprove ? 'inline-block' : 'none';
+  document.getElementById('eventUnapprove').style.display = ev.extendedProps.canUnapprove ? 'inline-block' : 'none';
+  modalAdd.classList.add('open');
+}
+
+document.getElementById('btnAdd').addEventListener('click', () => openCreateModal(null));
 document.getElementById('btnCancel').addEventListener('click', () => modalAdd.classList.remove('open'));
 
 document.getElementById('eventForm').addEventListener('submit', async (e) => {
@@ -155,7 +191,8 @@ document.getElementById('eventForm').addEventListener('submit', async (e) => {
     type: document.getElementById('type').value,
     note: document.getElementById('note').value,
   });
-  const res = await fetch('events_create.php', {
+  if (editingEventId) params.set('id', editingEventId);
+  const res = await fetch(editingEventId ? 'events_update.php' : 'events_create.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params.toString(),
@@ -170,6 +207,41 @@ document.getElementById('eventForm').addEventListener('submit', async (e) => {
   await loadData();
   refreshCurrentView();
 });
+
+document.getElementById('eventDelete').addEventListener('click', async () => {
+  if (!editingEventId) return;
+  if (!confirm('Usunac to zdarzenie?')) return;
+  const res = await fetch('events_delete.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'id=' + encodeURIComponent(editingEventId),
+  });
+  if (!res.ok) {
+    const body = await res.json();
+    alert(body.error || 'Nie udalo sie usunac zdarzenia.');
+  }
+  modalAdd.classList.remove('open');
+  await loadData();
+  refreshCurrentView();
+});
+
+async function sendApprovalFromModal(action) {
+  if (!editingEventId) return;
+  const res = await fetch('events_approve.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'id=' + encodeURIComponent(editingEventId) + '&action=' + action,
+  });
+  if (!res.ok) {
+    const body = await res.json();
+    alert(body.error || 'Nie udalo sie zapisac zmiany statusu.');
+  }
+  modalAdd.classList.remove('open');
+  await loadData();
+  refreshCurrentView();
+}
+document.getElementById('eventApprove').addEventListener('click', () => sendApprovalFromModal('approve'));
+document.getElementById('eventUnapprove').addEventListener('click', () => sendApprovalFromModal('unapprove'));
 
 // --- Popover ---
 const popover = document.getElementById('eventPopover');
@@ -405,7 +477,7 @@ async function onDragEnd(e) {
   state.bar.classList.remove('dragging');
 
   if (!state.moved) {
-    showPopover(state.item.ev, state.bar.getBoundingClientRect());
+    openEditModal(state.item.ev);
     return;
   }
 
@@ -482,6 +554,10 @@ function renderYear() {
       } else {
         const dow = new Date(currentYear, m - 1, d).getDay();
         if (dow === 0 || dow === 6) cell.classList.add('weekend');
+        cell.classList.add('clickable');
+        cell.title = 'Dodaj zdarzenie';
+        const cellDateStr = dateToStr(currentYear, m, d);
+        cell.addEventListener('click', () => openCreateModal(cellDateStr));
       }
       cells.appendChild(cell);
     }
@@ -552,6 +628,14 @@ function renderYear() {
           if (e.target.classList.contains('resize-handle')) return;
           startDrag(e, item, bar, track, 'move', m, dCount);
         });
+      } else if (item.ev.extendedProps.canEdit) {
+        // Edytowalne, ale zdarzenie wychodzi poza ten miesiac - bez
+        // przeciagania pikselowego (nie da sie jednoznacznie policzyc dni
+        // poza widocznym wycinkiem), ale klikniecie wciaz otwiera edycje.
+        bar.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openEditModal(item.ev);
+        });
       } else {
         bar.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -588,7 +672,12 @@ function ensureFullCalendar() {
     headerToolbar: false,
     initialView: 'dayGridMonth',
     events: (info, success) => success(visibleEvents()),
-    eventClick: (info) => showPopover(popoverDataFromFcEvent(info.event), info.el.getBoundingClientRect()),
+    eventClick: (info) => {
+      const data = popoverDataFromFcEvent(info.event);
+      if (data.extendedProps.canEdit) openEditModal(data);
+      else showPopover(data, info.el.getBoundingClientRect());
+    },
+    dateClick: (info) => openCreateModal(info.dateStr),
     datesSet: (info) => { document.getElementById('navLabel').textContent = info.view.title; },
   });
   fcCalendar.render();
@@ -606,7 +695,11 @@ function ensureFullCalendarList() {
     initialView: 'listYear',
     initialDate: currentYear + '-01-01',
     events: (info, success) => success(visibleEvents()),
-    eventClick: (info) => showPopover(popoverDataFromFcEvent(info.event), info.el.getBoundingClientRect()),
+    eventClick: (info) => {
+      const data = popoverDataFromFcEvent(info.event);
+      if (data.extendedProps.canEdit) openEditModal(data);
+      else showPopover(data, info.el.getBoundingClientRect());
+    },
     datesSet: (info) => { document.getElementById('navLabel').textContent = info.view.title; },
   });
   fcList.render();
