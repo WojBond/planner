@@ -1,6 +1,6 @@
 # Planer urlopow (wersja pod XAMPP: PHP + SQLite)
 
-**Wersja: 1.3.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
+**Wersja: 1.4.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
 widoczny tez w interfejsie obok nazwy aplikacji).
 
 To jest wersja aplikacji "Planer urlopow" przystosowana do uruchomienia na
@@ -9,9 +9,14 @@ w wersji Node.js:
 
 1. Admin tworzy uzytkownikow i grupy uzytkownikow (dzialy).
 2. Logowanie z rolami: **user** widzi swoje zdarzenia i zdarzenia swojego
-   dzialu, **admin** widzi wszystkie zdarzenia.
+   dzialu, **kierownik** dodatkowo widzi i zatwierdza urlopy w dzialach,
+   ktorymi zarzadza, **admin** widzi i zarzadza wszystkim.
 3. Kazdy uzytkownik wybiera wlasny kolor paska w kalendarzu.
 4. Po dodaniu zdarzenia system wysyla e-mail do wszystkich osob w danym dziale.
+5. W widoku Rok mozna przeciagac paski urlopow (zmiana terminu) i ciagnac
+   za ich brzegi (zmiana liczby dni).
+6. Opcjonalny modul zatwierdzania urlopow (wlaczany w Konfiguracji) oraz
+   limity dni urlopowych (biezacy / zalegly) z automatycznym podliczaniem.
 
 ## Widoki kalendarza
 
@@ -34,6 +39,64 @@ Uwaga: filtrowanie w panelu bocznym dziala we wszystkich trzech widokach,
 natomiast nie ma odrebnych widokow Dzien/Tydzien/Oś czasu/Agenda/Tiles
 znanych z Teamup — do planowania urlopow trzy powyzsze widoki w zupelnosci
 wystarczaja, a ograniczenie zakresu upraszcza kod.
+
+### Przeciaganie i zmiana dlugosci urlopu (widok Rok)
+
+W widoku **Rok** kazdy pasek urlopu mozna:
+- **przeciagnac** (chwytajac srodek paska) — przesuwa caly urlop o tyle dni,
+  o ile przeciagnales,
+- **rozciagnac za lewy albo prawy brzeg** — skraca albo wydluza urlop od tej
+  strony.
+
+Zmiana zapisuje sie automatycznie po puszczeniu przycisku myszy. Dostepne
+jest to tylko dla wlasnych urlopow (albo wszystkich — dla admina) i tylko
+jesli zdarzenie **nie jest jeszcze zatwierdzone** (patrz modul zatwierdzania
+nizej) oraz miesci sie calkowicie w obrebie jednego miesiaca — urlopy
+przechodzace przez granice miesiaca trzeba edytowac usuwajac i dodajac na
+nowo. Przeciaganie dziala wylacznie w widoku Rok (nie w widokach Miesiac/Lista).
+
+## Modul zatwierdzania urlopow (opcjonalny)
+
+Wlacza sie go w **Konfiguracja -> Modul zatwierdzania urlopow**
+(dostepne tylko dla administratora, [admin_settings.php](admin_settings.php)).
+Domyslnie jest **wylaczony**.
+
+Po wlaczeniu:
+- kazde nowe zdarzenie ma status **Wprowadzony** i nie jest jeszcze
+  ostateczne,
+- zatwierdzic moze je **kierownik** dzialu, w ktorym powstalo, albo
+  **administrator** — status zmienia sie wtedy na **Zatwierdzony**,
+  a wlasciciel urlopu dostaje o tym maila,
+- zdarzenia zatwierdzone sa zablokowane przed przesuwaniem, zmiana dlugosci
+  i usunieciem przez zwyklego uzytkownika (admin moze zawsze); zatwierdzenie
+  mozna cofnac przyciskiem w dymku szczegolow,
+- w widoku Rok wprowadzone-ale-niezatwierdzone urlopy maja dodatkowy,
+  biały "szrafowany" obrys (legenda widoczna w panelu bocznym).
+
+Po wylaczeniu modulu nowe zdarzenia sa od razu zatwierdzone — bez
+dodatkowego kroku, dokladnie jak przed wersja 1.4.0.
+
+### Rola "kierownik"
+
+Kierownika tworzy/edytuje admin w **Uzytkownicy** ([admin_users.php](admin_users.php)):
+wybierz rolę "Kierownik", a nastepnie w polu **"Dzialy zarzadzane"**
+zaznacz jeden lub wiecej dzialow (przytrzymaj Ctrl/Cmd, zeby zaznaczyc kilka).
+Kierownik ma tez wlasny dzial "macierzysty" (jak kazdy uzytkownik) — widzi w
+kalendarzu swoj dzial oraz wszystkie dzialy, ktorymi zarzadza, i moze
+zatwierdzac urlopy wylacznie w tych ostatnich.
+
+## Limity urlopowe
+
+Kazdy uzytkownik ma dwa pola limitu w **Uzytkownicy**: **Limit biezacy**
+i **Limit zalegly** (w dniach, mozna wpisac np. "0.5" dla pol-dnia). Suma
+obu to limit do wykorzystania w danym roku kalendarzowym.
+
+Aplikacja automatycznie liczy, ile dni urlopu **wypoczynkowego** i **na
+zadanie** (te dwa typy sa czerpane z tej samej puli w polskim prawie pracy)
+dany uzytkownik wprowadzil do kalendarza w biezacym roku — niezaleznie od
+statusu zatwierdzenia. Podsumowanie (Limit / Wykorzystano / Pozostalo)
+widac przy kazdym uzytkowniku w tabeli w **Uzytkownicy**, a kazdy uzytkownik
+widzi wlasny bilans w **Moj profil**.
 
 ## Baza danych
 
@@ -153,12 +216,15 @@ urlopy-xampp/
   schema.mssql.sql        - dokumentacja struktury (opcjonalny konektor MS SQL)
   bootstrap.php           - wspolny start kazdej strony (sesja, polaczenia)
   index.php, login.php, logout.php
-  calendar.php            - widok kalendarza (FullCalendar)
-  api_events.php          - zwraca zdarzenia jako JSON (filtrowane wg roli)
-  events_create.php, events_delete.php
+  calendar.php            - widok kalendarza (Rok/Miesiac/Lista, drag&drop)
+  api_events.php          - zwraca zdarzenia jako JSON (filtrowane wg roli/dzialow)
+  api_calendars.php       - lista kalendarzy (osob) + ustawienia dla UI
+  events_create.php, events_update.php, events_delete.php, events_approve.php
   profile.php, profile_color.php, profile_password.php
   admin_users.php, admin_groups.php, admin_mail.php, admin_mail_test.php
-  includes/               - polaczenie z baza (wielosilnikowe), autoryzacja, layout
+  admin_settings.php      - Konfiguracja: wlacznik modulu zatwierdzania urlopow
+  includes/               - polaczenie z baza (wielosilnikowe + migracje),
+                             autoryzacja, role/uprawnienia, limity urlopowe, layout
   libs/PHPMailer/          - biblioteka do wysylki e-mail (SMTP)
   assets/                  - CSS i biblioteka kalendarza (FullCalendar)
   data/urlopy.sqlite       - plik bazy SQLite (tryb domyslny, tworzony automatycznie)

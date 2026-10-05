@@ -5,6 +5,26 @@ $currentAdmin = require_admin();
 $pdo = get_pdo();
 $error = null;
 
+function valid_role($value) {
+    return in_array($value, ['user', 'kierownik', 'admin'], true) ? $value : 'user';
+}
+
+function parse_days($value) {
+    $value = str_replace(',', '.', trim((string) $value));
+    return is_numeric($value) && (float) $value >= 0 ? (float) $value : 0;
+}
+
+function save_manager_groups(PDO $pdo, string $userId, string $role, array $groupIds) {
+    $stmt = $pdo->prepare('DELETE FROM manager_groups WHERE user_id = ?');
+    $stmt->execute([$userId]);
+    if ($role !== 'kierownik' || empty($groupIds)) return;
+    $stmt = $pdo->prepare('INSERT INTO manager_groups (user_id, group_id) VALUES (?, ?)');
+    foreach (array_unique($groupIds) as $gid) {
+        if ($gid === '') continue;
+        $stmt->execute([$userId, $gid]);
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $formAction = $_POST['form_action'] ?? '';
 
@@ -12,9 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name = trim($_POST['name'] ?? '');
         $email = strtolower(trim($_POST['email'] ?? ''));
         $password = $_POST['password'] ?? '';
-        $role = ($_POST['role'] ?? 'user') === 'admin' ? 'admin' : 'user';
+        $role = valid_role($_POST['role'] ?? 'user');
         $groupId = $_POST['groupId'] ?? '';
         $color = $_POST['color'] ?? '';
+        $managedGroups = $_POST['managed_groups'] ?? [];
+        $leaveCurrent = parse_days($_POST['leave_current_days'] ?? 0);
+        $leaveBacklog = parse_days($_POST['leave_backlog_days'] ?? 0);
         if (!preg_match('/^#[0-9a-fA-F]{6}$/', $color)) $color = '#2563eb';
 
         if ($name === '' || $email === '' || $password === '' || $groupId === '') {
@@ -22,11 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE email = ?');
             $stmt->execute([$email]);
-            if ((int)$stmt->fetchColumn() > 0) {
+            if ((int) $stmt->fetchColumn() > 0) {
                 $error = 'Uzytkownik z tym adresem e-mail juz istnieje.';
             } else {
-                $stmt = $pdo->prepare('INSERT INTO users (id, name, email, password_hash, role, group_id, color, must_change_password) VALUES (?, ?, ?, ?, ?, ?, ?, 1)');
-                $stmt->execute([uuidv4(), $name, $email, password_hash($password, PASSWORD_DEFAULT), $role, $groupId, $color]);
+                $newId = uuidv4();
+                $stmt = $pdo->prepare('INSERT INTO users (id, name, email, password_hash, role, group_id, color, must_change_password, leave_current_days, leave_backlog_days) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)');
+                $stmt->execute([$newId, $name, $email, password_hash($password, PASSWORD_DEFAULT), $role, $groupId, $color, $leaveCurrent, $leaveBacklog]);
+                save_manager_groups($pdo, $newId, $role, $managedGroups);
                 header('Location: admin_users.php');
                 exit;
             }
@@ -36,17 +61,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($formAction === 'update') {
         $id = $_POST['id'] ?? '';
         $name = trim($_POST['name'] ?? '');
-        $role = ($_POST['role'] ?? 'user') === 'admin' ? 'admin' : 'user';
+        $role = valid_role($_POST['role'] ?? 'user');
         $groupId = $_POST['groupId'] ?? '';
         $password = $_POST['password'] ?? '';
+        $managedGroups = $_POST['managed_groups'] ?? [];
+        $leaveCurrent = parse_days($_POST['leave_current_days'] ?? 0);
+        $leaveBacklog = parse_days($_POST['leave_backlog_days'] ?? 0);
 
         if ($password !== '') {
-            $stmt = $pdo->prepare('UPDATE users SET name = ?, role = ?, group_id = ?, password_hash = ?, must_change_password = 1 WHERE id = ?');
-            $stmt->execute([$name, $role, $groupId, password_hash($password, PASSWORD_DEFAULT), $id]);
+            $stmt = $pdo->prepare('UPDATE users SET name = ?, role = ?, group_id = ?, password_hash = ?, must_change_password = 1, leave_current_days = ?, leave_backlog_days = ? WHERE id = ?');
+            $stmt->execute([$name, $role, $groupId, password_hash($password, PASSWORD_DEFAULT), $leaveCurrent, $leaveBacklog, $id]);
         } else {
-            $stmt = $pdo->prepare('UPDATE users SET name = ?, role = ?, group_id = ? WHERE id = ?');
-            $stmt->execute([$name, $role, $groupId, $id]);
+            $stmt = $pdo->prepare('UPDATE users SET name = ?, role = ?, group_id = ?, leave_current_days = ?, leave_backlog_days = ? WHERE id = ?');
+            $stmt->execute([$name, $role, $groupId, $leaveCurrent, $leaveBacklog, $id]);
         }
+        save_manager_groups($pdo, $id, $role, $managedGroups);
         header('Location: admin_users.php');
         exit;
     }
@@ -73,6 +102,15 @@ $users = $pdo->query('
 
 $groups = $pdo->query('SELECT * FROM groups_ ORDER BY name')->fetchAll();
 
+$managedGroupsByUser = [];
+foreach ($pdo->query('SELECT mg.user_id, g.name FROM manager_groups mg JOIN groups_ g ON g.id = mg.group_id') as $row) {
+    $managedGroupsByUser[$row['user_id']][] = $row['name'];
+}
+$managedGroupIdsByUser = [];
+foreach ($pdo->query('SELECT user_id, group_id FROM manager_groups') as $row) {
+    $managedGroupIdsByUser[$row['user_id']][] = $row['group_id'];
+}
+
 $pageTitle = 'Uzytkownicy - Planer urlopow';
 include __DIR__ . '/includes/header.php';
 ?>
@@ -81,20 +119,31 @@ include __DIR__ . '/includes/header.php';
   <?php if ($error): ?><div class="alert error"><?= e($error) ?></div><?php endif; ?>
   <table>
     <thead>
-      <tr><th>Kolor</th><th>Imie i nazwisko</th><th>E-mail</th><th>Dzial</th><th>Rola</th><th>Akcje</th></tr>
+      <tr>
+        <th>Kolor</th><th>Imie i nazwisko</th><th>E-mail</th><th>Dzial</th><th>Rola</th>
+        <th>Limit (biez./zaleg.)</th><th>Wykorzystano</th><th>Pozostalo</th><th>Akcje</th>
+      </tr>
     </thead>
     <tbody>
-      <?php foreach ($users as $u): ?>
+      <?php foreach ($users as $u): $summary = compute_leave_summary($u); ?>
         <tr>
           <td><span class="color-dot" style="background: <?= e($u['color']) ?>"></span></td>
-          <td><?= e($u['name']) ?></td>
+          <td>
+            <?= e($u['name']) ?>
+            <?php if ($u['role'] === 'kierownik' && !empty($managedGroupsByUser[$u['id']])): ?>
+              <div class="muted" style="font-size:0.78rem;">zarzadza: <?= e(implode(', ', $managedGroupsByUser[$u['id']])) ?></div>
+            <?php endif; ?>
+          </td>
           <td><?= e($u['email']) ?></td>
           <td><?= e($u['group_name'] ?? '-') ?></td>
-          <td><?= $u['role'] === 'admin' ? 'Administrator' : 'Uzytkownik' ?></td>
+          <td><?= e(role_label($u['role'])) ?></td>
+          <td><?= e(format_days($summary['limit_current'])) ?> / <?= e(format_days($summary['limit_backlog'])) ?></td>
+          <td><?= e(format_days($summary['used'])) ?></td>
+          <td><?= e(format_days($summary['remaining'])) ?></td>
           <td>
             <details>
               <summary class="muted" style="cursor:pointer;">Edytuj</summary>
-              <form method="POST" action="admin_users.php" style="margin-top:8px;">
+              <form method="POST" action="admin_users.php" style="margin-top:8px;" class="user-edit-form">
                 <input type="hidden" name="form_action" value="update" />
                 <input type="hidden" name="id" value="<?= e($u['id']) ?>" />
                 <div class="form-row">
@@ -102,7 +151,7 @@ include __DIR__ . '/includes/header.php';
                   <input type="text" name="name" value="<?= e($u['name']) ?>" />
                 </div>
                 <div class="form-row">
-                  <label>Dzial</label>
+                  <label>Dzial (wlasny)</label>
                   <select name="groupId">
                     <?php foreach ($groups as $g): ?>
                       <option value="<?= e($g['id']) ?>" <?= $g['id'] === $u['group_id'] ? 'selected' : '' ?>><?= e($g['name']) ?></option>
@@ -111,10 +160,27 @@ include __DIR__ . '/includes/header.php';
                 </div>
                 <div class="form-row">
                   <label>Rola</label>
-                  <select name="role">
-                    <option value="user" <?= $u['role'] === 'user' ? 'selected' : '' ?>>Uzytkownik</option>
-                    <option value="admin" <?= $u['role'] === 'admin' ? 'selected' : '' ?>>Administrator</option>
+                  <select name="role" class="role-select">
+                    <?php foreach (ROLE_LABELS as $value => $label): ?>
+                      <option value="<?= e($value) ?>" <?= $u['role'] === $value ? 'selected' : '' ?>><?= e($label) ?></option>
+                    <?php endforeach; ?>
                   </select>
+                </div>
+                <div class="form-row managed-groups-row" style="<?= $u['role'] === 'kierownik' ? '' : 'display:none;' ?>">
+                  <label>Dzialy zarzadzane (kierownik)</label>
+                  <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
+                    <?php foreach ($groups as $g): ?>
+                      <option value="<?= e($g['id']) ?>" <?= in_array($g['id'], $managedGroupIdsByUser[$u['id']] ?? [], true) ? 'selected' : '' ?>><?= e($g['name']) ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label>Limit biezacy (dni)</label>
+                  <input type="text" name="leave_current_days" value="<?= e(format_days($u['leave_current_days'])) ?>" />
+                </div>
+                <div class="form-row">
+                  <label>Limit zalegly (dni)</label>
+                  <input type="text" name="leave_backlog_days" value="<?= e(format_days($u['leave_backlog_days'])) ?>" />
                 </div>
                 <div class="form-row">
                   <label>Nowe haslo (opcjonalnie)</label>
@@ -138,7 +204,7 @@ include __DIR__ . '/includes/header.php';
 
 <div class="card">
   <h2>Dodaj uzytkownika</h2>
-  <form method="POST" action="admin_users.php">
+  <form method="POST" action="admin_users.php" class="user-edit-form">
     <input type="hidden" name="form_action" value="create" />
     <div class="form-row">
       <label for="name">Imie i nazwisko</label>
@@ -153,7 +219,7 @@ include __DIR__ . '/includes/header.php';
       <input type="password" id="password" name="password" required minlength="6" />
     </div>
     <div class="form-row">
-      <label for="groupId">Dzial</label>
+      <label for="groupId">Dzial (wlasny)</label>
       <select id="groupId" name="groupId" required>
         <?php foreach ($groups as $g): ?>
           <option value="<?= e($g['id']) ?>"><?= e($g['name']) ?></option>
@@ -162,10 +228,27 @@ include __DIR__ . '/includes/header.php';
     </div>
     <div class="form-row">
       <label for="role">Rola</label>
-      <select id="role" name="role">
-        <option value="user">Uzytkownik</option>
-        <option value="admin">Administrator</option>
+      <select id="role" name="role" class="role-select">
+        <?php foreach (ROLE_LABELS as $value => $label): ?>
+          <option value="<?= e($value) ?>"><?= e($label) ?></option>
+        <?php endforeach; ?>
       </select>
+    </div>
+    <div class="form-row managed-groups-row" style="display:none;">
+      <label>Dzialy zarzadzane (kierownik)</label>
+      <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
+        <?php foreach ($groups as $g): ?>
+          <option value="<?= e($g['id']) ?>"><?= e($g['name']) ?></option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+    <div class="form-row">
+      <label for="leave_current_days">Limit biezacy (dni)</label>
+      <input type="text" id="leave_current_days" name="leave_current_days" value="0" />
+    </div>
+    <div class="form-row">
+      <label for="leave_backlog_days">Limit zalegly (dni)</label>
+      <input type="text" id="leave_backlog_days" name="leave_backlog_days" value="0" />
     </div>
     <div class="form-row">
       <label for="color">Kolor paska</label>
@@ -174,4 +257,15 @@ include __DIR__ . '/includes/header.php';
     <button class="btn" type="submit">Dodaj uzytkownika</button>
   </form>
 </div>
+
+<script>
+document.querySelectorAll('.user-edit-form').forEach(function (form) {
+  var roleSelect = form.querySelector('.role-select');
+  var groupsRow = form.querySelector('.managed-groups-row');
+  if (!roleSelect || !groupsRow) return;
+  var toggle = function () { groupsRow.style.display = roleSelect.value === 'kierownik' ? '' : 'none'; };
+  roleSelect.addEventListener('change', toggle);
+  toggle();
+});
+</script>
 <?php include __DIR__ . '/includes/footer.php'; ?>

@@ -44,9 +44,15 @@ router.get('/api/events', requireAuth, (req, res) => {
 });
 
 function addOneDay(dateStr) {
+  // Uwaga: celowo NIE uzywamy toISOString() tutaj - ono konwertuje do UTC,
+  // co w strefach na wschod od UTC (np. Polska) przesuwaloby date o 1 dzien
+  // wstecz (np. gdy serwer Node dziala w lokalnej strefie czasowej).
   const d = new Date(dateStr + 'T00:00:00');
   d.setDate(d.getDate() + 1);
-  return d.toISOString().slice(0, 10);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 router.post('/events', requireAuth, async (req, res) => {
