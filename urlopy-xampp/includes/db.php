@@ -3,6 +3,10 @@ if (!defined('APP_BOOTSTRAPPED')) { http_response_code(403); exit; }
 
 require_once __DIR__ . '/uuid.php';
 
+// Numer wersji schematu. Podnies przy kazdej zmianie struktury i dopisz
+// odpowiedni blok w run_migrations().
+const SCHEMA_VERSION = 2;
+
 function get_pdo() {
     static $pdo = null;
     if ($pdo !== null) return $pdo;
@@ -21,6 +25,7 @@ function get_pdo() {
     }
 
     ensure_schema($pdo, DB_DRIVER);
+    run_migrations($pdo, DB_DRIVER);
 
     return $pdo;
 }
@@ -35,6 +40,10 @@ function connect_sqlite() {
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
     );
     $pdo->exec('PRAGMA foreign_keys = ON');
+    // Bez tego SQLite rzuca "database is locked" natychmiast przy
+    // jakiejkolwiek kolizji (np. dwoch rownoczesnych zapisow) zamiast
+    // chwile poczekac i sprobowac ponownie.
+    $pdo->exec('PRAGMA busy_timeout = 5000');
     return $pdo;
 }
 
@@ -73,6 +82,11 @@ function connect_sqlsrv() {
     );
 }
 
+/**
+ * Tworzy tabele od zera (fresh install). Schemat tutaj to zawsze AKTUALNA
+ * (najnowsza) wersja struktury - dla juz istniejacych baz zmiany dokladane
+ * sa przez run_migrations().
+ */
 function ensure_schema(PDO $pdo, string $driver) {
     if ($driver === 'sqlite') {
         $pdo->exec("CREATE TABLE IF NOT EXISTS groups_ (
@@ -85,10 +99,12 @@ function ensure_schema(PDO $pdo, string $driver) {
             name TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
             password_hash TEXT NOT NULL,
-            role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('admin','user')),
+            role TEXT NOT NULL DEFAULT 'user',
             group_id TEXT,
             color TEXT NOT NULL DEFAULT '#2563eb',
             must_change_password INTEGER NOT NULL DEFAULT 1,
+            leave_current_days REAL NOT NULL DEFAULT 0,
+            leave_backlog_days REAL NOT NULL DEFAULT 0,
             FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE SET NULL
         )");
 
@@ -100,9 +116,20 @@ function ensure_schema(PDO $pdo, string $driver) {
             end_date TEXT NOT NULL,
             type TEXT NOT NULL,
             note TEXT,
+            status TEXT NOT NULL DEFAULT 'wprowadzony',
+            approved_by TEXT,
+            approved_at TEXT,
             created_at TEXT NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
             FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE SET NULL
+        )");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS manager_groups (
+            user_id TEXT NOT NULL,
+            group_id TEXT NOT NULL,
+            PRIMARY KEY (user_id, group_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE CASCADE
         )");
 
         $pdo->exec("CREATE TABLE IF NOT EXISTS settings (
@@ -120,10 +147,12 @@ function ensure_schema(PDO $pdo, string $driver) {
             name VARCHAR(255) NOT NULL,
             email VARCHAR(255) NOT NULL UNIQUE,
             password_hash VARCHAR(255) NOT NULL,
-            role ENUM('admin','user') NOT NULL DEFAULT 'user',
+            role VARCHAR(20) NOT NULL DEFAULT 'user',
             group_id CHAR(36) NULL,
             color CHAR(7) NOT NULL DEFAULT '#2563eb',
             must_change_password TINYINT(1) NOT NULL DEFAULT 1,
+            leave_current_days DECIMAL(5,1) NOT NULL DEFAULT 0,
+            leave_backlog_days DECIMAL(5,1) NOT NULL DEFAULT 0,
             FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE SET NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
@@ -135,9 +164,20 @@ function ensure_schema(PDO $pdo, string $driver) {
             end_date DATE NOT NULL,
             type VARCHAR(50) NOT NULL,
             note VARCHAR(500) NULL,
+            status VARCHAR(20) NOT NULL DEFAULT 'wprowadzony',
+            approved_by CHAR(36) NULL,
+            approved_at DATETIME NULL,
             created_at DATETIME NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
             FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE SET NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS manager_groups (
+            user_id CHAR(36) NOT NULL,
+            group_id CHAR(36) NOT NULL,
+            PRIMARY KEY (user_id, group_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
         $pdo->exec("CREATE TABLE IF NOT EXISTS settings (
@@ -157,10 +197,12 @@ function ensure_schema(PDO $pdo, string $driver) {
             name NVARCHAR(255) NOT NULL,
             email NVARCHAR(255) NOT NULL UNIQUE,
             password_hash NVARCHAR(255) NOT NULL,
-            role NVARCHAR(10) NOT NULL DEFAULT 'user' CHECK (role IN ('admin','user')),
+            role NVARCHAR(20) NOT NULL DEFAULT 'user',
             group_id CHAR(36) NULL,
             color CHAR(7) NOT NULL DEFAULT '#2563eb',
             must_change_password BIT NOT NULL DEFAULT 1,
+            leave_current_days DECIMAL(5,1) NOT NULL DEFAULT 0,
+            leave_backlog_days DECIMAL(5,1) NOT NULL DEFAULT 0,
             FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE SET NULL
         )");
 
@@ -173,9 +215,21 @@ function ensure_schema(PDO $pdo, string $driver) {
             end_date DATE NOT NULL,
             type NVARCHAR(50) NOT NULL,
             note NVARCHAR(500) NULL,
+            status NVARCHAR(20) NOT NULL DEFAULT 'wprowadzony',
+            approved_by CHAR(36) NULL,
+            approved_at DATETIME2 NULL,
             created_at DATETIME2 NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
             FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE SET NULL
+        )");
+
+        $pdo->exec("IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'manager_groups')
+        CREATE TABLE manager_groups (
+            user_id CHAR(36) NOT NULL,
+            group_id CHAR(36) NOT NULL,
+            PRIMARY KEY (user_id, group_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE CASCADE
         )");
 
         $pdo->exec("IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'settings')
@@ -197,5 +251,154 @@ function ensure_schema(PDO $pdo, string $driver) {
         $hash = password_hash(DEFAULT_ADMIN_PASSWORD, PASSWORD_DEFAULT);
         $stmt = $pdo->prepare('INSERT INTO users (id, name, email, password_hash, role, group_id, color, must_change_password) VALUES (?, ?, ?, ?, ?, ?, ?, 1)');
         $stmt->execute([$adminId, 'Administrator', DEFAULT_ADMIN_EMAIL, $hash, 'admin', $groupId, '#2563eb']);
+    }
+}
+
+/**
+ * Dokleja zmiany struktury do juz istniejacych baz (zalozonych przez
+ * wczesniejsza wersje aplikacji). ensure_schema() powyzej opisuje docelowy
+ * ksztalt dla NOWYCH instalacji - ta funkcja dogania do niego STARE.
+ */
+function run_migrations(PDO $pdo, string $driver) {
+    $current = (int) (get_schema_version($pdo, $driver) ?? 1);
+    if ($current >= SCHEMA_VERSION) return;
+
+    if ($current < 2) {
+        migrate_to_v2($pdo, $driver);
+    }
+
+    set_schema_version($pdo, $driver, SCHEMA_VERSION);
+}
+
+function get_schema_version(PDO $pdo, string $driver) {
+    try {
+        $stmt = $pdo->prepare('SELECT value FROM settings WHERE setting_key = ?');
+        $stmt->execute(['schema_version']);
+        $row = $stmt->fetch();
+        $stmt->closeCursor();
+        return $row ? (int) $row['value'] : null;
+    } catch (PDOException $e) {
+        return null;
+    }
+}
+
+function set_schema_version(PDO $pdo, string $driver, int $version) {
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM settings WHERE setting_key = ?');
+    $stmt->execute(['schema_version']);
+    $count = (int) $stmt->fetchColumn();
+    $stmt->closeCursor();
+    if ($count > 0) {
+        $stmt = $pdo->prepare('UPDATE settings SET value = ? WHERE setting_key = ?');
+        $stmt->execute([(string) $version, 'schema_version']);
+    } else {
+        $stmt = $pdo->prepare('INSERT INTO settings (setting_key, value) VALUES (?, ?)');
+        $stmt->execute(['schema_version', (string) $version]);
+    }
+}
+
+/**
+ * v1 -> v2: rola "kierownik", limity urlopowe, statusy/zatwierdzanie zdarzen,
+ * tabela przypisan kierownik-dzial. Bezpieczna do wielokrotnego uruchomienia
+ * (kazdy krok ignoruje blad "juz istnieje").
+ */
+function migrate_to_v2(PDO $pdo, string $driver) {
+    $exec_safe = function (string $sql) use ($pdo) {
+        try { $pdo->exec($sql); } catch (PDOException $e) { /* kolumna/tabela juz istnieje - ok */ }
+    };
+
+    if ($driver === 'sqlite') {
+        // Role mialo CHECK(role IN ('admin','user')) - SQLite nie pozwala
+        // zmienic CHECK bez przebudowy tabeli.
+        $hasOldCheck = false;
+        $stmt = $pdo->query("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'");
+        $row = $stmt->fetch();
+        $stmt->closeCursor();
+        $stmt = null;
+        if ($row && strpos($row['sql'], "CHECK") !== false) {
+            $hasOldCheck = true;
+        }
+
+        if ($hasOldCheck) {
+            $pdo->exec('PRAGMA foreign_keys = OFF');
+            // Bez tego RENAME TO przepisuje tez odwolania FOREIGN KEY w innych
+            // tabelach (np. events.user_id zaczeloby wskazywac na users_old_v1).
+            $pdo->exec('PRAGMA legacy_alter_table = ON');
+            $pdo->beginTransaction();
+            $pdo->exec("ALTER TABLE users RENAME TO users_old_v1");
+            $pdo->exec("CREATE TABLE users (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL,
+                role TEXT NOT NULL DEFAULT 'user',
+                group_id TEXT,
+                color TEXT NOT NULL DEFAULT '#2563eb',
+                must_change_password INTEGER NOT NULL DEFAULT 1,
+                leave_current_days REAL NOT NULL DEFAULT 0,
+                leave_backlog_days REAL NOT NULL DEFAULT 0,
+                FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE SET NULL
+            )");
+            $pdo->exec("INSERT INTO users (id, name, email, password_hash, role, group_id, color, must_change_password)
+                SELECT id, name, email, password_hash, role, group_id, color, must_change_password FROM users_old_v1");
+            $pdo->exec("DROP TABLE users_old_v1");
+            $pdo->commit();
+            $pdo->exec('PRAGMA foreign_keys = ON');
+            $pdo->exec('PRAGMA legacy_alter_table = OFF');
+        } else {
+            $exec_safe("ALTER TABLE users ADD COLUMN leave_current_days REAL NOT NULL DEFAULT 0");
+            $exec_safe("ALTER TABLE users ADD COLUMN leave_backlog_days REAL NOT NULL DEFAULT 0");
+        }
+
+        $exec_safe("ALTER TABLE events ADD COLUMN status TEXT NOT NULL DEFAULT 'wprowadzony'");
+        $exec_safe("ALTER TABLE events ADD COLUMN approved_by TEXT");
+        $exec_safe("ALTER TABLE events ADD COLUMN approved_at TEXT");
+
+        $exec_safe("CREATE TABLE IF NOT EXISTS manager_groups (
+            user_id TEXT NOT NULL,
+            group_id TEXT NOT NULL,
+            PRIMARY KEY (user_id, group_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE CASCADE
+        )");
+    } elseif ($driver === 'mysql') {
+        $exec_safe("ALTER TABLE users MODIFY COLUMN role VARCHAR(20) NOT NULL DEFAULT 'user'");
+        $exec_safe("ALTER TABLE users ADD COLUMN leave_current_days DECIMAL(5,1) NOT NULL DEFAULT 0");
+        $exec_safe("ALTER TABLE users ADD COLUMN leave_backlog_days DECIMAL(5,1) NOT NULL DEFAULT 0");
+        $exec_safe("ALTER TABLE events ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'wprowadzony'");
+        $exec_safe("ALTER TABLE events ADD COLUMN approved_by CHAR(36) NULL");
+        $exec_safe("ALTER TABLE events ADD COLUMN approved_at DATETIME NULL");
+        $exec_safe("CREATE TABLE IF NOT EXISTS manager_groups (
+            user_id CHAR(36) NOT NULL,
+            group_id CHAR(36) NOT NULL,
+            PRIMARY KEY (user_id, group_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    } elseif ($driver === 'sqlsrv') {
+        // Zdejmij CHECK na role (nazwa jest generowana automatycznie przez SQL Server).
+        try {
+            $pdo->exec("
+                DECLARE @c NVARCHAR(200);
+                SELECT @c = cc.name
+                FROM sys.check_constraints cc
+                JOIN sys.columns col ON cc.parent_object_id = col.object_id AND cc.parent_column_id = col.column_id
+                WHERE cc.parent_object_id = OBJECT_ID('users') AND col.name = 'role';
+                IF @c IS NOT NULL EXEC('ALTER TABLE users DROP CONSTRAINT ' + @c);
+            ");
+        } catch (PDOException $e) { /* brak ograniczenia - ok */ }
+
+        $exec_safe("ALTER TABLE users ADD leave_current_days DECIMAL(5,1) NOT NULL DEFAULT 0");
+        $exec_safe("ALTER TABLE users ADD leave_backlog_days DECIMAL(5,1) NOT NULL DEFAULT 0");
+        $exec_safe("ALTER TABLE events ADD status NVARCHAR(20) NOT NULL DEFAULT 'wprowadzony'");
+        $exec_safe("ALTER TABLE events ADD approved_by CHAR(36) NULL");
+        $exec_safe("ALTER TABLE events ADD approved_at DATETIME2 NULL");
+        $exec_safe("IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'manager_groups')
+        CREATE TABLE manager_groups (
+            user_id CHAR(36) NOT NULL,
+            group_id CHAR(36) NOT NULL,
+            PRIMARY KEY (user_id, group_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE CASCADE
+        )");
     }
 }

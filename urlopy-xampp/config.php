@@ -1,8 +1,20 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopow" pod XAMPP.
 
-define('APP_VERSION', '1.3.0');
+define('APP_VERSION', '1.4.0');
 define('APP_CHANGELOG', [
+    '1.4.0' => [
+        'date' => '2026-10-05',
+        'changes' => [
+            'Widok Rok: przeciaganie pasków zmienia termin urlopu, ciagniecie za',
+            'brzegi zmienia liczbe dni (tylko wlasne/wszystkie wpisy nie-zatwierdzone).',
+            'Nowy opcjonalny modul zatwierdzania urlopow (Konfiguracja): rola',
+            '"kierownik" przypisywana do wielu dzialow, statusy Wprowadzony/Zatwierdzony,',
+            'zatwierdzac moze tylko kierownik danego dzialu lub administrator.',
+            'Limity urlopowe (biezacy/zalegly) na uzytkownika, z automatycznym',
+            'podliczaniem wykorzystanych dni na podstawie wpisow w kalendarzu.',
+        ],
+    ],
     '1.3.0' => [
         'date' => '2026-09-29',
         'changes' => [

@@ -3,6 +3,7 @@ require_once __DIR__ . '/bootstrap.php';
 $user = require_auth();
 
 $manageLink = $user['role'] === 'admin' ? 'admin_users.php' : 'profile.php';
+$approvalEnabled = is_approval_enabled();
 
 $pageTitle = 'Kalendarz - Planer urlopow';
 $containerClass = 'container wide';
@@ -32,6 +33,15 @@ include __DIR__ . '/includes/header.php';
         <?php endforeach; ?>
       </ul>
     </div>
+    <?php if ($approvalEnabled): ?>
+    <div class="sidebar-section">
+      <h3>Legenda</h3>
+      <div class="muted" style="font-size:0.82rem; display:flex; flex-direction:column; gap:6px;">
+        <span><span class="legend-swatch legend-pending"></span> Wprowadzony (oczekuje)</span>
+        <span><span class="legend-swatch legend-approved"></span> Zatwierdzony</span>
+      </div>
+    </div>
+    <?php endif; ?>
   </aside>
 
   <div class="cal-main">
@@ -53,9 +63,12 @@ include __DIR__ . '/includes/header.php';
     <p class="muted" style="margin-top:-8px;">
       <?php if ($user['role'] === 'admin'): ?>
         Widzisz zdarzenia wszystkich uzytkownikow.
+      <?php elseif ($user['role'] === 'kierownik'): ?>
+        Widzisz zdarzenia swojego dzialu oraz dzialow, ktorymi zarzadzasz.
       <?php else: ?>
         Widzisz swoje zdarzenia oraz zdarzenia swojego dzialu.
       <?php endif; ?>
+      W widoku Rok mozesz przeciagac paski, aby przesunac urlop, albo ciagnac za ich brzegi, aby zmienic liczbe dni.
     </p>
 
     <div class="view-panel" id="panelMonth"><div id="calendar"></div></div>
@@ -101,9 +114,12 @@ include __DIR__ . '/includes/header.php';
   <h4 id="popTitle"></h4>
   <p id="popDates"></p>
   <p>Kalendarz: <span class="pill" id="popCalendar"></span></p>
+  <p id="popStatusWrap" style="display:none;"><strong>Status:</strong> <span id="popStatus"></span></p>
   <p id="popNoteWrap" style="display:none;"><strong>Notatka:</strong> <span id="popNote"></span></p>
   <div class="popover-actions">
     <button type="button" class="btn secondary" id="popClose">Zamknij</button>
+    <button type="button" class="btn" id="popApprove" style="display:none;">Zatwierdz</button>
+    <button type="button" class="btn secondary" id="popUnapprove" style="display:none;">Cofnij zatwierdzenie</button>
     <button type="button" class="btn danger" id="popDelete" style="display:none;">Usun</button>
   </div>
 </div>
@@ -115,6 +131,7 @@ const MONTH_ABBR = ['sty','lut','mar','kwi','maj','cze','lip','sie','wrz','paź'
 
 let allEvents = [];
 let allCalendars = [];
+let appMeta = { approvalEnabled: <?= $approvalEnabled ? 'true' : 'false' ?>, role: <?= json_encode($user['role']) ?> };
 let hiddenUsers = new Set();
 let hiddenTypes = new Set();
 let currentYear = new Date().getFullYear();
@@ -170,6 +187,15 @@ function showPopover(ev, anchorRect) {
   const pill = document.getElementById('popCalendar');
   pill.textContent = ev.extendedProps.userName;
   pill.style.background = ev.color;
+
+  const statusWrap = document.getElementById('popStatusWrap');
+  if (appMeta.approvalEnabled) {
+    statusWrap.style.display = 'block';
+    document.getElementById('popStatus').textContent = ev.extendedProps.statusLabel;
+  } else {
+    statusWrap.style.display = 'none';
+  }
+
   const noteWrap = document.getElementById('popNoteWrap');
   if (ev.extendedProps.note) {
     noteWrap.style.display = 'block';
@@ -178,6 +204,8 @@ function showPopover(ev, anchorRect) {
     noteWrap.style.display = 'none';
   }
   document.getElementById('popDelete').style.display = ev.extendedProps.canDelete ? 'inline-block' : 'none';
+  document.getElementById('popApprove').style.display = ev.extendedProps.canApprove ? 'inline-block' : 'none';
+  document.getElementById('popUnapprove').style.display = ev.extendedProps.canUnapprove ? 'inline-block' : 'none';
 
   popover.classList.add('open');
   const popRect = popover.getBoundingClientRect();
@@ -193,15 +221,38 @@ document.getElementById('popClose').addEventListener('click', () => popover.clas
 document.getElementById('popDelete').addEventListener('click', async () => {
   if (!selectedEventId) return;
   if (!confirm('Usunac to zdarzenie?')) return;
-  await fetch('events_delete.php', {
+  const res = await fetch('events_delete.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: 'id=' + encodeURIComponent(selectedEventId),
   });
+  if (!res.ok) {
+    const body = await res.json();
+    alert(body.error || 'Nie udalo sie usunac zdarzenia.');
+  }
   popover.classList.remove('open');
   await loadData();
   refreshCurrentView();
 });
+
+async function sendApproval(action) {
+  if (!selectedEventId) return;
+  const res = await fetch('events_approve.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'id=' + encodeURIComponent(selectedEventId) + '&action=' + action,
+  });
+  if (!res.ok) {
+    const body = await res.json();
+    alert(body.error || 'Nie udalo sie zapisac zmiany statusu.');
+  }
+  popover.classList.remove('open');
+  await loadData();
+  refreshCurrentView();
+}
+document.getElementById('popApprove').addEventListener('click', () => sendApproval('approve'));
+document.getElementById('popUnapprove').addEventListener('click', () => sendApproval('unapprove'));
+
 document.addEventListener('click', (e) => {
   if (popover.classList.contains('open') && !popover.contains(e.target) && !e.target.closest('.year-event-bar')) {
     popover.classList.remove('open');
@@ -214,7 +265,9 @@ async function loadData() {
     fetch('api_calendars.php'),
     fetch('api_events.php'),
   ]);
-  allCalendars = await calRes.json();
+  const calBody = await calRes.json();
+  allCalendars = calBody.calendars || [];
+  appMeta = calBody.meta || appMeta;
   const rawEvents = await evRes.json();
   allEvents = rawEvents.map(ev => ({
     ...ev,
@@ -223,9 +276,19 @@ async function loadData() {
 }
 
 function addDays(dateStr, delta) {
+  // Uwaga: celowo NIE uzywamy toISOString() tutaj - ono konwertuje do UTC,
+  // co w strefach na wschod od UTC (np. Polska) przesuwaloby date o 1 dzien
+  // wstecz. Budujemy string z lokalnych skladowych daty.
   const d = new Date(dateStr + 'T00:00:00');
   d.setDate(d.getDate() + delta);
-  return d.toISOString().slice(0, 10);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function dateToStr(year, month, day) {
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
 function renderSidebar() {
@@ -275,6 +338,102 @@ function visibleEvents() {
 
 // --- Widok roczny ---
 function daysInMonth(year, month) { return new Date(year, month, 0).getDate(); }
+
+// Stan aktywnego przeciagania (przesuwanie / zmiana rozmiaru pasków).
+let dragState = null;
+
+function startDrag(e, item, bar, track, mode, month, dCount) {
+  if (e.button !== undefined && e.button !== 0) return; // tylko lewy przycisk
+  e.preventDefault();
+  e.stopPropagation();
+  const trackRect = track.getBoundingClientRect();
+  dragState = {
+    mode,
+    item,
+    bar,
+    month,
+    dCount,
+    startClientX: e.clientX,
+    pxPerDay: trackRect.width / 31,
+    origStartDay: item.startDay,
+    origEndDay: item.endDay,
+    pendingStart: item.startDay,
+    pendingEnd: item.endDay,
+    moved: false,
+  };
+  document.addEventListener('mousemove', onDragMove);
+  document.addEventListener('mouseup', onDragEnd);
+}
+
+function onDragMove(e) {
+  if (!dragState) return;
+  const deltaPx = e.clientX - dragState.startClientX;
+  if (Math.abs(deltaPx) > 3) dragState.moved = true;
+  const dayDelta = Math.round(deltaPx / dragState.pxPerDay);
+
+  let newStart = dragState.origStartDay;
+  let newEnd = dragState.origEndDay;
+
+  if (dragState.mode === 'move') {
+    newStart = dragState.origStartDay + dayDelta;
+    newEnd = dragState.origEndDay + dayDelta;
+    if (newStart < 1) { newEnd += (1 - newStart); newStart = 1; }
+    if (newEnd > dragState.dCount) { newStart -= (newEnd - dragState.dCount); newEnd = dragState.dCount; }
+    newStart = Math.max(1, newStart);
+  } else if (dragState.mode === 'resize-left') {
+    newStart = Math.min(dragState.origEndDay, Math.max(1, dragState.origStartDay + dayDelta));
+  } else if (dragState.mode === 'resize-right') {
+    newEnd = Math.max(dragState.origStartDay, Math.min(dragState.dCount, dragState.origEndDay + dayDelta));
+  }
+
+  dragState.pendingStart = newStart;
+  dragState.pendingEnd = newEnd;
+
+  const left = ((newStart - 1) / 31) * 100;
+  const width = ((newEnd - newStart + 1) / 31) * 100;
+  dragState.bar.style.left = left + '%';
+  dragState.bar.style.width = width + '%';
+  dragState.bar.classList.add('dragging');
+}
+
+async function onDragEnd(e) {
+  document.removeEventListener('mousemove', onDragMove);
+  document.removeEventListener('mouseup', onDragEnd);
+  if (!dragState) return;
+  const state = dragState;
+  dragState = null;
+  state.bar.classList.remove('dragging');
+
+  if (!state.moved) {
+    showPopover(state.item.ev, state.bar.getBoundingClientRect());
+    return;
+  }
+
+  const newStartStr = dateToStr(currentYear, state.month, state.pendingStart);
+  const newEndStr = dateToStr(currentYear, state.month, state.pendingEnd);
+
+  state.item.ev.start = newStartStr;
+  state.item.ev.endInclusive = newEndStr;
+  state.item.ev.end = addDays(newEndStr, 1);
+
+  const params = new URLSearchParams({ id: state.item.ev.id, startDate: newStartStr, endDate: newEndStr });
+  try {
+    const res = await fetch('events_update.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString(),
+    });
+    const body = await res.json();
+    if (!res.ok) {
+      alert(body.error || 'Nie udalo sie zapisac zmiany.');
+      await loadData();
+    }
+  } catch (err) {
+    alert('Blad polaczenia - zmiana nie zostala zapisana.');
+    await loadData();
+  }
+  renderYear();
+}
 
 function renderYear() {
   document.getElementById('navLabel').textContent = currentYear;
@@ -330,6 +489,9 @@ function renderYear() {
 
     const monthStart = new Date(currentYear, m - 1, 1);
     const monthEnd = new Date(currentYear, m - 1, dCount);
+    const monthStartStr = dateToStr(currentYear, m, 1);
+    const monthEndStr = dateToStr(currentYear, m, dCount);
+
     const monthEvents = events
       .map(ev => {
         const s = new Date(ev.start + 'T00:00:00');
@@ -364,10 +526,39 @@ function renderYear() {
       bar.style.top = (item.lane * 22 + 5) + 'px';
       bar.style.background = item.ev.color;
       bar.textContent = item.ev.extendedProps.userName + ' - ' + item.ev.extendedProps.typeLabel;
-      bar.addEventListener('click', (e) => {
-        e.stopPropagation();
-        showPopover(item.ev, bar.getBoundingClientRect());
-      });
+
+      if (appMeta.approvalEnabled && item.ev.extendedProps.status === 'wprowadzony') {
+        bar.classList.add('status-pending');
+      }
+
+      const clippedStart = item.ev.start < monthStartStr;
+      const clippedEnd = item.ev.endInclusive > monthEndStr;
+      const draggable = item.ev.extendedProps.canEdit && !clippedStart && !clippedEnd;
+
+      if (draggable) {
+        bar.classList.add('draggable');
+        bar.title = 'Przeciagnij, aby przesunac; ciagnij za brzeg, aby zmienic liczbe dni.';
+
+        const handleLeft = document.createElement('div');
+        handleLeft.className = 'resize-handle resize-handle-left';
+        handleLeft.addEventListener('mousedown', (e) => startDrag(e, item, bar, track, 'resize-left', m, dCount));
+
+        const handleRight = document.createElement('div');
+        handleRight.className = 'resize-handle resize-handle-right';
+        handleRight.addEventListener('mousedown', (e) => startDrag(e, item, bar, track, 'resize-right', m, dCount));
+
+        bar.append(handleLeft, handleRight);
+        bar.addEventListener('mousedown', (e) => {
+          if (e.target.classList.contains('resize-handle')) return;
+          startDrag(e, item, bar, track, 'move', m, dCount);
+        });
+      } else {
+        bar.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showPopover(item.ev, bar.getBoundingClientRect());
+        });
+      }
+
       track.appendChild(bar);
     });
 

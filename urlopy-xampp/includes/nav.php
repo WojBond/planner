@@ -11,11 +11,12 @@ $navUser = current_user();
       <a href="admin_users.php">Uzytkownicy</a>
       <a href="admin_groups.php">Dzialy</a>
       <a href="admin_mail.php">Poczta</a>
+      <a href="admin_settings.php">Konfiguracja</a>
     <?php endif; ?>
     <?php if ($navUser): ?>
       <span class="user-badge">
         <span class="color-dot" style="background: <?= e($navUser['color']) ?>"></span>
-        <?= e($navUser['name']) ?> (<?= $navUser['role'] === 'admin' ? 'administrator' : 'uzytkownik' ?>)
+        <?= e($navUser['name']) ?> (<?= e(mb_strtolower(role_label($navUser['role']))) ?>)
       </span>
       <form method="POST" action="logout.php" style="margin:0;">
         <button class="btn secondary" type="submit">Wyloguj</button>

@@ -21,6 +21,11 @@ if ($user['role'] !== 'admin' && $event['user_id'] !== $user['id']) {
     echo json_encode(['error' => 'Brak uprawnien do usuniecia tego zdarzenia.']);
     exit;
 }
+if (event_is_locked($user, $event)) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Zdarzenie jest juz zatwierdzone i nie mozna go usunac. Poproś kierownika o cofniecie zatwierdzenia.']);
+    exit;
+}
 
 $stmt = $pdo->prepare('DELETE FROM events WHERE id = ?');
 $stmt->execute([$id]);

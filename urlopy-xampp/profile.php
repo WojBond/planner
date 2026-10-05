@@ -12,6 +12,7 @@ if ($user['group_id']) {
 
 $saved = isset($_GET['saved']);
 $error = $_GET['error'] ?? null;
+$leave = compute_leave_summary($user);
 
 $pageTitle = 'Moj profil - Planer urlopow';
 include __DIR__ . '/includes/header.php';
@@ -23,7 +24,24 @@ include __DIR__ . '/includes/header.php';
   <p><strong>Imie i nazwisko:</strong> <?= e($user['name']) ?></p>
   <p><strong>E-mail:</strong> <?= e($user['email']) ?></p>
   <p><strong>Dzial:</strong> <?= e($group ? $group['name'] : '-') ?></p>
-  <p><strong>Rola:</strong> <?= $user['role'] === 'admin' ? 'Administrator' : 'Uzytkownik' ?></p>
+  <p><strong>Rola:</strong> <?= e(role_label($user['role'])) ?></p>
+</div>
+
+<div class="card">
+  <h2>Limit urlopowy <?= e($leave['year']) ?></h2>
+  <table>
+    <tbody>
+      <tr><td>Limit biezacy</td><td><?= e(format_days($leave['limit_current'])) ?> dni</td></tr>
+      <tr><td>Limit zalegly</td><td><?= e(format_days($leave['limit_backlog'])) ?> dni</td></tr>
+      <tr><td>Razem do wykorzystania</td><td><?= e(format_days($leave['limit_total'])) ?> dni</td></tr>
+      <tr><td>Wykorzystano (wg kalendarza)</td><td><?= e(format_days($leave['used'])) ?> dni</td></tr>
+      <tr><td><strong>Pozostalo</strong></td><td><strong><?= e(format_days($leave['remaining'])) ?> dni</strong></td></tr>
+    </tbody>
+  </table>
+  <p class="muted" style="margin-top:10px;">
+    Liczone sa dni urlopu wypoczynkowego i urlopu na zadanie wprowadzone do
+    kalendarza w tym roku (niezaleznie od statusu zatwierdzenia).
+  </p>
 </div>
 
 <div class="card">
