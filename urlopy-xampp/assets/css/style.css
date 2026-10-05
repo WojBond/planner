@@ -125,8 +125,7 @@ table th, table td {
 .modal {
   background: var(--card); border-radius: var(--radius); padding: 22px; width: 420px;
 }
-.modal-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 16px; }
-.modal-actions .btn { white-space: nowrap; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
 .muted { color: var(--muted); font-size: 0.85rem; }
 
 /* ---- Widok kalendarza (Miesiac / Rok / Lista) ---- */
@@ -293,8 +292,6 @@ table th, table td {
 .year-day-cell { flex: 1; border-left: 1px solid #f1f3f6; }
 .year-day-cell.weekend { background: #eef4fb; }
 .year-day-cell.out-of-month { background: repeating-linear-gradient(45deg, #f7f7f8, #f7f7f8 4px, #efefef 4px, #efefef 8px); }
-.year-day-cell.clickable { cursor: pointer; }
-.year-day-cell.clickable:hover { background: #dbeafe; }
 
 .year-event-bar {
   position: absolute;

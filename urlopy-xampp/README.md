@@ -1,6 +1,6 @@
 # Planer urlopow (wersja pod XAMPP: PHP + SQLite)
 
-**Wersja: 1.5.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
+**Wersja: 1.4.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
 widoczny tez w interfejsie obok nazwy aplikacji).
 
 To jest wersja aplikacji "Planer urlopow" przystosowana do uruchomienia na
@@ -40,32 +40,20 @@ natomiast nie ma odrebnych widokow Dzien/Tydzien/Oś czasu/Agenda/Tiles
 znanych z Teamup — do planowania urlopow trzy powyzsze widoki w zupelnosci
 wystarczaja, a ograniczenie zakresu upraszcza kod.
 
-### Dodawanie i edycja klikniemem
-
-**Klikniecie pustego dnia** (w widoku Rok albo Miesiac) otwiera formularz
-nowego zdarzenia z juz wpisana data. **Klikniecie istniejacego zdarzenia**,
-ktore mozesz edytowac (wlasne, albo dowolne dla admina, i nie jest jeszcze
-zatwierdzone), otwiera ten sam formularz wypelniony aktualnymi danymi
-(typ, zakres dat, notatka) — zmien co trzeba i kliknij "Zapisz". Z tego
-samego okienka dostepne sa tez przyciski "Usun" oraz (jesli masz
-uprawnienia) "Zatwierdz"/"Cofnij zatwierdzenie". Zdarzenia, ktorych nie
-mozesz edytowac (cudze, albo juz zatwierdzone), po kliknieciu pokazuja
-zamiast tego krotki podglad bez mozliwosci zmiany.
-
 ### Przeciaganie i zmiana dlugosci urlopu (widok Rok)
 
-W widoku **Rok** kazdy edytowalny pasek urlopu mozna dodatkowo:
+W widoku **Rok** kazdy pasek urlopu mozna:
 - **przeciagnac** (chwytajac srodek paska) — przesuwa caly urlop o tyle dni,
   o ile przeciagnales,
 - **rozciagnac za lewy albo prawy brzeg** — skraca albo wydluza urlop od tej
   strony.
 
-Zmiana zapisuje sie automatycznie po puszczeniu przycisku myszy. Dziala to
-tylko jesli zdarzenie miesci sie calkowicie w obrebie jednego miesiaca —
-urlopy przechodzace przez granice miesiaca nadal mozna edytowac (typ,
-notatke, daty) przez klikniecie i formularz, po prostu bez przeciagania
-pikselowego. Przeciaganie dziala wylacznie w widoku Rok (nie w widokach
-Miesiac/Lista).
+Zmiana zapisuje sie automatycznie po puszczeniu przycisku myszy. Dostepne
+jest to tylko dla wlasnych urlopow (albo wszystkich — dla admina) i tylko
+jesli zdarzenie **nie jest jeszcze zatwierdzone** (patrz modul zatwierdzania
+nizej) oraz miesci sie calkowicie w obrebie jednego miesiaca — urlopy
+przechodzace przez granice miesiaca trzeba edytowac usuwajac i dodajac na
+nowo. Przeciaganie dziala wylacznie w widoku Rok (nie w widokach Miesiac/Lista).
 
 ## Modul zatwierdzania urlopow (opcjonalny)
 

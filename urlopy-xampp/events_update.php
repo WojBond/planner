@@ -7,10 +7,6 @@ header('Content-Type: application/json; charset=utf-8');
 $id = $_POST['id'] ?? '';
 $startDate = $_POST['startDate'] ?? '';
 $endDate = $_POST['endDate'] ?? '';
-// Typ i notatka sa opcjonalne: przeciaganie paska w widoku Rok wysyla tylko
-// daty, formularz edycji wysyla komplet pol.
-$type = array_key_exists('type', $_POST) ? trim($_POST['type']) : null;
-$note = array_key_exists('note', $_POST) ? trim($_POST['note']) : null;
 
 if ($id === '' || $startDate === '' || $endDate === '') {
     http_response_code(400);
@@ -25,11 +21,6 @@ if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate) || !preg_match('/^\d{4}-\d{
 if ($endDate < $startDate) {
     http_response_code(400);
     echo json_encode(['error' => 'Data zakonczenia nie moze byc wczesniejsza niz data rozpoczecia.']);
-    exit;
-}
-if ($type !== null && $type === '') {
-    http_response_code(400);
-    echo json_encode(['error' => 'Wybierz typ zdarzenia.']);
     exit;
 }
 
@@ -50,14 +41,11 @@ if ($user['role'] !== 'admin' && $event['user_id'] !== $user['id']) {
 }
 if (event_is_locked($user, $event)) {
     http_response_code(403);
-    echo json_encode(['error' => 'Zdarzenie jest juz zatwierdzone - nie mozna go edytowac.']);
+    echo json_encode(['error' => 'Zdarzenie jest juz zatwierdzone - nie mozna go przesunac ani zmienic jego dlugosci.']);
     exit;
 }
 
-$newType = $type !== null ? $type : $event['type'];
-$newNote = $note !== null ? mb_substr($note, 0, 500) : ($event['note'] ?? '');
-
-$stmt = $pdo->prepare('UPDATE events SET start_date = ?, end_date = ?, type = ?, note = ? WHERE id = ?');
-$stmt->execute([$startDate, $endDate, $newType, $newNote !== '' ? $newNote : null, $id]);
+$stmt = $pdo->prepare('UPDATE events SET start_date = ?, end_date = ? WHERE id = ?');
+$stmt->execute([$startDate, $endDate, $id]);
 
 echo json_encode(['ok' => true]);

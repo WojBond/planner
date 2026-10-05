@@ -1,19 +1,8 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopow" pod XAMPP.
 
-define('APP_VERSION', '1.5.0');
+define('APP_VERSION', '1.4.0');
 define('APP_CHANGELOG', [
-    '1.5.0' => [
-        'date' => '2026-10-05',
-        'changes' => [
-            'Klikniecie pustego dnia w kalendarzu (widok Rok i Miesiac) otwiera',
-            'formularz nowego zdarzenia z gotowa data.',
-            'Klikniecie istniejacego, edytowalnego zdarzenia otwiera ten sam',
-            'formularz wypelniony danymi (typ, daty, notatka) do edycji - zamiast',
-            'tylko podgladu. Usuwanie i zatwierdzanie/cofanie zatwierdzenia dostepne',
-            'teraz tez bezposrednio z tego formularza.',
-        ],
-    ],
     '1.4.0' => [
         'date' => '2026-10-05',
         'changes' => [
