@@ -1,8 +1,10 @@
 <?php
 require_once __DIR__ . '/bootstrap.php';
 
+$next = safe_next_url($_POST['next'] ?? ($_GET['next'] ?? ''));
+
 if (current_user()) {
-    header('Location: calendar.php');
+    header('Location: ' . $next);
     exit;
 }
 
@@ -23,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
-        header('Location: calendar.php');
+        header('Location: ' . $next);
         exit;
     }
 }
@@ -43,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h1>Planer urlopow</h1>
     <?php if ($error): ?><div class="alert error"><?= e($error) ?></div><?php endif; ?>
     <form method="POST" action="login.php">
+      <input type="hidden" name="next" value="<?= e($next) ?>" />
       <div class="form-row">
         <label for="email">E-mail</label>
         <input type="email" id="email" name="email" required autofocus />

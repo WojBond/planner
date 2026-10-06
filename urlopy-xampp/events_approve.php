@@ -43,6 +43,8 @@ if ($action === 'unapprove') {
             'Typ: ' . event_type_label($event['type']),
             'Od: ' . $event['start_date'],
             'Do: ' . $event['end_date'],
+            '',
+            'Zobacz w systemie: ' . event_link($id),
         ]));
     }
 }

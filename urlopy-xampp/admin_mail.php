@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $smtpSecure = $_POST['smtp_secure'] ?? '';
     $smtpUser = trim($_POST['smtp_user'] ?? '');
     $smtpPass = $_POST['smtp_pass'] ?? '';
+    $appBaseUrl = trim($_POST['app_base_url'] ?? '');
 
     if ($fromEmail === '' || !filter_var($fromEmail, FILTER_VALIDATE_EMAIL)) {
         $error = 'Podaj poprawny adres e-mail nadawcy.';
@@ -20,6 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Port SMTP musi byc liczba od 1 do 65535.';
     } elseif (!in_array($smtpSecure, ['', 'tls', 'ssl'], true)) {
         $error = 'Nieprawidlowa wartosc szyfrowania SMTP.';
+    } elseif ($appBaseUrl !== '' && !filter_var($appBaseUrl, FILTER_VALIDATE_URL)) {
+        $error = 'Adres aplikacji musi byc poprawnym adresem URL (np. http://192.168.1.50/urlopy).';
     } else {
         set_setting('mail_from_email', $fromEmail);
         set_setting('mail_from_name', $fromName !== '' ? $fromName : 'Planer urlopow');
@@ -30,11 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($smtpPass !== '') {
             set_setting('smtp_pass', $smtpPass);
         }
+        set_setting('app_base_url', rtrim($appBaseUrl, '/'));
         $saved = true;
     }
 }
 
 $settings = get_mail_settings();
+$appBaseUrlSetting = get_setting('app_base_url', '');
+$detectedBaseUrl = detect_base_url();
 
 $pageTitle = 'Poczta - Planer urlopow';
 include __DIR__ . '/includes/header.php';
@@ -82,6 +88,19 @@ include __DIR__ . '/includes/header.php';
     <div class="form-row">
       <label for="smtp_pass">Haslo SMTP</label>
       <input type="password" id="smtp_pass" name="smtp_pass" placeholder="pozostaw puste, aby nie zmieniac" />
+    </div>
+    <div class="form-row">
+      <label for="app_base_url">Adres aplikacji (link w powiadomieniach)</label>
+      <input type="text" id="app_base_url" name="app_base_url" value="<?= e($appBaseUrlSetting) ?>" placeholder="<?= e($detectedBaseUrl) ?>" />
+      <p class="muted" style="margin:6px 0 0;">
+        Ten adres sluzy do budowania linku "Zobacz w systemie" w mailach
+        (np. do konkretnego zgloszenia urlopowego). Zostaw puste, aby
+        aplikacja sama wykrywala adres (IP albo domene) z biezacego
+        zadania — obecnie wykryty adres to:
+        <code><?= e($detectedBaseUrl) ?></code>.
+        Wypelnij tylko, jesli ten adres bywa niestabilny (np. zmienne IP w
+        sieci lokalnej) i wolisz zawsze ustawiony na sztywno adres/domene.
+      </p>
     </div>
     <button class="btn" type="submit">Zapisz ustawienia</button>
   </form>

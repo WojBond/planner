@@ -1,8 +1,20 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopow" pod XAMPP.
 
-define('APP_VERSION', '1.6.0');
+define('APP_VERSION', '1.7.0');
 define('APP_CHANGELOG', [
+    '1.7.0' => [
+        'date' => '2026-10-06',
+        'changes' => [
+            'Powiadomienia e-mail o zdarzeniach urlopowych zawieraja teraz link',
+            '"Zobacz w systemie" prowadzacy wprost do danego zgloszenia.',
+            'Adres aplikacji (IP albo domena) do budowy linku jest wykrywany',
+            'automatycznie z biezacego zadania HTTP; mozna go tez ustawic na',
+            'sztywno w Poczta, jesli bywa niestabilny.',
+            'Link po zalogowaniu poprawnie wraca do strony, z ktorej uzytkownik',
+            'zostal przekierowany (np. wprost do zgloszenia z maila).',
+        ],
+    ],
     '1.6.0' => [
         'date' => '2026-10-05',
         'changes' => [
