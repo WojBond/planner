@@ -18,12 +18,12 @@ if (!$event) {
 }
 if ($user['role'] !== 'admin' && $event['user_id'] !== $user['id']) {
     http_response_code(403);
-    echo json_encode(['error' => 'Brak uprawnien do usuniecia tego zdarzenia.']);
+    echo json_encode(['error' => 'Brak uprawnień do usunięcia tego zdarzenia.']);
     exit;
 }
 if (event_is_locked($user, $event)) {
     http_response_code(403);
-    echo json_encode(['error' => 'Zdarzenie jest juz zatwierdzone i nie mozna go usunac. Poproś kierownika o cofniecie zatwierdzenia.']);
+    echo json_encode(['error' => 'Zdarzenie jest już zatwierdzone i nie można go usunąć. Poproś kierownika o cofnięcie zatwierdzenia.']);
     exit;
 }
 

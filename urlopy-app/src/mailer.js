@@ -15,7 +15,7 @@ if (smtpConfigured) {
   });
 }
 
-const MAIL_FROM = process.env.MAIL_FROM || 'Planer urlopow <urlopy@firma.local>';
+const MAIL_FROM = process.env.MAIL_FROM || 'Planer urlopów <urlopy@firma.local>';
 
 async function sendMail({ to, subject, text }) {
   if (!to || to.length === 0) return;
@@ -35,7 +35,7 @@ async function sendMail({ to, subject, text }) {
       text,
     });
   } catch (err) {
-    console.error('Blad wysylki maila:', err.message);
+    console.error('Błąd wysyłki maila:', err.message);
   }
 }
 

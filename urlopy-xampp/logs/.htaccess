@@ -1,4 +1,4 @@
-# Blokuje bezposredni dostep przez przegladarke do logu maili.
+# Blokuje bezpośredni dostęp przez przeglądarkę do logu maili.
 <IfModule mod_authz_core.c>
     Require all denied
 </IfModule>

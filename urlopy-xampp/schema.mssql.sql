@@ -1,11 +1,11 @@
--- Schemat bazy danych "Planer urlopow" - Microsoft SQL Server (opcjonalny konektor).
--- Aktywuj ustawiajac w config.php: define('DB_DRIVER', 'sqlsrv');
+-- Schemat bazy danych "Planer urlopów" - Microsoft SQL Server (opcjonalny konektor).
+-- Aktywuj ustawiając w config.php: define('DB_DRIVER', 'sqlsrv');
 -- Wymaga rozszerzenia pdo_sqlsrv w PHP (Microsoft Drivers for PHP for SQL
--- Server) - nie jest czescia standardowego XAMPP, trzeba doinstalowac osobno.
--- Aplikacja tworzy i migruje tabele automatycznie przy kazdym uruchomieniu
--- (patrz includes/db.php: ensure_schema() / run_migrations()) - recznego
--- importu NIE trzeba robic, o ile baza 'urlopy' juz istnieje na serwerze.
--- Zostawiony wylacznie jako dokumentacja aktualnej struktury (wersja schematu 2).
+-- Server) - nie jest częścią standardowego XAMPP, trzeba doinstalować osobno.
+-- Aplikacja tworzy i migruje tabele automatycznie przy każdym uruchomieniu
+-- (patrz includes/db.php: ensure_schema() / run_migrations()) - ręcznego
+-- importu NIE trzeba robić, o ile baza 'urlopy' już istnieje na serwerze.
+-- Zostawiony wyłącznie jako dokumentacja aktualnej struktury (wersja schematu 2).
 
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'groups_')
 CREATE TABLE groups_ (
@@ -14,7 +14,7 @@ CREATE TABLE groups_ (
 );
 
 -- role: 'user' | 'kierownik' | 'admin' (bez CHECK - walidacja w PHP,
--- zeby latwo bylo dokladac kolejne role w przyszlosci).
+-- żeby łatwo bylo dokładać kolejne role w przyszłości).
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'users')
 CREATE TABLE users (
     id CHAR(36) NOT NULL PRIMARY KEY,
@@ -48,7 +48,7 @@ CREATE TABLE events (
     FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE SET NULL
 );
 
--- Dzialy, ktorymi zarzadza dany kierownik (relacja wiele-do-wielu).
+-- Działy, którymi zarządza dany kierownik (relacja wiele-do-wielu).
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'manager_groups')
 CREATE TABLE manager_groups (
     user_id CHAR(36) NOT NULL,

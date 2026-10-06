@@ -37,7 +37,7 @@ function require_auth() {
     return $user;
 }
 
-/** Bezpieczny cel przekierowania po zalogowaniu - tylko wzgledna sciezka we wlasnej aplikacji. */
+/** Bezpieczny cel przekierowania po zalogowaniu - tylko względna ścieżka we własnej aplikacji. */
 function safe_next_url($raw) {
     $raw = trim((string) $raw);
     if ($raw === '') return 'calendar.php';
@@ -50,7 +50,7 @@ function require_admin() {
     $user = require_auth();
     if ($user['role'] !== 'admin') {
         http_response_code(403);
-        render_error('Brak uprawnien administratora.');
+        render_error('Brak uprawnień administratora.');
         exit;
     }
     return $user;

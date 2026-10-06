@@ -23,9 +23,9 @@ function set_setting($key, $value) {
 }
 
 /**
- * Ustawienia poczty wychodzacej. Wartosci z bazy (ustawione w panelu
- * Admin -> Poczta) maja pierwszenstwo, a stale z config.php sluza jako
- * wartosci startowe / awaryjne, dopoki admin nic nie zapisze w panelu.
+ * Ustawienia poczty wychodzącej. Wartości z bazy (ustawione w panelu
+ * Admin -> Poczta) mają pierwszeństwo, a stale z config.php służą jako
+ * wartości startowe / awaryjne, dopóki admin nic nie zapisze w panelu.
  */
 function get_mail_settings() {
     return [

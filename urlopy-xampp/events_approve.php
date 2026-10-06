@@ -6,7 +6,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 if (!is_approval_enabled()) {
     http_response_code(400);
-    echo json_encode(['error' => 'Modul zatwierdzania urlopow jest wylaczony.']);
+    echo json_encode(['error' => 'Moduł zatwierdzania urlopów jest wyłączony.']);
     exit;
 }
 
@@ -25,7 +25,7 @@ if (!$event) {
 }
 if (!can_approve_group($user, $event['group_id'])) {
     http_response_code(403);
-    echo json_encode(['error' => 'Brak uprawnien do zatwierdzania urlopow w tym dziale.']);
+    echo json_encode(['error' => 'Brak uprawnień do zatwierdzania urlopów w tym dziale.']);
     exit;
 }
 
@@ -38,7 +38,7 @@ if ($action === 'unapprove') {
 
     if ($event['user_email']) {
         send_mail_to([$event['user_email']], 'Urlop zatwierdzony', implode("\n", [
-            $user['name'] . ' zatwierdzil(a) Twoj urlop.',
+            $user['name'] . ' zatwierdził(a) Twoj urlop.',
             '',
             'Typ: ' . event_type_label($event['type']),
             'Od: ' . $event['start_date'],

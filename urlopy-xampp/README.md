@@ -1,140 +1,140 @@
-# Planer urlopow (wersja pod XAMPP: PHP + SQLite)
+# Planer urlopów (wersja pod XAMPP: PHP + SQLite)
 
-**Wersja: 1.7.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
-widoczny tez w interfejsie obok nazwy aplikacji).
+**Wersja: 1.7.1** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
+widoczny też w interfejsie obok nazwy aplikacji).
 
-To jest wersja aplikacji "Planer urlopow" przystosowana do uruchomienia na
-serwerze Apache z PHP, tak jak dostarcza je XAMPP. Funkcje sa identyczne jak
+To jest wersja aplikacji "Planer urlopów" przystosowana do uruchomienia na
+serwerze Apache z PHP, tak jak dostarcza je XAMPP. Funkcje są identyczne jak
 w wersji Node.js:
 
-1. Admin tworzy uzytkownikow i grupy uzytkownikow (dzialy).
+1. Admin tworzy użytkowników i grupy użytkowników (działy).
 2. Logowanie z rolami: **user** widzi swoje zdarzenia i zdarzenia swojego
-   dzialu, **kierownik** dodatkowo widzi i zatwierdza urlopy w dzialach,
-   ktorymi zarzadza, **admin** widzi i zarzadza wszystkim.
-3. Kazdy uzytkownik wybiera wlasny kolor paska w kalendarzu.
-4. Po dodaniu zdarzenia system wysyla e-mail do wszystkich osob w danym dziale.
-5. W widoku Rok mozna przeciagac paski urlopow (zmiana terminu) i ciagnac
+   działu, **kierownik** dodatkowo widzi i zatwierdza urlopy w działach,
+   którymi zarządza, **admin** widzi i zarządza wszystkim.
+3. Każdy użytkownik wybiera własny kolor paska w kalendarzu.
+4. Po dodaniu zdarzenia system wysyła e-mail do wszystkich osób w danym dziale.
+5. W widoku Rok można przeciągać paski urlopów (zmiana terminu) i ciągnąć
    za ich brzegi (zmiana liczby dni).
-6. Opcjonalny modul zatwierdzania urlopow (wlaczany w Konfiguracji) oraz
-   limity dni urlopowych (biezacy / zalegly) z automatycznym podliczaniem.
+6. Opcjonalny moduł zatwierdzania urlopów (włączany w Konfiguracji) oraz
+   limity dni urlopowych (bieżący / zaległy) z automatycznym podliczaniem.
 
 ## Widoki kalendarza
 
-Dostepne sa trzy widoki, przelaczane jednym przyciskiem w gornym pasku:
+Dostępne są trzy widoki, przełączane jednym przyciskiem w górnym pasku:
 
-- **Rok** (domyslny) — uklad w stylu Teamup: wszystkie miesiace roku jako
-  wiersze, dni jako kolumny, zdarzenia jako kolorowe paski. Klikniecie
-  paska pokazuje dymek ze szczegolami (typ, zakres dat, osoba, notatka) i
+- **Rok** (domyślny) — układ w stylu Teamup: wszystkie miesiące roku jako
+  wiersze, dni jako kolumny, zdarzenia jako kolorowe paski. Kliknięcie
+  paska pokazuje dymek ze szczegółami (typ, zakres dat, osoba, notatka) i
   przyciskiem usuwania.
-- **Miesiac** — klasyczna siatka miesieczna (FullCalendar).
-- **Lista** — chronologiczna lista zdarzen w danym roku.
+- **Miesiąc** — klasyczna siatka miesięczna (FullCalendar).
+- **Lista** — chronologiczna lista zdarzeń w danym roku.
 
 Panel boczny po lewej pozwala:
-- ukrywac/pokazywac zdarzenia konkretnych osob (lista "Kalendarze"),
-- filtrowac wedlug typu urlopu ("Filtruj wg typu"),
-- przejsc do zarzadzania uzytkownikami (admin) albo do wlasnego profilu
-  (zwykly uzytkownik) przez link "+ Dodaj / Edytuj".
+- ukrywać/pokazywać zdarzenia konkretnych osób (lista "Kalendarze"),
+- filtrować według typu urlopu ("Filtruj wg typu"),
+- przejść do zarządzania użytkownikami (admin) albo do własnego profilu
+  (zwykły użytkownik) przez link "+ Dodaj / Edytuj".
 
-Uwaga: filtrowanie w panelu bocznym dziala we wszystkich trzech widokach,
-natomiast nie ma odrebnych widokow Dzien/Tydzien/Oś czasu/Agenda/Tiles
-znanych z Teamup — do planowania urlopow trzy powyzsze widoki w zupelnosci
-wystarczaja, a ograniczenie zakresu upraszcza kod.
+Uwaga: filtrowanie w panelu bocznym działa we wszystkich trzech widokach,
+natomiast nie ma odrębnych widoków Dzień/Tydzień/Oś czasu/Agenda/Tiles
+znanych z Teamup — do planowania urlopów trzy powyższe widoki w zupełności
+wystarczają, a ograniczenie zakresu upraszcza kod.
 
 ### Dodawanie i edycja klikniemem
 
-**Klikniecie pustego dnia** (w widoku Rok albo Miesiac) otwiera formularz
-nowego zdarzenia z juz wpisana data. **Przeciagniecie po kilku dniach**
-(w dowolnym kierunku, w obrebie tego samego wiersza/miesiaca w widoku Rok)
-zaznacza cale od-do na raz i tak samo otwiera formularz z gotowym zakresem.
-**Klikniecie istniejacego zdarzenia**,
-ktore mozesz edytowac (wlasne, albo dowolne dla admina, i nie jest jeszcze
-zatwierdzone), otwiera ten sam formularz wypelniony aktualnymi danymi
-(typ, zakres dat, notatka) — zmien co trzeba i kliknij "Zapisz". Z tego
-samego okienka dostepne sa tez przyciski "Usun" oraz (jesli masz
-uprawnienia) "Zatwierdz"/"Cofnij zatwierdzenie". Zdarzenia, ktorych nie
-mozesz edytowac (cudze, albo juz zatwierdzone), po kliknieciu pokazuja
-zamiast tego krotki podglad bez mozliwosci zmiany.
+**Kliknięcie pustego dnia** (w widoku Rok albo Miesiąc) otwiera formularz
+nowego zdarzenia z już wpisana data. **Przeciągnięcie po kilku dniach**
+(w dowolnym kierunku, w obrębie tego samego wiersza/miesiąca w widoku Rok)
+zaznacza całe od-do na raz i tak samo otwiera formularz z gotowym zakresem.
+**Kliknięcie istniejącego zdarzenia**,
+które możesz edytować (własne, albo dowolne dla admina, i nie jest jeszcze
+zatwierdzone), otwiera ten sam formularz wypełniony aktualnymi danymi
+(typ, zakres dat, notatka) — zmień co trzeba i kliknij "Zapisz". Z tego
+samego okienka dostępne są też przyciski "Usuń" oraz (jeśli masz
+uprawnienia) "Zatwierdź"/"Cofnij zatwierdzenie". Zdarzenia, których nie
+możesz edytować (cudze, albo już zatwierdzone), po kliknięciu pokazują
+zamiast tego krótki podgląd bez możliwości zmiany.
 
-### Przeciaganie i zmiana dlugosci urlopu (widok Rok)
+### Przeciąganie i zmiana długości urlopu (widok Rok)
 
-W widoku **Rok** kazdy edytowalny pasek urlopu mozna dodatkowo:
-- **przeciagnac** (chwytajac srodek paska) — przesuwa caly urlop o tyle dni,
-  o ile przeciagnales,
-- **rozciagnac za lewy albo prawy brzeg** — skraca albo wydluza urlop od tej
+W widoku **Rok** każdy edytowalny pasek urlopu można dodatkowo:
+- **przeciągnąć** (chwytając środek paska) — przesuwa cały urlop o tyle dni,
+  o ile przeciągnąłeś,
+- **rozciągnąć za lewy albo prawy brzeg** — skraca albo wydłuża urlop od tej
   strony.
 
-Zmiana zapisuje sie automatycznie po puszczeniu przycisku myszy. Dziala to
-tylko jesli zdarzenie miesci sie calkowicie w obrebie jednego miesiaca —
-urlopy przechodzace przez granice miesiaca nadal mozna edytowac (typ,
-notatke, daty) przez klikniecie i formularz, po prostu bez przeciagania
-pikselowego. Przeciaganie dziala wylacznie w widoku Rok (nie w widokach
-Miesiac/Lista).
+Zmiana zapisuje się automatycznie po puszczeniu przycisku myszy. Działa to
+tylko jeśli zdarzenie mieści się całkowicie w obrębie jednego miesiąca —
+urlopy przechodzące przez granice miesiąca nadal można edytować (typ,
+notatke, daty) przez kliknięcie i formularz, po prostu bez przeciągania
+pikselowego. Przeciąganie działa wyłącznie w widoku Rok (nie w widokach
+Miesiąc/Lista).
 
-## Modul zatwierdzania urlopow (opcjonalny)
+## Moduł zatwierdzania urlopów (opcjonalny)
 
-Wlacza sie go w **Konfiguracja -> Modul zatwierdzania urlopow**
-(dostepne tylko dla administratora, [admin_settings.php](admin_settings.php)).
-Domyslnie jest **wylaczony**.
+Włącza się go w **Konfiguracja -> Moduł zatwierdzania urlopów**
+(dostępne tylko dla administratora, [admin_settings.php](admin_settings.php)).
+Domyślnie jest **wyłączony**.
 
-Po wlaczeniu:
-- kazde nowe zdarzenie ma status **Wprowadzony** i nie jest jeszcze
+Po włączeniu:
+- każde nowe zdarzenie ma status **Wprowadzony** i nie jest jeszcze
   ostateczne,
-- zatwierdzic moze je **kierownik** dzialu, w ktorym powstalo, albo
-  **administrator** — status zmienia sie wtedy na **Zatwierdzony**,
-  a wlasciciel urlopu dostaje o tym maila,
-- zdarzenia zatwierdzone sa zablokowane przed przesuwaniem, zmiana dlugosci
-  i usunieciem przez zwyklego uzytkownika (admin moze zawsze); zatwierdzenie
-  mozna cofnac przyciskiem w dymku szczegolow,
-- w widoku Rok wprowadzone-ale-niezatwierdzone urlopy maja dodatkowy,
+- zatwierdzić może je **kierownik** działu, w którym powstało, albo
+  **administrator** — status zmienia się wtedy na **Zatwierdzony**,
+  a właściciel urlopu dostaje o tym maila,
+- zdarzenia zatwierdzone są zablokowane przed przesuwaniem, zmiana długości
+  i usunięciem przez zwykłego użytkownika (admin może zawsze); zatwierdzenie
+  można cofnąć przyciskiem w dymku szczegółów,
+- w widoku Rok wprowadzone-ale-niezatwierdzone urlopy mają dodatkowy,
   biały "szrafowany" obrys (legenda widoczna w panelu bocznym).
 
-Po wylaczeniu modulu nowe zdarzenia sa od razu zatwierdzone — bez
-dodatkowego kroku, dokladnie jak przed wersja 1.4.0.
+Po wyłączeniu modułu nowe zdarzenia są od razu zatwierdzone — bez
+dodatkowego kroku, dokładnie jak przed wersja 1.4.0.
 
 ### Rola "kierownik"
 
-Kierownika tworzy/edytuje admin w **Uzytkownicy** ([admin_users.php](admin_users.php)):
-wybierz rolę "Kierownik", a nastepnie w polu **"Dzialy zarzadzane"**
-zaznacz jeden lub wiecej dzialow (przytrzymaj Ctrl/Cmd, zeby zaznaczyc kilka).
-Kierownik ma tez wlasny dzial "macierzysty" (jak kazdy uzytkownik) — widzi w
-kalendarzu swoj dzial oraz wszystkie dzialy, ktorymi zarzadza, i moze
-zatwierdzac urlopy wylacznie w tych ostatnich.
+Kierownika tworzy/edytuje admin w **Użytkownicy** ([admin_users.php](admin_users.php)):
+wybierz rolę "Kierownik", a następnie w polu **"Działy zarządzane"**
+zaznacz jeden lub więcej działów (przytrzymaj Ctrl/Cmd, żeby zaznaczyć kilka).
+Kierownik ma też własny dział "macierzysty" (jak każdy użytkownik) — widzi w
+kalendarzu swoj dział oraz wszystkie działy, którymi zarządza, i może
+zatwierdzać urlopy wyłącznie w tych ostatnich.
 
 ## Limity urlopowe
 
-Kazdy uzytkownik ma dwa pola limitu w **Uzytkownicy**: **Limit biezacy**
-i **Limit zalegly** (w dniach, mozna wpisac np. "0.5" dla pol-dnia). Suma
+Każdy użytkownik ma dwa pola limitu w **Użytkownicy**: **Limit bieżący**
+i **Limit zaległy** (w dniach, można wpisać np. "0.5" dla pol-dnia). Suma
 obu to limit do wykorzystania w danym roku kalendarzowym.
 
 Aplikacja automatycznie liczy, ile dni urlopu **wypoczynkowego** i **na
-zadanie** (te dwa typy sa czerpane z tej samej puli w polskim prawie pracy)
-dany uzytkownik wprowadzil do kalendarza w biezacym roku — niezaleznie od
-statusu zatwierdzenia. Podsumowanie (Limit / Wykorzystano / Pozostalo)
-widac przy kazdym uzytkowniku w tabeli w **Uzytkownicy**, a kazdy uzytkownik
-widzi wlasny bilans w **Moj profil**.
+żądanie** (te dwa typy są czerpane z tej samej puli w polskim prawie pracy)
+dany użytkownik wprowadził do kalendarza w bieżącym roku — niezależnie od
+statusu zatwierdzenia. Podsumowanie (Limit / Wykorzystano / Pozostało)
+widać przy każdym użytkowniku w tabeli w **Użytkownicy**, a każdy użytkownik
+widzi własny bilans w **Mój profil**.
 
 ## Baza danych
 
-Domyslnie aplikacja uzywa **SQLite** — jednego pliku (`data/urlopy.sqlite`),
-tworzonego automatycznie przy pierwszym uruchomieniu. Nie trzeba w ogole
-uruchamiac MySQL w XAMPP — wystarczy sam Apache.
+Domyślnie aplikacja używa **SQLite** — jednego pliku (`data/urlopy.sqlite`),
+tworzonego automatycznie przy pierwszym uruchomieniu. Nie trzeba w ogóle
+uruchamiać MySQL w XAMPP — wystarczy sam Apache.
 
-Opcjonalnie mozna przelaczyc sie na **MySQL/MariaDB** albo
-**Microsoft SQL Server**, zmieniajac jedna linijke w [`config.php`](config.php):
+Opcjonalnie można przełączyć się na **MySQL/MariaDB** albo
+**Microsoft SQL Server**, zmieniając jedna linijkę w [`config.php`](config.php):
 
 ```php
-define('DB_DRIVER', 'sqlite'); // 'sqlite' (domyslnie) | 'mysql' | 'sqlsrv'
+define('DB_DRIVER', 'sqlite'); // 'sqlite' (domyślnie) | 'mysql' | 'sqlsrv'
 ```
 
-W kazdym przypadku tabele i domyslne konto administratora tworza sie
-**automatycznie** przy pierwszym uzyciu — nie trzeba nic importowac recznie.
-Pliki `schema.sqlite.sql`, `schema.mysql.sql`, `schema.mssql.sql` sa
-dolaczone wylacznie jako dokumentacja struktury / do recznego podejrzenia.
+W każdym przypadku tabele i domyślne konto administratora tworzą się
+**automatycznie** przy pierwszym użyciu — nie trzeba nic importować ręcznie.
+Pliki `schema.sqlite.sql`, `schema.mysql.sql`, `schema.mssql.sql` są
+dołączone wyłącznie jako dokumentacja struktury / do ręcznego podejrzenia.
 
 ### Konektor MySQL / MariaDB
 
-Ustaw `DB_DRIVER` na `'mysql'` i uzupelnij dane polaczenia (domyslne pasuja
-do standardowej instalacji XAMPP: `root` bez hasla):
+Ustaw `DB_DRIVER` na `'mysql'` i uzupełnij dane połączenia (domyślne pasują
+do standardowej instalacji XAMPP: `root` bez hasła):
 
 ```php
 define('DB_HOST', 'localhost');
@@ -143,12 +143,12 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 ```
 
-Pamietaj, zeby uruchomic **MySQL** w panelu XAMPP Control Panel, gdy
+Pamiętaj, żeby uruchomić **MySQL** w panelu XAMPP Control Panel, gdy
 korzystasz z tego trybu.
 
 ### Konektor Microsoft SQL Server
 
-Ustaw `DB_DRIVER` na `'sqlsrv'` i uzupelnij:
+Ustaw `DB_DRIVER` na `'sqlsrv'` i uzupełnij:
 
 ```php
 define('MSSQL_HOST', 'localhost');
@@ -159,49 +159,49 @@ define('MSSQL_PASS', '');
 
 Wymaga to doinstalowania w PHP rozszerzenia `pdo_sqlsrv` z pakietu
 [Microsoft Drivers for PHP for SQL Server](https://learn.microsoft.com/pl-pl/sql/connect/php/microsoft-php-driver-for-sql-server)
-— nie jest ono czescia standardowego XAMPP. Baza `urlopy` musi juz istniec
+— nie jest ono częścią standardowego XAMPP. Baza `urlopy` musi już istnieć
 na serwerze SQL Server (aplikacja tworzy tylko tabele, nie sama baze).
 
-## Instalacja (krok po kroku, tryb domyslny — SQLite)
+## Instalacja (krok po kroku, tryb domyślny — SQLite)
 
 1. Zainstaluj [XAMPP](https://www.apachefriends.org/) (Apache + PHP, wersja
-   PHP 8.x). MySQL nie jest wymagany w trybie domyslnym.
+   PHP 8.x). MySQL nie jest wymagany w trybie domyślnym.
 2. Uruchom **Apache** w panelu XAMPP Control Panel.
-3. Skopiuj caly folder `urlopy-xampp` do katalogu `htdocs` XAMPP, np.:
+3. Skopiuj cały folder `urlopy-xampp` do katalogu `htdocs` XAMPP, np.:
    - Windows: `C:\xampp\htdocs\urlopy\`
-   - (czyli zawartosc tego folderu, nie sam folder `urlopy-xampp` w srodku
-     kolejnego podfolderu — pliki `index.php`, `login.php` itd. maja lezec
-     bezposrednio w `C:\xampp\htdocs\urlopy\`)
-4. Otworz w przegladarce: `http://localhost/urlopy/`
-5. Plik bazy `data/urlopy.sqlite` oraz wszystkie tabele **tworza sie
-   automatycznie** przy pierwszym wejsciu na strone. Tworzy sie tez
-   domyslne konto administratora.
+   - (czyli zawartość tego folderu, nie sam folder `urlopy-xampp` w środku
+     kolejnego podfolderu — pliki `index.php`, `login.php` itd. mają leżeć
+     bezpośrednio w `C:\xampp\htdocs\urlopy\`)
+4. Otwórz w przeglądarce: `http://localhost/urlopy/`
+5. Plik bazy `data/urlopy.sqlite` oraz wszystkie tabele **tworzą się
+   automatycznie** przy pierwszym wejściu na stronę. Tworzy się też
+   domyślne konto administratora.
 
-Domyslne konto administratora:
+Domyślne konto administratora:
 
 - e-mail: `admin@firma.local`
-- haslo: `admin123`
+- hasło: `admin123`
 
-**Zmien to haslo od razu po pierwszym zalogowaniu** (Moj profil -> Zmiana hasla).
+**Zmień to hasło od razu po pierwszym zalogowaniu** (Mój profil -> Zmiana hasła).
 
-## Konfiguracja wysylki e-mail
+## Konfiguracja wysyłki e-mail
 
-Kazde nowe zdarzenie urlopowe generuje powiadomienie e-mail do wszystkich
-czlonkow dzialu osoby, ktora je dodala (poza nia samą).
+Każde nowe zdarzenie urlopowe generuje powiadomienie e-mail do wszystkich
+członków działu osoby, która je dodala (poza nia samą).
 
-Adres/nazwe nadawcy oraz dane serwera SMTP konfiguruje sie wygodnie z
-poziomu aplikacji: zaloguj sie jako **administrator** i wejdz w
-**Poczta** w gornym menu ([admin_mail.php](admin_mail.php)). Ustawienia
-zapisywane sa w bazie danych (tabela `settings`) i maja pierwszenstwo przed
-stalymi w `config.php`. Na tym ekranie jest tez przycisk do wyslania
-testowej wiadomosci na adres zalogowanego administratora.
+Adres/nazwę nadawcy oraz dane serwera SMTP konfiguruje się wygodnie z
+poziomu aplikacji: zaloguj się jako **administrator** i wejdz w
+**Poczta** w górnym menu ([admin_mail.php](admin_mail.php)). Ustawienia
+zapisywane są w bazie danych (tabela `settings`) i mają pierwszeństwo przed
+stałymi w `config.php`. Na tym ekranie jest też przycisk do wysłania
+testowej wiadomości na adres zalogowanego administratora.
 
 Bez skonfigurowanego serwera SMTP (pole "Serwer SMTP" puste) aplikacja
-dziala normalnie, ale tresc maili jest tylko zapisywana do pliku
-`logs/mail.log` zamiast byc faktycznie wyslana (przydatne do testow).
+działa normalnie, ale treść maili jest tylko zapisywana do pliku
+`logs/mail.log` zamiast być faktycznie wysłana (przydatne do testów).
 
-Stale w `config.php` (`SMTP_HOST`, `MAIL_FROM_EMAIL` itd.) sluza jedynie
-jako wartosci startowe/awaryjne, dopoki administrator nic nie zapisze w
+Stale w `config.php` (`SMTP_HOST`, `MAIL_FROM_EMAIL` itd.) służą jedynie
+jako wartości startowe/awaryjne, dopóki administrator nic nie zapisze w
 panelu "Poczta":
 
 ```php
@@ -211,66 +211,66 @@ define('SMTP_SECURE', 'tls'); // albo 'ssl'
 define('SMTP_USER', 'twoj_login_smtp');
 define('SMTP_PASS', 'twoje_haslo_smtp');
 define('MAIL_FROM_EMAIL', 'urlopy@twojafirma.pl');
-define('MAIL_FROM_NAME', 'Planer urlopow');
+define('MAIL_FROM_NAME', 'Planer urlopów');
 ```
 
-Wysylka realizowana jest przez dolaczona biblioteke PHPMailer
+Wysyłka realizowana jest przez dołączona biblioteke PHPMailer
 (`libs/PHPMailer/`), bez potrzeby instalowania Composera.
 
-### Link do zgloszenia w mailu
+### Link do zgłoszenia w mailu
 
-Kazde powiadomienie o zdarzeniu urlopowym (nowy wpis, prosba o
+Każde powiadomienie o zdarzeniu urlopowym (nowy wpis, prośba o
 zatwierdzenie, informacja o zatwierdzeniu) zawiera link "Zobacz w
-systemie", ktory po kliknieciu otwiera dany wpis bezposrednio w
-kalendarzu (po ewentualnym zalogowaniu — aplikacja pamieta, dokad
-wrocic). Adres (IP albo domena), z jakiego zbudowany jest ten link,
-**wykrywany jest automatycznie** z biezacego zadania HTTP — nie trzeba
-nic konfigurowac. Jesli ten adres bywa niestabilny (np. zmienne IP w
-sieci lokalnej), mozna go ustawic na sztywno w **Poczta** -> "Adres
+systemie", który po kliknięciu otwiera dany wpis bezpośrednio w
+kalendarzu (po ewentualnym zalogowaniu — aplikacja pamięta, dokąd
+wrócić). Adres (IP albo domena), z jakiego zbudowany jest ten link,
+**wykrywany jest automatycznie** z bieżącego żądania HTTP — nie trzeba
+nic konfigurować. Jeśli ten adres bywa niestabilny (np. zmienne IP w
+sieci lokalnej), można go ustawić na sztywno w **Poczta** -> "Adres
 aplikacji".
 
-## Typy zdarzen
+## Typy zdarzeń
 
-Urlop wypoczynkowy, Urlop na zadanie, Urlop z nadgodzin, Wizyta lekarska, Inne.
+Urlop wypoczynkowy, Urlop na żądanie, Urlop z nadgodzin, Wizyta lekarska, Inne.
 
 ## Struktura projektu
 
 ```
 urlopy-xampp/
-  config.php             - wybor bazy danych (DB_DRIVER), dane polaczen, SMTP
-  schema.sqlite.sql       - dokumentacja struktury (SQLite, domyslny silnik)
+  config.php             - wybór bazy danych (DB_DRIVER), dane połączeń, SMTP
+  schema.sqlite.sql       - dokumentacja struktury (SQLite, domyślny silnik)
   schema.mysql.sql        - dokumentacja struktury (opcjonalny konektor MySQL)
   schema.mssql.sql        - dokumentacja struktury (opcjonalny konektor MS SQL)
-  bootstrap.php           - wspolny start kazdej strony (sesja, polaczenia)
+  bootstrap.php           - wspólny start każdej strony (sesja, połączenia)
   index.php, login.php, logout.php
-  calendar.php            - widok kalendarza (Rok/Miesiac/Lista, drag&drop)
-  api_events.php          - zwraca zdarzenia jako JSON (filtrowane wg roli/dzialow)
-  api_calendars.php       - lista kalendarzy (osob) + ustawienia dla UI
+  calendar.php            - widok kalendarza (Rok/Miesiąc/Lista, drag&drop)
+  api_events.php          - zwraca zdarzenia jako JSON (filtrowane wg roli/działów)
+  api_calendars.php       - lista kalendarzy (osób) + ustawienia dla UI
   events_create.php, events_update.php, events_delete.php, events_approve.php
   profile.php, profile_color.php, profile_password.php
   admin_users.php, admin_groups.php, admin_mail.php, admin_mail_test.php
-  admin_settings.php      - Konfiguracja: wlacznik modulu zatwierdzania urlopow
-  includes/               - polaczenie z baza (wielosilnikowe + migracje),
+  admin_settings.php      - Konfiguracja: włącznik modułu zatwierdzania urlopów
+  includes/               - połączenie z baza (wielosilnikowe + migracje),
                              autoryzacja, role/uprawnienia, limity urlopowe,
-                             adres aplikacji do linkow w mailach, layout
-  libs/PHPMailer/          - biblioteka do wysylki e-mail (SMTP)
+                             adres aplikacji do linków w mailach, layout
+  libs/PHPMailer/          - biblioteka do wysyłki e-mail (SMTP)
   assets/                  - CSS i biblioteka kalendarza (FullCalendar)
-  data/urlopy.sqlite       - plik bazy SQLite (tryb domyslny, tworzony automatycznie)
-  logs/mail.log            - log wyslanych/probowanych maili
+  data/urlopy.sqlite       - plik bazy SQLite (tryb domyślny, tworzony automatycznie)
+  logs/mail.log            - log wysłanych/próbowanych maili
 ```
 
-## Uwagi bezpieczenstwa
+## Uwagi bezpieczeństwa
 
-- Hasla sa haszowane (`password_hash`/`password_verify`), nigdy nie sa
+- Hasła są haszowane (`password_hash`/`password_verify`), nigdy nie są
   przechowywane w postaci czystego tekstu.
 - Sesja logowania oparta na natywnych sesjach PHP.
-- Katalogi `data/`, `logs/`, `includes/` i `libs/` maja wlasne pliki
-  `.htaccess` blokujace bezposredni dostep przez przegladarke — to wazne
-  zwlaszcza dla `data/`, bo w trybie SQLite caly plik bazy danych lezy w
-  katalogu serwowanym przez Apache. Jesli Twoj serwer nie uzywa Apache
-  (`.htaccess` dziala tylko z nim), przenies katalog `data/` poza
+- Katalogi `data/`, `logs/`, `includes/` i `libs/` mają własne pliki
+  `.htaccess` blokujace bezpośredni dostęp przez przeglądarkę — to ważne
+  zwłaszcza dla `data/`, bo w trybie SQLite cały plik bazy danych leży w
+  katalogu serwowanym przez Apache. Jeśli Twoj serwer nie używa Apache
+  (`.htaccess` działa tylko z nim), przenieś katalog `data/` poza
   document root i zaktualizuj `SQLITE_PATH` w `config.php`.
 - Przed wystawieniem aplikacji poza siec lokalna: w trybie MySQL ustaw
-  haslo do konta bazy danych (nie zostawiaj `root` bez hasla), rozwaz HTTPS
-  oraz wylacz wyswietlanie bledow PHP na produkcji
+  hasło do konta bazy danych (nie zostawiaj `root` bez hasła), rozważ HTTPS
+  oraz wyłącz wyświetlanie błędów PHP na produkcji
   (`display_errors = Off` w `php.ini`).

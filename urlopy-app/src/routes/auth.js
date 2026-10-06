@@ -15,7 +15,7 @@ router.post('/login', (req, res) => {
     (u) => u.email.toLowerCase() === String(email || '').toLowerCase()
   );
   if (!user || !bcrypt.compareSync(password || '', user.passwordHash)) {
-    return res.status(401).render('login', { error: 'Nieprawidlowy e-mail lub haslo.' });
+    return res.status(401).render('login', { error: 'Nieprawidłowy e-mail lub hasło.' });
   }
   req.session.userId = user.id;
   res.redirect('/');

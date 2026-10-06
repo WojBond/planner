@@ -44,9 +44,9 @@ router.get('/api/events', requireAuth, (req, res) => {
 });
 
 function addOneDay(dateStr) {
-  // Uwaga: celowo NIE uzywamy toISOString() tutaj - ono konwertuje do UTC,
-  // co w strefach na wschod od UTC (np. Polska) przesuwaloby date o 1 dzien
-  // wstecz (np. gdy serwer Node dziala w lokalnej strefie czasowej).
+  // Uwaga: celowo NIE używamy toISOString() tutaj - ono konwertuje do UTC,
+  // co w strefach na wschód od UTC (np. Polska) przesuwałoby date o 1 dzień
+  // wstecz (np. gdy serwer Node działa w lokalnej strefie czasowej).
   const d = new Date(dateStr + 'T00:00:00');
   d.setDate(d.getDate() + 1);
   const y = d.getFullYear();
@@ -58,10 +58,10 @@ function addOneDay(dateStr) {
 router.post('/events', requireAuth, async (req, res) => {
   const { startDate, endDate, type, note } = req.body;
   if (!startDate || !endDate || !type) {
-    return res.status(400).json({ error: 'Wypelnij wymagane pola.' });
+    return res.status(400).json({ error: 'Wypełnij wymagane pola.' });
   }
   if (endDate < startDate) {
-    return res.status(400).json({ error: 'Data zakonczenia nie moze byc wczesniejsza niz data rozpoczecia.' });
+    return res.status(400).json({ error: 'Data zakończenia nie może być wcześniejsza niz data rozpoczęcia.' });
   }
   const event = {
     id: id(),
@@ -84,7 +84,7 @@ router.post('/events', requireAuth, async (req, res) => {
     to: recipients,
     subject: `Nowe zdarzenie urlopowe: ${req.currentUser.name}`,
     text: [
-      `${req.currentUser.name} dodal(a) nowy wpis w kalendarzu urlopow.`,
+      `${req.currentUser.name} dodal(a) nowy wpis w kalendarzu urlopów.`,
       ``,
       `Typ: ${typeLabel(type)}`,
       `Od: ${startDate}`,
@@ -102,7 +102,7 @@ router.post('/events/:id/delete', requireAuth, (req, res) => {
   const event = db.events.find((e) => e.id === req.params.id);
   if (!event) return res.status(404).json({ error: 'Nie znaleziono zdarzenia.' });
   if (req.currentUser.role !== 'admin' && event.userId !== req.currentUser.id) {
-    return res.status(403).json({ error: 'Brak uprawnien do usuniecia tego zdarzenia.' });
+    return res.status(403).json({ error: 'Brak uprawnień do usunięcia tego zdarzenia.' });
   }
   db.events = db.events.filter((e) => e.id !== req.params.id);
   persist();

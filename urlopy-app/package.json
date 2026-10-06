@@ -1,7 +1,7 @@
 {
   "name": "urlopy-app",
   "version": "1.0.0",
-  "description": "Lokalna aplikacja do planowania urlopow z logowaniem, grupami/dzialami i powiadomieniami e-mail",
+  "description": "Lokalna aplikacja do planowania urlopów z logowaniem, grupami/działami i powiadomieniami e-mail",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",

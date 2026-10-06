@@ -22,7 +22,7 @@ function load() {
   try {
     return JSON.parse(raw);
   } catch (e) {
-    console.error('Nie udalo sie wczytac data/db.json, tworze nowa baze.', e);
+    console.error('Nie udało się wczytac data/db.json, tworze nowa baze.', e);
     const db = emptyDb();
     seed(db);
     save(db);
@@ -40,7 +40,7 @@ function id() {
 
 function seed(db) {
   const groupId = id();
-  db.groups.push({ id: groupId, name: 'Dzial ogolny' });
+  db.groups.push({ id: groupId, name: 'Dział ogólny' });
 
   const adminPass = bcrypt.hashSync('admin123', 10);
   db.users.push({

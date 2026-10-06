@@ -1,9 +1,9 @@
--- Schemat bazy danych "Planer urlopow" - MySQL / MariaDB (opcjonalny konektor).
--- Aktywuj ustawiajac w config.php: define('DB_DRIVER', 'mysql');
--- Aplikacja tworzy i migruje baze/tabele automatycznie przy kazdym uruchomieniu
--- (patrz includes/db.php: ensure_schema() / run_migrations()) - recznego
--- importu NIE trzeba robic. Zostawiony wylacznie jako dokumentacja aktualnej
--- struktury (wersja schematu 2) / do recznego importu przez phpMyAdmin.
+-- Schemat bazy danych "Planer urlopów" - MySQL / MariaDB (opcjonalny konektor).
+-- Aktywuj ustawiając w config.php: define('DB_DRIVER', 'mysql');
+-- Aplikacja tworzy i migruje baze/tabele automatycznie przy każdym uruchomieniu
+-- (patrz includes/db.php: ensure_schema() / run_migrations()) - ręcznego
+-- importu NIE trzeba robić. Zostawiony wyłącznie jako dokumentacja aktualnej
+-- struktury (wersja schematu 2) / do ręcznego importu przez phpMyAdmin.
 
 CREATE DATABASE IF NOT EXISTS urlopy CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE urlopy;
@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS groups_ (
     name VARCHAR(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- role: 'user' | 'kierownik' | 'admin' (VARCHAR zamiast ENUM, zeby latwo
--- bylo dokladac kolejne role bez przebudowy kolumny).
+-- role: 'user' | 'kierownik' | 'admin' (VARCHAR zamiast ENUM, żeby łatwo
+-- bylo dokładać kolejne role bez przebudowy kolumny).
 CREATE TABLE IF NOT EXISTS users (
     id CHAR(36) NOT NULL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS events (
     FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Dzialy, ktorymi zarzadza dany kierownik (relacja wiele-do-wielu).
+-- Działy, którymi zarządza dany kierownik (relacja wiele-do-wielu).
 CREATE TABLE IF NOT EXISTS manager_groups (
     user_id CHAR(36) NOT NULL,
     group_id CHAR(36) NOT NULL,

@@ -11,11 +11,11 @@ $currentPassword = $_POST['currentPassword'] ?? '';
 $newPassword = $_POST['newPassword'] ?? '';
 
 if (!password_verify($currentPassword, $user['password_hash'])) {
-    header('Location: profile.php?error=' . urlencode('Aktualne haslo jest nieprawidlowe.'));
+    header('Location: profile.php?error=' . urlencode('Aktualne hasło jest nieprawidłowe.'));
     exit;
 }
 if (strlen($newPassword) < 6) {
-    header('Location: profile.php?error=' . urlencode('Nowe haslo musi miec co najmniej 6 znakow.'));
+    header('Location: profile.php?error=' . urlencode('Nowe hasło musi miec co najmniej 6 znaków.'));
     exit;
 }
 
