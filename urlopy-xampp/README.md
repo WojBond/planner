@@ -1,6 +1,6 @@
 # Planer urlopow (wersja pod XAMPP: PHP + SQLite)
 
-**Wersja: 1.6.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
+**Wersja: 1.7.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
 widoczny tez w interfejsie obok nazwy aplikacji).
 
 To jest wersja aplikacji "Planer urlopow" przystosowana do uruchomienia na
@@ -217,6 +217,18 @@ define('MAIL_FROM_NAME', 'Planer urlopow');
 Wysylka realizowana jest przez dolaczona biblioteke PHPMailer
 (`libs/PHPMailer/`), bez potrzeby instalowania Composera.
 
+### Link do zgloszenia w mailu
+
+Kazde powiadomienie o zdarzeniu urlopowym (nowy wpis, prosba o
+zatwierdzenie, informacja o zatwierdzeniu) zawiera link "Zobacz w
+systemie", ktory po kliknieciu otwiera dany wpis bezposrednio w
+kalendarzu (po ewentualnym zalogowaniu — aplikacja pamieta, dokad
+wrocic). Adres (IP albo domena), z jakiego zbudowany jest ten link,
+**wykrywany jest automatycznie** z biezacego zadania HTTP — nie trzeba
+nic konfigurowac. Jesli ten adres bywa niestabilny (np. zmienne IP w
+sieci lokalnej), mozna go ustawic na sztywno w **Poczta** -> "Adres
+aplikacji".
+
 ## Typy zdarzen
 
 Urlop wypoczynkowy, Urlop na zadanie, Urlop z nadgodzin, Wizyta lekarska, Inne.
@@ -239,7 +251,8 @@ urlopy-xampp/
   admin_users.php, admin_groups.php, admin_mail.php, admin_mail_test.php
   admin_settings.php      - Konfiguracja: wlacznik modulu zatwierdzania urlopow
   includes/               - polaczenie z baza (wielosilnikowe + migracje),
-                             autoryzacja, role/uprawnienia, limity urlopowe, layout
+                             autoryzacja, role/uprawnienia, limity urlopowe,
+                             adres aplikacji do linkow w mailach, layout
   libs/PHPMailer/          - biblioteka do wysylki e-mail (SMTP)
   assets/                  - CSS i biblioteka kalendarza (FullCalendar)
   data/urlopy.sqlite       - plik bazy SQLite (tryb domyslny, tworzony automatycznie)

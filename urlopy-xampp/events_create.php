@@ -33,6 +33,8 @@ $stmt = $pdo->prepare('SELECT email FROM users WHERE group_id = ? AND id <> ?');
 $stmt->execute([$user['group_id'], $user['id']]);
 $recipients = array_column($stmt->fetchAll(), 'email');
 
+$link = event_link($id);
+
 $text = implode("\n", array_filter([
     $user['name'] . ' dodal(a) nowy wpis w kalendarzu urlopow.',
     '',
@@ -41,6 +43,8 @@ $text = implode("\n", array_filter([
     'Do: ' . $endDate,
     $note !== '' ? 'Notatka: ' . $note : '',
     $approvalEnabled ? 'Status: oczekuje na zatwierdzenie przez kierownika.' : '',
+    '',
+    'Zobacz w systemie: ' . $link,
 ]));
 
 send_mail_to($recipients, 'Nowe zdarzenie urlopowe: ' . $user['name'], $text);
@@ -56,6 +60,8 @@ if ($approvalEnabled && $user['group_id']) {
             'Typ: ' . event_type_label($type),
             'Od: ' . $startDate,
             'Do: ' . $endDate,
+            '',
+            'Zatwierdz lub zobacz szczegoly: ' . $link,
         ])));
     }
 }

@@ -26,10 +26,24 @@ function current_user() {
 function require_auth() {
     $user = current_user();
     if (!$user) {
-        header('Location: login.php');
+        $next = $_SERVER['REQUEST_URI'] ?? '';
+        $loginUrl = 'login.php';
+        if ($next !== '' && strpos($next, 'login.php') === false) {
+            $loginUrl .= '?next=' . urlencode($next);
+        }
+        header('Location: ' . $loginUrl);
         exit;
     }
     return $user;
+}
+
+/** Bezpieczny cel przekierowania po zalogowaniu - tylko wzgledna sciezka we wlasnej aplikacji. */
+function safe_next_url($raw) {
+    $raw = trim((string) $raw);
+    if ($raw === '') return 'calendar.php';
+    if (strpos($raw, '://') !== false) return 'calendar.php';
+    if (substr($raw, 0, 2) === '//') return 'calendar.php';
+    return $raw;
 }
 
 function require_admin() {

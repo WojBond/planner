@@ -652,6 +652,7 @@ function renderYear() {
     monthEvents.forEach(item => {
       const bar = document.createElement('div');
       bar.className = 'year-event-bar';
+      bar.dataset.eventId = item.ev.id;
       const left = ((item.startDay - 1) / 31) * 100;
       const width = ((item.endDay - item.startDay + 1) / 31) * 100;
       bar.style.left = left + '%';
@@ -814,10 +815,38 @@ document.getElementById('navToday').addEventListener('click', () => {
   else { currentYear = new Date().getFullYear(); ensureFullCalendarList().today(); }
 });
 
+// --- Link bezposrednio do zdarzenia (np. z powiadomienia e-mail) ---
+function handleDeepLink() {
+  const params = new URLSearchParams(window.location.search);
+  const eventId = params.get('event');
+  if (!eventId) return;
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({}, '', 'calendar.php');
+  }
+  const ev = allEvents.find(e => e.id === eventId);
+  if (!ev) {
+    alert('Nie znaleziono zdarzenia spod tego linku - moglo zostac usuniete albo nie masz do niego dostepu.');
+    return;
+  }
+  currentYear = parseInt(ev.start.slice(0, 4), 10);
+  renderYear();
+  const bar = document.querySelector('.year-event-bar[data-event-id="' + CSS.escape(eventId) + '"]');
+  if (bar) bar.scrollIntoView({ block: 'center' });
+  if (ev.extendedProps.canEdit) {
+    openEditModal(ev);
+  } else if (bar) {
+    showPopover(ev, bar.getBoundingClientRect());
+  } else {
+    const cx = window.innerWidth / 2 - 140, cy = window.innerHeight / 2;
+    showPopover(ev, { left: cx, right: cx + 280, top: cy, bottom: cy });
+  }
+}
+
 (async function init() {
   await loadData();
   renderSidebar();
   renderYear();
+  handleDeepLink();
 })();
 </script>
 <?php include __DIR__ . '/includes/footer.php'; ?>
