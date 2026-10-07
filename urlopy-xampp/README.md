@@ -1,6 +1,6 @@
 # Planer urlopów (wersja pod XAMPP: PHP + SQLite)
 
-**Wersja: 1.7.1** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
+**Wersja: 1.8.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
 widoczny też w interfejsie obok nazwy aplikacji).
 
 To jest wersja aplikacji "Planer urlopów" przystosowana do uruchomienia na
@@ -40,7 +40,7 @@ natomiast nie ma odrębnych widoków Dzień/Tydzień/Oś czasu/Agenda/Tiles
 znanych z Teamup — do planowania urlopów trzy powyższe widoki w zupełności
 wystarczają, a ograniczenie zakresu upraszcza kod.
 
-### Dodawanie i edycja klikniemem
+### Dodawanie i edycja kliknięciem
 
 **Kliknięcie pustego dnia** (w widoku Rok albo Miesiąc) otwiera formularz
 nowego zdarzenia z już wpisana data. **Przeciągnięcie po kilku dniach**
@@ -66,9 +66,22 @@ W widoku **Rok** każdy edytowalny pasek urlopu można dodatkowo:
 Zmiana zapisuje się automatycznie po puszczeniu przycisku myszy. Działa to
 tylko jeśli zdarzenie mieści się całkowicie w obrębie jednego miesiąca —
 urlopy przechodzące przez granice miesiąca nadal można edytować (typ,
-notatke, daty) przez kliknięcie i formularz, po prostu bez przeciągania
+notatkę, daty) przez kliknięcie i formularz, po prostu bez przeciągania
 pikselowego. Przeciąganie działa wyłącznie w widoku Rok (nie w widokach
 Miesiąc/Lista).
+
+### Drukowanie wniosku urlopowego
+
+Przy zdarzeniu (popover po kliknięciu paska w widoku Rok, albo formularz
+edycji we wszystkich widokach) dostępny jest przycisk **"Drukuj wniosek"**.
+Otwiera on w nowej karcie gotowy do wydruku wniosek urlopowy w formacie A6
+poziomo, wypełniony danymi pracownika, działu, typu i zakresu dat urlopu —
+pole "Zastępstwo pełni" oraz podpisy zostają puste do ręcznego uzupełnienia.
+
+Przycisk jest widoczny tylko dla **bieżących i przyszłych** urlopów (nie dla
+już zakończonych) i tylko dla właściciela zdarzenia, kierownika danego
+działu albo administratora. Nazwę firmy i miejscowość widoczne na wydruku
+("Miejscowość, dnia ...") można ustawić w **Konfiguracja**.
 
 ## Moduł zatwierdzania urlopów (opcjonalny)
 
