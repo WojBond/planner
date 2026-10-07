@@ -52,6 +52,20 @@ function can_approve_group($user, $groupId) {
 }
 
 /**
+ * Czy $user może wydrukować wniosek urlopowy dla $event (wiersz z tabeli
+ * events). Dostępne dla właściciela zdarzenia, admina lub kierownika danego
+ * działu - i tylko dla zdarzeń bieżących/przyszłych (koniec nie wcześniej
+ * niż dzisiaj), żeby nie drukować już zakończonych urlopów.
+ */
+function can_print_event($user, $event) {
+    if (!$user) return false;
+    $isOwner = $user['id'] === $event['user_id'];
+    $isAdmin = $user['role'] === 'admin';
+    if (!$isOwner && !$isAdmin && !can_approve_group($user, $event['group_id'])) return false;
+    return $event['end_date'] >= date('Y-m-d');
+}
+
+/**
  * Zbiory działów i użytkowników widocznych dla $user w kalendarzu:
  * - admin: wszystko,
  * - kierownik: swoj dział + wszystkie działy, którymi zarządza,

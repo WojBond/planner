@@ -1,14 +1,26 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.7.1');
+define('APP_VERSION', '1.8.0');
 define('APP_CHANGELOG', [
+    '1.8.0' => [
+        'date' => '2026-10-07',
+        'changes' => [
+            'Nowy przycisk "Drukuj wniosek" przy zdarzeniu (popover i formularz',
+            'edycji) - generuje gotowy do wydruku wniosek urlopowy w formacie A6',
+            'poziomo, wypełniony danymi pracownika, działu i wybranego urlopu.',
+            'Dostępny tylko dla bieżących i przyszłych urlopów (nie dla już',
+            'zakończonych) i tylko dla właściciela, kierownika danego działu lub',
+            'administratora. Nazwę firmy i miejscowość na wydruku można ustawić',
+            'w Konfiguracji.',
+        ],
+    ],
     '1.7.1' => [
         'date' => '2026-10-06',
         'changes' => [
-            'Poprawiono brakujące polskie znaki diakrytyczne w całym interfejsie,',
-            'komunikatach, mailach i dokumentacji (np. "urlopów" zamiast "urlopow",',
-            '"urlop na żądanie" zamiast "urlop na zadanie"). Bez zmian w działaniu.',
+            'Poprawiono brakujące polskie znaki diakrytyczne (ogonki, kreski)',
+            'w całym interfejsie, komunikatach, mailach i dokumentacji. Bez zmian',
+            'w działaniu aplikacji.',
         ],
     ],
     '1.7.0' => [

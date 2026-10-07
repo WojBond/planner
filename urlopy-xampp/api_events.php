@@ -76,6 +76,7 @@ foreach ($rows as $r) {
             'canEdit' => ($isAdmin || $isOwner) && !$locked,
             'canApprove' => $approvalEnabled && $r['status'] === 'wprowadzony' && can_approve_group($user, $r['group_id']),
             'canUnapprove' => $approvalEnabled && $r['status'] === 'zatwierdzony' && can_approve_group($user, $r['group_id']),
+            'canPrint' => can_print_event($user, $r),
         ],
     ];
 }

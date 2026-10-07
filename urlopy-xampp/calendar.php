@@ -108,6 +108,7 @@ include __DIR__ . '/includes/header.php';
         <button type="button" class="btn danger" id="eventDelete" style="display:none;">Usuń</button>
         <button type="button" class="btn secondary" id="eventUnapprove" style="display:none;">Cofnij zatwierdzenie</button>
         <button type="button" class="btn" id="eventApprove" style="display:none;">Zatwierdź</button>
+        <button type="button" class="btn secondary" id="eventPrint" style="display:none;">Drukuj wniosek</button>
         <button type="button" class="btn secondary" id="btnCancel">Anuluj</button>
         <button type="submit" class="btn">Zapisz</button>
       </div>
@@ -125,6 +126,7 @@ include __DIR__ . '/includes/header.php';
     <button type="button" class="btn secondary" id="popClose">Zamknij</button>
     <button type="button" class="btn" id="popApprove" style="display:none;">Zatwierdź</button>
     <button type="button" class="btn secondary" id="popUnapprove" style="display:none;">Cofnij zatwierdzenie</button>
+    <button type="button" class="btn secondary" id="popPrint" style="display:none;">Drukuj wniosek</button>
     <button type="button" class="btn danger" id="popDelete" style="display:none;">Usuń</button>
   </div>
 </div>
@@ -178,6 +180,7 @@ function openEditModal(ev) {
   document.getElementById('eventDelete').style.display = ev.extendedProps.canDelete ? 'inline-block' : 'none';
   document.getElementById('eventApprove').style.display = ev.extendedProps.canApprove ? 'inline-block' : 'none';
   document.getElementById('eventUnapprove').style.display = ev.extendedProps.canUnapprove ? 'inline-block' : 'none';
+  document.getElementById('eventPrint').style.display = ev.extendedProps.canPrint ? 'inline-block' : 'none';
   modalAdd.classList.add('open');
 }
 
@@ -200,7 +203,7 @@ document.getElementById('eventForm').addEventListener('submit', async (e) => {
   });
   const body = await res.json();
   if (!res.ok) {
-    formError.textContent = body.error || 'Wystapil błąd.';
+    formError.textContent = body.error || 'Wystąpił błąd.';
     formError.style.display = 'block';
     return;
   }
@@ -243,6 +246,10 @@ async function sendApprovalFromModal(action) {
 }
 document.getElementById('eventApprove').addEventListener('click', () => sendApprovalFromModal('approve'));
 document.getElementById('eventUnapprove').addEventListener('click', () => sendApprovalFromModal('unapprove'));
+document.getElementById('eventPrint').addEventListener('click', () => {
+  if (!editingEventId) return;
+  window.open('print_leave.php?event=' + encodeURIComponent(editingEventId), '_blank');
+});
 
 // --- Popover ---
 const popover = document.getElementById('eventPopover');
@@ -279,6 +286,7 @@ function showPopover(ev, anchorRect) {
   document.getElementById('popDelete').style.display = ev.extendedProps.canDelete ? 'inline-block' : 'none';
   document.getElementById('popApprove').style.display = ev.extendedProps.canApprove ? 'inline-block' : 'none';
   document.getElementById('popUnapprove').style.display = ev.extendedProps.canUnapprove ? 'inline-block' : 'none';
+  document.getElementById('popPrint').style.display = ev.extendedProps.canPrint ? 'inline-block' : 'none';
 
   popover.classList.add('open');
   const popRect = popover.getBoundingClientRect();
@@ -325,6 +333,10 @@ async function sendApproval(action) {
 }
 document.getElementById('popApprove').addEventListener('click', () => sendApproval('approve'));
 document.getElementById('popUnapprove').addEventListener('click', () => sendApproval('unapprove'));
+document.getElementById('popPrint').addEventListener('click', () => {
+  if (!selectedEventId) return;
+  window.open('print_leave.php?event=' + encodeURIComponent(selectedEventId), '_blank');
+});
 
 document.addEventListener('click', (e) => {
   if (popover.classList.contains('open') && !popover.contains(e.target) && !e.target.closest('.year-event-bar')) {
