@@ -1,8 +1,18 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.8.1');
+define('APP_VERSION', '1.8.2');
 define('APP_CHANGELOG', [
+    '1.8.2' => [
+        'date' => '2026-10-07',
+        'changes' => [
+            'Poprawka: biblioteka FullCalendar (assets/vendor/fullcalendar.min.js),',
+            'wymagana przez widoki Miesiąc i Lista, nigdy nie trafiła do',
+            'repozytorium ani do paczek wydania - przez co te dwa widoki nie',
+            'działały na świeżo sklonowanej/rozpakowanej instalacji. Dodano plik',
+            'na stałe do repozytorium.',
+        ],
+    ],
     '1.8.1' => [
         'date' => '2026-10-07',
         'changes' => [
