@@ -100,7 +100,7 @@
       });
       const body = await res.json();
       if (!res.ok) {
-        formError.textContent = body.error || 'Wystapil błąd.';
+        formError.textContent = body.error || 'Wystąpił błąd.';
         formError.style.display = 'block';
         return;
       }

@@ -5,7 +5,7 @@ include __DIR__ . '/includes/header.php';
 ?>
 <div class="card">
   <h1>Ups!</h1>
-  <p><?= e($message ?? 'Wystapil nieoczekiwany błąd.') ?></p>
-  <a class="btn" href="calendar.php">Wroc do kalendarza</a>
+  <p><?= e($message ?? 'Wystąpił nieoczekiwany błąd.') ?></p>
+  <a class="btn" href="calendar.php">Wróć do kalendarza</a>
 </div>
 <?php include __DIR__ . '/includes/footer.php'; ?>
