@@ -3,7 +3,7 @@ if (!defined('APP_BOOTSTRAPPED')) { http_response_code(403); exit; }
 
 require_once __DIR__ . '/uuid.php';
 
-// Numer wersji schematu. Podnies przy kazdej zmianie struktury i dopisz
+// Numer wersji schematu. Podnies przy każdej zmianie struktury i dopisz
 // odpowiedni blok w run_migrations().
 const SCHEMA_VERSION = 2;
 
@@ -41,14 +41,14 @@ function connect_sqlite() {
     );
     $pdo->exec('PRAGMA foreign_keys = ON');
     // Bez tego SQLite rzuca "database is locked" natychmiast przy
-    // jakiejkolwiek kolizji (np. dwoch rownoczesnych zapisow) zamiast
-    // chwile poczekac i sprobowac ponownie.
+    // jakiejkolwiek kolizji (np. dwóch równoczesnych zapisów) zamiast
+    // chwile poczekac i spróbować ponownie.
     $pdo->exec('PRAGMA busy_timeout = 5000');
     return $pdo;
 }
 
 function connect_mysql() {
-    // Polacz sie bez wskazanej bazy, zeby moc ja utworzyc, jesli nie istnieje.
+    // Połącz się bez wskazanej bazy, żeby móc ją utworzyć, jeśli nie istnieje.
     $root = new PDO(
         'mysql:host=' . DB_HOST . ';charset=' . DB_CHARSET,
         DB_USER,
@@ -68,9 +68,9 @@ function connect_mysql() {
 function connect_sqlsrv() {
     if (!extension_loaded('pdo_sqlsrv')) {
         throw new RuntimeException(
-            'Rozszerzenie pdo_sqlsrv nie jest zaladowane w PHP. Zainstaluj "Microsoft ' .
-            'Drivers for PHP for SQL Server" i wlacz extension=pdo_sqlsrv w php.ini, ' .
-            'albo zmien DB_DRIVER na "sqlite" lub "mysql" w config.php.'
+            'Rozszerzenie pdo_sqlsrv nie jest załadowane w PHP. Zainstaluj "Microsoft ' .
+            'Drivers for PHP for SQL Server" i włącz extension=pdo_sqlsrv w php.ini, ' .
+            'albo zmień DB_DRIVER na "sqlite" lub "mysql" w config.php.'
         );
     }
     $dsn = 'sqlsrv:Server=' . MSSQL_HOST . ';Database=' . MSSQL_DB;
@@ -84,8 +84,8 @@ function connect_sqlsrv() {
 
 /**
  * Tworzy tabele od zera (fresh install). Schemat tutaj to zawsze AKTUALNA
- * (najnowsza) wersja struktury - dla juz istniejacych baz zmiany dokladane
- * sa przez run_migrations().
+ * (najnowsza) wersja struktury - dla już istniejących baz zmiany dokładane
+ * są przez run_migrations().
  */
 function ensure_schema(PDO $pdo, string $driver) {
     if ($driver === 'sqlite') {
@@ -245,7 +245,7 @@ function ensure_schema(PDO $pdo, string $driver) {
     if ($count === 0) {
         $groupId = uuidv4();
         $stmt = $pdo->prepare('INSERT INTO groups_ (id, name) VALUES (?, ?)');
-        $stmt->execute([$groupId, 'Dzial ogolny']);
+        $stmt->execute([$groupId, 'Dział ogólny']);
 
         $adminId = uuidv4();
         $hash = password_hash(DEFAULT_ADMIN_PASSWORD, PASSWORD_DEFAULT);
@@ -255,9 +255,9 @@ function ensure_schema(PDO $pdo, string $driver) {
 }
 
 /**
- * Dokleja zmiany struktury do juz istniejacych baz (zalozonych przez
- * wczesniejsza wersje aplikacji). ensure_schema() powyzej opisuje docelowy
- * ksztalt dla NOWYCH instalacji - ta funkcja dogania do niego STARE.
+ * Dokleja zmiany struktury do już istniejących baz (założonych przez
+ * wcześniejsza wersje aplikacji). ensure_schema() powyżej opisuje docelowy
+ * kształt dla NOWYCH instalacji - ta funkcja dogania do niego STARE.
  */
 function run_migrations(PDO $pdo, string $driver) {
     $current = (int) (get_schema_version($pdo, $driver) ?? 1);
@@ -297,18 +297,18 @@ function set_schema_version(PDO $pdo, string $driver, int $version) {
 }
 
 /**
- * v1 -> v2: rola "kierownik", limity urlopowe, statusy/zatwierdzanie zdarzen,
- * tabela przypisan kierownik-dzial. Bezpieczna do wielokrotnego uruchomienia
- * (kazdy krok ignoruje blad "juz istnieje").
+ * v1 -> v2: rola "kierownik", limity urlopowe, statusy/zatwierdzanie zdarzeń,
+ * tabela przypisań kierownik-dział. Bezpieczna do wielokrotnego uruchomienia
+ * (każdy krok ignoruje błąd "już istnieje").
  */
 function migrate_to_v2(PDO $pdo, string $driver) {
     $exec_safe = function (string $sql) use ($pdo) {
-        try { $pdo->exec($sql); } catch (PDOException $e) { /* kolumna/tabela juz istnieje - ok */ }
+        try { $pdo->exec($sql); } catch (PDOException $e) { /* kolumna/tabela już istnieje - ok */ }
     };
 
     if ($driver === 'sqlite') {
-        // Role mialo CHECK(role IN ('admin','user')) - SQLite nie pozwala
-        // zmienic CHECK bez przebudowy tabeli.
+        // Role miało CHECK(role IN ('admin','user')) - SQLite nie pozwala
+        // zmienić CHECK bez przebudowy tabeli.
         $hasOldCheck = false;
         $stmt = $pdo->query("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'");
         $row = $stmt->fetch();
@@ -320,8 +320,8 @@ function migrate_to_v2(PDO $pdo, string $driver) {
 
         if ($hasOldCheck) {
             $pdo->exec('PRAGMA foreign_keys = OFF');
-            // Bez tego RENAME TO przepisuje tez odwolania FOREIGN KEY w innych
-            // tabelach (np. events.user_id zaczeloby wskazywac na users_old_v1).
+            // Bez tego RENAME TO przepisuje też odwołania FOREIGN KEY w innych
+            // tabelach (np. events.user_id zaczęłoby wskazywać na users_old_v1).
             $pdo->exec('PRAGMA legacy_alter_table = ON');
             $pdo->beginTransaction();
             $pdo->exec("ALTER TABLE users RENAME TO users_old_v1");

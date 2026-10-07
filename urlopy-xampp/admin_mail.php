@@ -18,14 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($fromEmail === '' || !filter_var($fromEmail, FILTER_VALIDATE_EMAIL)) {
         $error = 'Podaj poprawny adres e-mail nadawcy.';
     } elseif ($smtpHost !== '' && (!ctype_digit($smtpPort) || (int) $smtpPort < 1 || (int) $smtpPort > 65535)) {
-        $error = 'Port SMTP musi byc liczba od 1 do 65535.';
+        $error = 'Port SMTP musi być liczba od 1 do 65535.';
     } elseif (!in_array($smtpSecure, ['', 'tls', 'ssl'], true)) {
-        $error = 'Nieprawidlowa wartosc szyfrowania SMTP.';
+        $error = 'Nieprawidłowa wartość szyfrowania SMTP.';
     } elseif ($appBaseUrl !== '' && !filter_var($appBaseUrl, FILTER_VALIDATE_URL)) {
-        $error = 'Adres aplikacji musi byc poprawnym adresem URL (np. http://192.168.1.50/urlopy).';
+        $error = 'Adres aplikacji musi być poprawnym adresem URL (np. http://192.168.1.50/urlopy).';
     } else {
         set_setting('mail_from_email', $fromEmail);
-        set_setting('mail_from_name', $fromName !== '' ? $fromName : 'Planer urlopow');
+        set_setting('mail_from_name', $fromName !== '' ? $fromName : 'Planer urlopów');
         set_setting('smtp_host', $smtpHost);
         set_setting('smtp_port', $smtpPort !== '' ? $smtpPort : '587');
         set_setting('smtp_secure', $smtpSecure);
@@ -42,23 +42,23 @@ $settings = get_mail_settings();
 $appBaseUrlSetting = get_setting('app_base_url', '');
 $detectedBaseUrl = detect_base_url();
 
-$pageTitle = 'Poczta - Planer urlopow';
+$pageTitle = 'Poczta - Planer urlopów';
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="card">
   <h1>Ustawienia poczty</h1>
   <p class="muted">
-    Adres i serwer, z ktorego wysylane sa powiadomienia o nowych zdarzeniach
-    urlopowych do czlonkow danego dzialu. Jesli pole "Serwer SMTP" zostanie
-    puste, wiadomosci nie beda faktycznie wysylane — ich tresc trafi tylko
-    do pliku <code>logs/mail.log</code> (przydatne do testow).
+    Adres i serwer, z którego wysyłane są powiadomienia o nowych zdarzeniach
+    urlopowych do członków danego działu. Jeśli pole "Serwer SMTP" zostanie
+    puste, wiadomości nie będą faktycznie wysyłane — ich treść trafi tylko
+    do pliku <code>logs/mail.log</code> (przydatne do testów).
   </p>
   <?php if ($saved): ?><div class="alert success">Zapisano ustawienia poczty.</div><?php endif; ?>
   <?php if ($error): ?><div class="alert error"><?= e($error) ?></div><?php endif; ?>
 
   <form method="POST" action="admin_mail.php">
     <div class="form-row">
-      <label for="from_email">Adres nadawcy (od kogo przychodza powiadomienia)</label>
+      <label for="from_email">Adres nadawcy (od kogo przychodzą powiadomienia)</label>
       <input type="email" id="from_email" name="from_email" value="<?= e($settings['from_email']) ?>" required />
     </div>
     <div class="form-row">
@@ -66,7 +66,7 @@ include __DIR__ . '/includes/header.php';
       <input type="text" id="from_name" name="from_name" value="<?= e($settings['from_name']) ?>" />
     </div>
     <div class="form-row">
-      <label for="smtp_host">Serwer SMTP (puste = tylko log, bez realnej wysylki)</label>
+      <label for="smtp_host">Serwer SMTP (puste = tylko log, bez realnej wysyłki)</label>
       <input type="text" id="smtp_host" name="smtp_host" value="<?= e($settings['smtp_host']) ?>" placeholder="np. smtp.twojafirma.pl" />
     </div>
     <div class="form-row">
@@ -82,23 +82,23 @@ include __DIR__ . '/includes/header.php';
       </select>
     </div>
     <div class="form-row">
-      <label for="smtp_user">Uzytkownik SMTP</label>
+      <label for="smtp_user">Użytkownik SMTP</label>
       <input type="text" id="smtp_user" name="smtp_user" value="<?= e($settings['smtp_user']) ?>" />
     </div>
     <div class="form-row">
-      <label for="smtp_pass">Haslo SMTP</label>
-      <input type="password" id="smtp_pass" name="smtp_pass" placeholder="pozostaw puste, aby nie zmieniac" />
+      <label for="smtp_pass">Hasło SMTP</label>
+      <input type="password" id="smtp_pass" name="smtp_pass" placeholder="pozostaw puste, aby nie zmieniać" />
     </div>
     <div class="form-row">
       <label for="app_base_url">Adres aplikacji (link w powiadomieniach)</label>
       <input type="text" id="app_base_url" name="app_base_url" value="<?= e($appBaseUrlSetting) ?>" placeholder="<?= e($detectedBaseUrl) ?>" />
       <p class="muted" style="margin:6px 0 0;">
-        Ten adres sluzy do budowania linku "Zobacz w systemie" w mailach
-        (np. do konkretnego zgloszenia urlopowego). Zostaw puste, aby
-        aplikacja sama wykrywala adres (IP albo domene) z biezacego
-        zadania — obecnie wykryty adres to:
+        Ten adres służy do budowania linku "Zobacz w systemie" w mailach
+        (np. do konkretnego zgłoszenia urlopowego). Zostaw puste, aby
+        aplikacja sama wykrywała adres (IP albo domene) z bieżącego
+        żądania — obecnie wykryty adres to:
         <code><?= e($detectedBaseUrl) ?></code>.
-        Wypelnij tylko, jesli ten adres bywa niestabilny (np. zmienne IP w
+        Wypełnij tylko, jeśli ten adres bywa niestabilny (np. zmienne IP w
         sieci lokalnej) i wolisz zawsze ustawiony na sztywno adres/domene.
       </p>
     </div>
@@ -107,10 +107,10 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <div class="card">
-  <h2>Test wysylki</h2>
-  <p class="muted">Wysle testowa wiadomosc na Twoj adres (<?= e($currentAdmin['email']) ?>), z aktualnie zapisanymi ustawieniami.</p>
+  <h2>Test wysyłki</h2>
+  <p class="muted">Wyśle testowa wiadomość na Twoj adres (<?= e($currentAdmin['email']) ?>), z aktualnie zapisanymi ustawieniami.</p>
   <div id="testResult"></div>
-  <button class="btn secondary" id="btnTestMail">Wyslij testowa wiadomosc</button>
+  <button class="btn secondary" id="btnTestMail">Wyślij testowa wiadomość</button>
 </div>
 
 <script>

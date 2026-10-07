@@ -129,7 +129,7 @@ table th, table td {
 .modal-actions .btn { white-space: nowrap; }
 .muted { color: var(--muted); font-size: 0.85rem; }
 
-/* ---- Widok kalendarza (Miesiac / Rok / Lista) ---- */
+/* ---- Widok kalendarza (Miesiąc / Rok / Lista) ---- */
 
 .container.wide { max-width: 1600px; }
 

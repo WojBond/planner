@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <title>Kalendarz - Planer urlopow</title>
+  <title>Kalendarz - Planer urlopów</title>
   <%- include('partials/head') %>
   <script src="/vendor/fullcalendar.min.js"></script>
 </head>
@@ -10,12 +10,12 @@
   <div class="container">
     <div class="card" style="display:flex; align-items:center; justify-content:space-between;">
       <div>
-        <h1 style="margin-bottom:4px;">Kalendarz urlopow</h1>
+        <h1 style="margin-bottom:4px;">Kalendarz urlopów</h1>
         <p class="muted" style="margin:0;">
           <% if (currentUser.role === 'admin') { %>
-            Widzisz zdarzenia wszystkich uzytkownikow.
+            Widzisz zdarzenia wszystkich użytkowników.
           <% } else { %>
-            Widzisz swoje zdarzenia oraz zdarzenia swojego dzialu.
+            Widzisz swoje zdarzenia oraz zdarzenia swojego działu.
           <% } %>
         </p>
       </div>
@@ -66,7 +66,7 @@
       <p id="viewNoteWrap"><strong>Notatka:</strong> <span id="viewNote"></span></p>
       <div class="modal-actions">
         <button type="button" class="btn secondary" id="btnCloseView">Zamknij</button>
-        <button type="button" class="btn danger" id="btnDeleteEvent" style="display:none;">Usun</button>
+        <button type="button" class="btn danger" id="btnDeleteEvent" style="display:none;">Usuń</button>
       </div>
     </div>
   </div>
@@ -100,7 +100,7 @@
       });
       const body = await res.json();
       if (!res.ok) {
-        formError.textContent = body.error || 'Wystapil blad.';
+        formError.textContent = body.error || 'Wystąpił błąd.';
         formError.style.display = 'block';
         return;
       }
@@ -110,7 +110,7 @@
 
     document.getElementById('btnDeleteEvent').addEventListener('click', async () => {
       if (!selectedEventId) return;
-      if (!confirm('Usunac to zdarzenie?')) return;
+      if (!confirm('Usunąć to zdarzenie?')) return;
       await fetch('/events/' + selectedEventId + '/delete', { method: 'POST' });
       modalView.classList.remove('open');
       calendar.refetchEvents();

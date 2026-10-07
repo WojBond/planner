@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <title>Moj profil - Planer urlopow</title>
+  <title>Mój profil - Planer urlopów</title>
   <%- include('partials/head') %>
 </head>
 <body>
   <%- include('partials/nav') %>
   <div class="container">
     <div class="card">
-      <h1>Moj profil</h1>
+      <h1>Mój profil</h1>
       <% if (saved) { %><div class="alert success">Zapisano zmiany.</div><% } %>
       <% if (error) { %><div class="alert error"><%= error %></div><% } %>
       <p><strong>Imie i nazwisko:</strong> <%= currentUser.name %></p>
       <p><strong>E-mail:</strong> <%= currentUser.email %></p>
-      <p><strong>Dzial:</strong> <%= group ? group.name : '-' %></p>
-      <p><strong>Rola:</strong> <%= currentUser.role === 'admin' ? 'Administrator' : 'Uzytkownik' %></p>
+      <p><strong>Dział:</strong> <%= group ? group.name : '-' %></p>
+      <p><strong>Rola:</strong> <%= currentUser.role === 'admin' ? 'Administrator' : 'Użytkownik' %></p>
     </div>
 
     <div class="card">
@@ -26,17 +26,17 @@
     </div>
 
     <div class="card">
-      <h2>Zmiana hasla</h2>
+      <h2>Zmiana hasła</h2>
       <form method="POST" action="/profile/password">
         <div class="form-row">
-          <label for="currentPassword">Aktualne haslo</label>
+          <label for="currentPassword">Aktualne hasło</label>
           <input type="password" id="currentPassword" name="currentPassword" required />
         </div>
         <div class="form-row">
-          <label for="newPassword">Nowe haslo (min. 6 znakow)</label>
+          <label for="newPassword">Nowe hasło (min. 6 znaków)</label>
           <input type="password" id="newPassword" name="newPassword" required minlength="6" />
         </div>
-        <button class="btn" type="submit">Zmien haslo</button>
+        <button class="btn" type="submit">Zmień hasło</button>
       </form>
     </div>
   </div>

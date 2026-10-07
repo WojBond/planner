@@ -2,9 +2,9 @@
 if (!defined('APP_BOOTSTRAPPED')) { http_response_code(403); exit; }
 
 /**
- * Podsumowanie limitu urlopowego uzytkownika dla danego roku kalendarzowego.
- * Liczy dni z urlopu wypoczynkowego i na zadanie (LEAVE_LIMIT_TYPES),
- * niezaleznie od statusu zdarzenia (wprowadzony/zatwierdzony) - to po prostu
+ * Podsumowanie limitu urlopowego użytkownika dla danego roku kalendarzowego.
+ * Liczy dni z urlopu wypoczynkowego i na żądanie (LEAVE_LIMIT_TYPES),
+ * niezależnie od statusu zdarzenia (wprowadzony/zatwierdzony) - to po prostu
  * suma dni WPROWADZONYCH do kalendarza, obcinana do granic danego roku.
  */
 function compute_leave_summary($user, $year = null) {

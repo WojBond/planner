@@ -5,7 +5,7 @@ $user = require_auth();
 $manageLink = $user['role'] === 'admin' ? 'admin_users.php' : 'profile.php';
 $approvalEnabled = is_approval_enabled();
 
-$pageTitle = 'Kalendarz - Planer urlopow';
+$pageTitle = 'Kalendarz - Planer urlopów';
 $containerClass = 'container wide';
 include __DIR__ . '/includes/header.php';
 ?>
@@ -48,12 +48,12 @@ include __DIR__ . '/includes/header.php';
     <div class="cal-toolbar">
       <div class="cal-nav">
         <button type="button" id="navPrev" title="Poprzedni">&lsaquo;</button>
-        <button type="button" id="navToday" class="wide">Dzis</button>
-        <button type="button" id="navNext" title="Nastepny">&rsaquo;</button>
+        <button type="button" id="navToday" class="wide">Dziś</button>
+        <button type="button" id="navNext" title="Następny">&rsaquo;</button>
         <span class="year-label" id="navLabel"></span>
       </div>
       <div class="view-switch">
-        <button type="button" data-view="month">Miesiac</button>
+        <button type="button" data-view="month">Miesiąc</button>
         <button type="button" data-view="year" class="active">Rok</button>
         <button type="button" data-view="list">Lista</button>
       </div>
@@ -62,15 +62,15 @@ include __DIR__ . '/includes/header.php';
 
     <p class="muted" style="margin-top:-8px;">
       <?php if ($user['role'] === 'admin'): ?>
-        Widzisz zdarzenia wszystkich uzytkownikow.
+        Widzisz zdarzenia wszystkich użytkowników.
       <?php elseif ($user['role'] === 'kierownik'): ?>
-        Widzisz zdarzenia swojego dzialu oraz dzialow, ktorymi zarzadzasz.
+        Widzisz zdarzenia swojego działu oraz działów, którymi zarządzasz.
       <?php else: ?>
-        Widzisz swoje zdarzenia oraz zdarzenia swojego dzialu.
+        Widzisz swoje zdarzenia oraz zdarzenia swojego działu.
       <?php endif; ?>
-      Kliknij pusty dzien (albo przeciagnij po kilku dniach), aby dodac zdarzenie z gotowym zakresem dat,
-      a istniejacy pasek, aby go edytowac.
-      W widoku Rok mozesz tez przeciagac paski, aby przesunac urlop, albo ciagnac za ich brzegi, aby zmienic liczbe dni.
+      Kliknij pusty dzień (albo przeciągnij po kilku dniach), aby dodać zdarzenie z gotowym zakresem dat,
+      a istniejący pasek, aby go edytować.
+      W widoku Rok możesz też przeciągać paski, aby przesunąć urlop, albo ciągnąć za ich brzegi, aby zmienić liczbę dni.
     </p>
 
     <div class="view-panel" id="panelMonth"><div id="calendar"></div></div>
@@ -105,9 +105,9 @@ include __DIR__ . '/includes/header.php';
         <textarea id="note" name="note" rows="2"></textarea>
       </div>
       <div class="modal-actions">
-        <button type="button" class="btn danger" id="eventDelete" style="display:none;">Usun</button>
+        <button type="button" class="btn danger" id="eventDelete" style="display:none;">Usuń</button>
         <button type="button" class="btn secondary" id="eventUnapprove" style="display:none;">Cofnij zatwierdzenie</button>
-        <button type="button" class="btn" id="eventApprove" style="display:none;">Zatwierdz</button>
+        <button type="button" class="btn" id="eventApprove" style="display:none;">Zatwierdź</button>
         <button type="button" class="btn secondary" id="btnCancel">Anuluj</button>
         <button type="submit" class="btn">Zapisz</button>
       </div>
@@ -123,16 +123,16 @@ include __DIR__ . '/includes/header.php';
   <p id="popNoteWrap" style="display:none;"><strong>Notatka:</strong> <span id="popNote"></span></p>
   <div class="popover-actions">
     <button type="button" class="btn secondary" id="popClose">Zamknij</button>
-    <button type="button" class="btn" id="popApprove" style="display:none;">Zatwierdz</button>
+    <button type="button" class="btn" id="popApprove" style="display:none;">Zatwierdź</button>
     <button type="button" class="btn secondary" id="popUnapprove" style="display:none;">Cofnij zatwierdzenie</button>
-    <button type="button" class="btn danger" id="popDelete" style="display:none;">Usun</button>
+    <button type="button" class="btn danger" id="popDelete" style="display:none;">Usuń</button>
   </div>
 </div>
 
 <script>
 const MONTH_NAMES = ['styczeń','luty','marzec','kwiecień','maj','czerwiec','lipiec','sierpień','wrzesień','październik','listopad','grudzień'];
 const WEEKDAY_ABBR = ['niedz','pon','wt','śr','czw','pt','sob'];
-const MONTH_ABBR = ['sty','lut','mar','kwi','maj','cze','lip','sie','wrz','paź','lis','gru'];
+const MONTH_ABBR = ['sty','lut','mar','kwi','maj','cze','lip','się','wrz','paź','lis','gru'];
 
 let allEvents = [];
 let allCalendars = [];
@@ -145,7 +145,7 @@ let currentView = 'year';
 const modalAdd = document.getElementById('modalAdd');
 const formError = document.getElementById('formError');
 
-// --- Modal dodawania / edycji zdarzenia (ten sam formularz dla obu trybow) ---
+// --- Modal dodawania / edycji zdarzenia (ten sam formularz dla obu trybów) ---
 let editingEventId = null;
 
 function resetEventForm() {
@@ -200,7 +200,7 @@ document.getElementById('eventForm').addEventListener('submit', async (e) => {
   });
   const body = await res.json();
   if (!res.ok) {
-    formError.textContent = body.error || 'Wystapil blad.';
+    formError.textContent = body.error || 'Wystapil błąd.';
     formError.style.display = 'block';
     return;
   }
@@ -211,7 +211,7 @@ document.getElementById('eventForm').addEventListener('submit', async (e) => {
 
 document.getElementById('eventDelete').addEventListener('click', async () => {
   if (!editingEventId) return;
-  if (!confirm('Usunac to zdarzenie?')) return;
+  if (!confirm('Usunąć to zdarzenie?')) return;
   const res = await fetch('events_delete.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -219,7 +219,7 @@ document.getElementById('eventDelete').addEventListener('click', async () => {
   });
   if (!res.ok) {
     const body = await res.json();
-    alert(body.error || 'Nie udalo sie usunac zdarzenia.');
+    alert(body.error || 'Nie udało się usunąć zdarzenia.');
   }
   modalAdd.classList.remove('open');
   await loadData();
@@ -235,7 +235,7 @@ async function sendApprovalFromModal(action) {
   });
   if (!res.ok) {
     const body = await res.json();
-    alert(body.error || 'Nie udalo sie zapisac zmiany statusu.');
+    alert(body.error || 'Nie udało się zapisać zmiany statusu.');
   }
   modalAdd.classList.remove('open');
   await loadData();
@@ -293,7 +293,7 @@ function showPopover(ev, anchorRect) {
 document.getElementById('popClose').addEventListener('click', () => popover.classList.remove('open'));
 document.getElementById('popDelete').addEventListener('click', async () => {
   if (!selectedEventId) return;
-  if (!confirm('Usunac to zdarzenie?')) return;
+  if (!confirm('Usunąć to zdarzenie?')) return;
   const res = await fetch('events_delete.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -301,7 +301,7 @@ document.getElementById('popDelete').addEventListener('click', async () => {
   });
   if (!res.ok) {
     const body = await res.json();
-    alert(body.error || 'Nie udalo sie usunac zdarzenia.');
+    alert(body.error || 'Nie udało się usunąć zdarzenia.');
   }
   popover.classList.remove('open');
   await loadData();
@@ -317,7 +317,7 @@ async function sendApproval(action) {
   });
   if (!res.ok) {
     const body = await res.json();
-    alert(body.error || 'Nie udalo sie zapisac zmiany statusu.');
+    alert(body.error || 'Nie udało się zapisać zmiany statusu.');
   }
   popover.classList.remove('open');
   await loadData();
@@ -349,9 +349,9 @@ async function loadData() {
 }
 
 function addDays(dateStr, delta) {
-  // Uwaga: celowo NIE uzywamy toISOString() tutaj - ono konwertuje do UTC,
-  // co w strefach na wschod od UTC (np. Polska) przesuwaloby date o 1 dzien
-  // wstecz. Budujemy string z lokalnych skladowych daty.
+  // Uwaga: celowo NIE używamy toISOString() tutaj - ono konwertuje do UTC,
+  // co w strefach na wschód od UTC (np. Polska) przesuwałoby date o 1 dzień
+  // wstecz. Budujemy string z lokalnych składowych daty.
   const d = new Date(dateStr + 'T00:00:00');
   d.setDate(d.getDate() + delta);
   const y = d.getFullYear();
@@ -412,8 +412,8 @@ function visibleEvents() {
 // --- Widok roczny ---
 function daysInMonth(year, month) { return new Date(year, month, 0).getDate(); }
 
-// Zaznaczanie zakresu dni przeciagnieciem po pustym miejscu w wierszu
-// miesiaca - wypelnia formularz nowego zdarzenia zaznaczonymi datami.
+// Zaznaczanie zakresu dni przeciągnięciem po pustym miejscu w wierszu
+// miesiąca - wypełnia formularz nowego zdarzenia zaznaczonymi datami.
 let selectState = null;
 
 function dayFromPoint(clientX, clientY, track, dCount) {
@@ -421,7 +421,7 @@ function dayFromPoint(clientX, clientY, track, dCount) {
   if (el && el.classList && el.classList.contains('year-day-cell') && el.closest('.year-track') === track && el.dataset.day) {
     return Math.min(dCount, parseInt(el.dataset.day, 10));
   }
-  // Kursor wyjechal poza komorki (np. nad/pod wiersz) - dolicz po pozycji poziomej.
+  // Kursor wyjechał poza komorki (np. nad/pod wiersz) - dolicz po pozycji poziomej.
   const rect = track.getBoundingClientRect();
   const pxPerDay = rect.width / 31;
   const day = Math.ceil((clientX - rect.left) / pxPerDay);
@@ -466,7 +466,7 @@ function onDaySelectEnd(e) {
   openCreateModal(dateToStr(currentYear, state.month, lo), dateToStr(currentYear, state.month, hi));
 }
 
-// Stan aktywnego przeciagania (przesuwanie / zmiana rozmiaru pasków).
+// Stan aktywnego przeciągania (przesuwanie / zmiana rozmiaru pasków).
 let dragState = null;
 
 function startDrag(e, item, bar, track, mode, month, dCount) {
@@ -552,11 +552,11 @@ async function onDragEnd(e) {
     });
     const body = await res.json();
     if (!res.ok) {
-      alert(body.error || 'Nie udalo sie zapisac zmiany.');
+      alert(body.error || 'Nie udało się zapisać zmiany.');
       await loadData();
     }
   } catch (err) {
-    alert('Blad polaczenia - zmiana nie zostala zapisana.');
+    alert('Błąd połączenia - zmiana nie została zapisana.');
     await loadData();
   }
   renderYear();
@@ -611,7 +611,7 @@ function renderYear() {
         const dow = new Date(currentYear, m - 1, d).getDay();
         if (dow === 0 || dow === 6) cell.classList.add('weekend');
         cell.classList.add('clickable');
-        cell.title = 'Dodaj zdarzenie (przeciagnij, aby zaznaczyc kilka dni)';
+        cell.title = 'Dodaj zdarzenie (przeciągnij, aby zaznaczyć kilka dni)';
         cell.dataset.day = d;
         cellsByDay[d] = cell;
         cell.addEventListener('mousedown', (e) => startDaySelect(e, m, dCount, track, cellsByDay, d));
@@ -671,7 +671,7 @@ function renderYear() {
 
       if (draggable) {
         bar.classList.add('draggable');
-        bar.title = 'Przeciagnij, aby przesunac; ciagnij za brzeg, aby zmienic liczbe dni.';
+        bar.title = 'Przeciągnij, aby przesunąć; ciągnij za brzeg, aby zmienić liczbę dni.';
 
         const handleLeft = document.createElement('div');
         handleLeft.className = 'resize-handle resize-handle-left';
@@ -687,9 +687,9 @@ function renderYear() {
           startDrag(e, item, bar, track, 'move', m, dCount);
         });
       } else if (item.ev.extendedProps.canEdit) {
-        // Edytowalne, ale zdarzenie wychodzi poza ten miesiac - bez
-        // przeciagania pikselowego (nie da sie jednoznacznie policzyc dni
-        // poza widocznym wycinkiem), ale klikniecie wciaz otwiera edycje.
+        // Edytowalne, ale zdarzenie wychodzi poza ten miesiąc - bez
+        // przeciągania pikselowego (nie da się jednoznacznie policzyć dni
+        // poza widocznym wycinkiem), ale kliknięcie wciąż otwiera edycje.
         bar.addEventListener('click', (e) => {
           e.stopPropagation();
           openEditModal(item.ev);
@@ -709,7 +709,7 @@ function renderYear() {
   }
 }
 
-// --- Widok miesiac / lista (FullCalendar) ---
+// --- Widok miesiąc / lista (FullCalendar) ---
 function popoverDataFromFcEvent(fcEvent) {
   return {
     id: fcEvent.id,
@@ -815,7 +815,7 @@ document.getElementById('navToday').addEventListener('click', () => {
   else { currentYear = new Date().getFullYear(); ensureFullCalendarList().today(); }
 });
 
-// --- Link bezposrednio do zdarzenia (np. z powiadomienia e-mail) ---
+// --- Link bezpośrednio do zdarzenia (np. z powiadomienia e-mail) ---
 function handleDeepLink() {
   const params = new URLSearchParams(window.location.search);
   const eventId = params.get('event');
@@ -825,7 +825,7 @@ function handleDeepLink() {
   }
   const ev = allEvents.find(e => e.id === eventId);
   if (!ev) {
-    alert('Nie znaleziono zdarzenia spod tego linku - moglo zostac usuniete albo nie masz do niego dostepu.');
+    alert('Nie znaleziono zdarzenia spod tego linku - mogło zostać usunięte albo nie masz do niego dostepu.');
     return;
   }
   currentYear = parseInt(ev.start.slice(0, 4), 10);

@@ -10,10 +10,10 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 /**
- * Wysyla maila do listy adresow, uzywajac konfiguracji ustawionej w panelu
+ * Wysyła maila do listy adresów, używając konfiguracji ustawionej w panelu
  * Admin -> Poczta (tabela settings), z fallbackiem na stale w config.php.
- * Jesli serwer SMTP nie jest skonfigurowany, tresc jest tylko dopisywana do
- * logs/mail.log (przydatne do testow lokalnych).
+ * Jeśli serwer SMTP nie jest skonfigurowany, treść jest tylko dopisywana do
+ * logs/mail.log (przydatne do testów lokalnych).
  */
 function send_mail_to(array $recipients, string $subject, string $text) {
     $recipients = array_values(array_filter($recipients));
@@ -56,7 +56,7 @@ function send_mail_via_smtp(array $recipients, string $subject, string $text, ar
         $mail->send();
         return true;
     } catch (PHPMailerException $e) {
-        error_log('Blad wysylki maila: ' . $mail->ErrorInfo);
+        error_log('Błąd wysyłki maila: ' . $mail->ErrorInfo);
         return $mail->ErrorInfo;
     }
 }

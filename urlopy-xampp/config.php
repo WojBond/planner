@@ -1,130 +1,138 @@
 <?php
-// Konfiguracja aplikacji "Planer urlopow" pod XAMPP.
+// Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.7.0');
+define('APP_VERSION', '1.7.1');
 define('APP_CHANGELOG', [
+    '1.7.1' => [
+        'date' => '2026-10-06',
+        'changes' => [
+            'Poprawiono brakujące polskie znaki diakrytyczne w całym interfejsie,',
+            'komunikatach, mailach i dokumentacji (np. "urlopów" zamiast "urlopow",',
+            '"urlop na żądanie" zamiast "urlop na zadanie"). Bez zmian w działaniu.',
+        ],
+    ],
     '1.7.0' => [
         'date' => '2026-10-06',
         'changes' => [
-            'Powiadomienia e-mail o zdarzeniach urlopowych zawieraja teraz link',
-            '"Zobacz w systemie" prowadzacy wprost do danego zgloszenia.',
+            'Powiadomienia e-mail o zdarzeniach urlopowych zawierają teraz link',
+            '"Zobacz w systemie" prowadzący wprost do danego zgłoszenia.',
             'Adres aplikacji (IP albo domena) do budowy linku jest wykrywany',
-            'automatycznie z biezacego zadania HTTP; mozna go tez ustawic na',
-            'sztywno w Poczta, jesli bywa niestabilny.',
-            'Link po zalogowaniu poprawnie wraca do strony, z ktorej uzytkownik',
-            'zostal przekierowany (np. wprost do zgloszenia z maila).',
+            'automatycznie z bieżącego żądania HTTP; można go też ustawić na',
+            'sztywno w Poczta, jeśli bywa niestabilny.',
+            'Link po zalogowaniu poprawnie wraca do strony, z której użytkownik',
+            'został przekierowany (np. wprost do zgłoszenia z maila).',
         ],
     ],
     '1.6.0' => [
         'date' => '2026-10-05',
         'changes' => [
-            'Zaznaczanie kilku dni przeciagnieciem po pustym miejscu w kalendarzu',
-            '(widok Rok i Miesiac) automatycznie wypelnia zakres dat "od-do" w',
-            'formularzu nowego zdarzenia. Zwykle klikniecie pojedynczego dnia',
-            'dziala jak dotychczas.',
+            'Zaznaczanie kilku dni przeciągnięciem po pustym miejscu w kalendarzu',
+            '(widok Rok i Miesiąc) automatycznie wypełnia zakres dat "od-do" w',
+            'formularzu nowego zdarzenia. Zwykle kliknięcie pojedynczego dnia',
+            'działa jak dotychczas.',
         ],
     ],
     '1.5.0' => [
         'date' => '2026-10-05',
         'changes' => [
-            'Klikniecie pustego dnia w kalendarzu (widok Rok i Miesiac) otwiera',
+            'Kliknięcie pustego dnia w kalendarzu (widok Rok i Miesiąc) otwiera',
             'formularz nowego zdarzenia z gotowa data.',
-            'Klikniecie istniejacego, edytowalnego zdarzenia otwiera ten sam',
-            'formularz wypelniony danymi (typ, daty, notatka) do edycji - zamiast',
-            'tylko podgladu. Usuwanie i zatwierdzanie/cofanie zatwierdzenia dostepne',
-            'teraz tez bezposrednio z tego formularza.',
+            'Kliknięcie istniejącego, edytowalnego zdarzenia otwiera ten sam',
+            'formularz wypełniony danymi (typ, daty, notatka) do edycji - zamiast',
+            'tylko podglądu. Usuwanie i zatwierdzanie/cofanie zatwierdzenia dostępne',
+            'teraz też bezpośrednio z tego formularza.',
         ],
     ],
     '1.4.0' => [
         'date' => '2026-10-05',
         'changes' => [
-            'Widok Rok: przeciaganie pasków zmienia termin urlopu, ciagniecie za',
-            'brzegi zmienia liczbe dni (tylko wlasne/wszystkie wpisy nie-zatwierdzone).',
-            'Nowy opcjonalny modul zatwierdzania urlopow (Konfiguracja): rola',
-            '"kierownik" przypisywana do wielu dzialow, statusy Wprowadzony/Zatwierdzony,',
-            'zatwierdzac moze tylko kierownik danego dzialu lub administrator.',
-            'Limity urlopowe (biezacy/zalegly) na uzytkownika, z automatycznym',
-            'podliczaniem wykorzystanych dni na podstawie wpisow w kalendarzu.',
+            'Widok Rok: przeciąganie pasków zmienia termin urlopu, ciągnięcie za',
+            'brzegi zmienia liczbę dni (tylko własne/wszystkie wpisy nie-zatwierdzone).',
+            'Nowy opcjonalny moduł zatwierdzania urlopów (Konfiguracja): rola',
+            '"kierownik" przypisywana do wielu działów, statusy Wprowadzony/Zatwierdzony,',
+            'zatwierdzać może tylko kierownik danego działu lub administrator.',
+            'Limity urlopowe (bieżący/zaległy) na użytkownika, z automatycznym',
+            'podliczaniem wykorzystanych dni na podstawie wpisów w kalendarzu.',
         ],
     ],
     '1.3.0' => [
         'date' => '2026-09-29',
         'changes' => [
             'Nowy ekran administracyjny "Poczta": adres/nazwa nadawcy oraz dane',
-            'serwera SMTP mozna teraz skonfigurowac z poziomu aplikacji (baza danych),',
-            'zamiast recznie edytowac config.php. Dodano tez przycisk testowej wysylki.',
+            'serwera SMTP można teraz skonfigurować z poziomu aplikacji (baza danych),',
+            'zamiast ręcznie edytować config.php. Dodano też przycisk testowej wysyłki.',
         ],
     ],
     '1.2.0' => [
         'date' => '2026-09-29',
         'changes' => [
-            'Nowy widok "Rok" w stylu Teamup: wszystkie miesiace jako wiersze,',
-            'zdarzenia jako kolorowe paski, dymek szczegolow po kliknieciu.',
-            'Panel boczny: lista kalendarzy (osob) z checkboxami do ukrywania',
-            'oraz filtr wedlug typu urlopu. Dodano przelacznik Miesiac / Rok / Lista.',
+            'Nowy widok "Rok" w stylu Teamup: wszystkie miesiące jako wiersze,',
+            'zdarzenia jako kolorowe paski, dymek szczegółów po kliknięciu.',
+            'Panel boczny: lista kalendarzy (osób) z checkboxami do ukrywania',
+            'oraz filtr według typu urlopu. Dodano przełącznik Miesiąc / Rok / Lista.',
         ],
     ],
     '1.1.0' => [
         'date' => '2026-09-29',
         'changes' => [
-            'Domyslna baza to teraz SQLite (zero konfiguracji, bez potrzeby uruchamiania MySQL).',
-            'Dodano opcjonalne konektory do MySQL i MS SQL Server (przelaczane przez DB_DRIVER).',
-            'Zabezpieczono katalogi data/, logs/, includes/ i libs/ przed bezposrednim dostepem przez HTTP.',
+            'Domyślna baza to teraz SQLite (zero konfiguracji, bez potrzeby uruchamiania MySQL).',
+            'Dodano opcjonalne konektory do MySQL i MS SQL Server (przełączane przez DB_DRIVER).',
+            'Zabezpieczono katalogi data/, logs/, includes/ i libs/ przed bezpośrednim dostepem przez HTTP.',
         ],
     ],
     '1.0.0' => [
         'date' => '2026-09-29',
         'changes' => [
-            'Pierwsza wersja: logowanie i role (user/admin), tworzenie uzytkownikow i dzialow,',
-            'wybor koloru paska, powiadomienia e-mail o nowych zdarzeniach dla dzialu.',
+            'Pierwsza wersja: logowanie i role (user/admin), tworzenie użytkowników i działów,',
+            'wybór koloru paska, powiadomienia e-mail o nowych zdarzeniach dla działu.',
         ],
     ],
 ]);
 
-// --- Wybor bazy danych -----------------------------------------------------
-// 'sqlite' (domyslnie, zalecane) - jeden plik, zero konfiguracji, dziala bez
+// --- Wybór bazy danych -----------------------------------------------------
+// 'sqlite' (domyślnie, zalecane) - jeden plik, zero konfiguracji, działa bez
 //          uruchamiania MySQL. Wymaga tylko rozszerzenia pdo_sqlite (wlaczone
-//          domyslnie w PHP dostarczanym z XAMPP).
+//          domyślnie w PHP dostarczanym z XAMPP).
 // 'mysql'  - opcjonalny konektor do MySQL/MariaDB (np. wbudowanego w XAMPP).
 // 'sqlsrv' - opcjonalny konektor do Microsoft SQL Server. Wymaga osobno
 //            zainstalowanego rozszerzenia pdo_sqlsrv (Microsoft Drivers for
-//            PHP for SQL Server) - nie jest czescia standardowego XAMPP.
+//            PHP for SQL Server) - nie jest częścią standardowego XAMPP.
 define('DB_DRIVER', 'sqlite');
 
-// Polaczenie SQLite (uzywane, gdy DB_DRIVER = 'sqlite')
+// Połączenie SQLite (używane, gdy DB_DRIVER = 'sqlite')
 define('SQLITE_PATH', __DIR__ . '/data/urlopy.sqlite');
 
-// Polaczenie MySQL / MariaDB (uzywane, gdy DB_DRIVER = 'mysql')
-// Domyslne wartosci pasuja do domyslnej instalacji XAMPP (root bez hasla).
+// Połączenie MySQL / MariaDB (używane, gdy DB_DRIVER = 'mysql')
+// Domyślne wartości pasują do domyślnej instalacji XAMPP (root bez hasła).
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'urlopy');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
 
-// Polaczenie MS SQL Server (uzywane, gdy DB_DRIVER = 'sqlsrv')
+// Połączenie MS SQL Server (używane, gdy DB_DRIVER = 'sqlsrv')
 define('MSSQL_HOST', 'localhost');
 define('MSSQL_DB', 'urlopy');
 define('MSSQL_USER', 'sa');
 define('MSSQL_PASS', '');
 
-// Konfiguracja SMTP do wysylki prawdziwych maili.
-// Sa to wylacznie wartosci POCZATKOWE / awaryjne - docelowo skonfiguruj
-// adres nadawcy i dane SMTP wygodniej z poziomu aplikacji: zaloguj sie jako
+// Konfiguracja SMTP do wysyłki prawdziwych maili.
+// Są to wyłącznie wartości POCZATKOWE / awaryjne - docelowo skonfiguruj
+// adres nadawcy i dane SMTP wygodniej z poziomu aplikacji: zaloguj się jako
 // administrator i wejdz w "Poczta" w menu. To, co zapiszesz tam, ma
-// pierwszenstwo przed stalymi ponizej.
-// Jesli SMTP_HOST jest puste, tresc maili jest tylko zapisywana w logs/mail.log
-// (przydatne do testow bez konfigurowania serwera pocztowego).
+// pierwszeństwo przed stałymi poniżej.
+// Jeśli SMTP_HOST jest puste, treść maili jest tylko zapisywana w logs/mail.log
+// (przydatne do testów bez konfigurowania serwera pocztowego).
 define('SMTP_HOST', '');
 define('SMTP_PORT', 587);
 define('SMTP_SECURE', 'tls'); // 'tls', 'ssl' albo ''
 define('SMTP_USER', '');
 define('SMTP_PASS', '');
 define('MAIL_FROM_EMAIL', 'urlopy@firma.local');
-define('MAIL_FROM_NAME', 'Planer urlopow');
+define('MAIL_FROM_NAME', 'Planer urlopów');
 
 define('SESSION_NAME', 'urlopy_session');
 
-// Domyslne haslo konta admina tworzonego przy pierwszym uruchomieniu.
+// Domyślne hasło konta admina tworzonego przy pierwszym uruchomieniu.
 define('DEFAULT_ADMIN_EMAIL', 'admin@firma.local');
 define('DEFAULT_ADMIN_PASSWORD', 'admin123');

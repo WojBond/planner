@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $color = $_POST['color'] ?? '';
 if (!preg_match('/^#[0-9a-fA-F]{6}$/', $color)) {
-    header('Location: profile.php?error=' . urlencode('Nieprawidlowy format koloru.'));
+    header('Location: profile.php?error=' . urlencode('Nieprawidłowy format koloru.'));
     exit;
 }
 

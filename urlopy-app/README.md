@@ -1,19 +1,19 @@
-# Planer urlopow
+# Planer urlopów
 
 **Wersja: 1.0.0** (numer wersji trzymany w `src/version.js` jako `APP_VERSION`,
-widoczny tez w interfejsie obok nazwy aplikacji).
+widoczny też w interfejsie obok nazwy aplikacji).
 
-Lokalna aplikacja webowa do planowania urlopow, zainspirowana kalendarzem Teamup.
-Dziala calkowicie lokalnie (Node.js + Express), dane sa zapisywane w pliku `data/db.json`.
+Lokalna aplikacja webowa do planowania urlopów, zainspirowana kalendarzem Teamup.
+Działa całkowicie lokalnie (Node.js + Express), dane są zapisywane w pliku `data/db.json`.
 
 ## Funkcje
 
-1. Admin tworzy uzytkownikow i grupy uzytkownikow (dzialy).
+1. Admin tworzy użytkowników i grupy użytkowników (działy).
 2. Logowanie z rolami:
-   - **user** - widzi swoje zdarzenia oraz zdarzenia swojego dzialu,
+   - **user** - widzi swoje zdarzenia oraz zdarzenia swojego działu,
    - **admin** - widzi wszystkie zdarzenia w systemie.
-3. Kazdy uzytkownik moze wybrac wlasny kolor paska w kalendarzu (w profilu).
-4. Po dodaniu zdarzenia system wysyla e-mail do wszystkich osob w danym dziale.
+3. Każdy użytkownik może wybrac własny kolor paska w kalendarzu (w profilu).
+4. Po dodaniu zdarzenia system wysyła e-mail do wszystkich osób w danym dziale.
 
 ## Instalacja i uruchomienie
 
@@ -25,19 +25,19 @@ npm start
 
 Aplikacja wystartuje na `http://localhost:3000`.
 
-Domyslne konto administratora tworzone przy pierwszym starcie:
+Domyślne konto administratora tworzone przy pierwszym starcie:
 
 - e-mail: `admin@firma.local`
-- haslo: `admin123`
+- hasło: `admin123`
 
-**Zmien to haslo od razu po pierwszym zalogowaniu** (Moj profil -> Zmiana hasla).
+**Zmień to hasło od razu po pierwszym zalogowaniu** (Mój profil -> Zmiana hasła).
 
-## Konfiguracja wysylki e-mail
+## Konfiguracja wysyłki e-mail
 
-Bez konfiguracji SMTP aplikacja dziala normalnie, ale tresc maili jest tylko
-wypisywana w konsoli serwera (przydatne do testow).
+Bez konfiguracji SMTP aplikacja działa normalnie, ale treść maili jest tylko
+wypisywana w konsoli serwera (przydatne do testów).
 
-Aby wysylac prawdziwe maile:
+Aby wysyłać prawdziwe maile:
 
 1. Skopiuj `.env.example` do `.env`.
 2. Wpisz dane swojego serwera SMTP (np. firmowej skrzynki, Gmail z hasiem
@@ -45,19 +45,19 @@ Aby wysylac prawdziwe maile:
    `SMTP_USER`, `SMTP_PASS`.
 3. Zrestartuj serwer (`npm start`).
 
-## Typy zdarzen
+## Typy zdarzeń
 
-Urlop wypoczynkowy, Urlop na zadanie, Urlop z nadgodzin, Wizyta lekarska, Inne.
+Urlop wypoczynkowy, Urlop na żądanie, Urlop z nadgodzin, Wizyta lekarska, Inne.
 
 ## Struktura danych
 
 Wszystko trzymane jest w jednym pliku `data/db.json` (tworzony automatycznie):
-uzytkownicy, dzialy (grupy) i zdarzenia urlopowe. Do backupu wystarczy
+użytkownicy, działy (grupy) i zdarzenia urlopowe. Do backupu wystarczy
 skopiowac ten plik.
 
-## Uwagi bezpieczenstwa
+## Uwagi bezpieczeństwa
 
-- Hasla sa haszowane (bcrypt), nigdy nie sa przechowywane w postaci czystego tekstu.
+- Hasła są haszowane (bcrypt), nigdy nie są przechowywane w postaci czystego tekstu.
 - Sesja logowania oparta na `express-session` (cookie httpOnly).
-- Przed wystawieniem aplikacji poza siec lokalna zmien `SESSION_SECRET` w `.env`
-  i rozwaz uzycie HTTPS (np. przez reverse proxy).
+- Przed wystawieniem aplikacji poza siec lokalna zmień `SESSION_SECRET` w `.env`
+  i rozważ uzycie HTTPS (np. przez reverse proxy).

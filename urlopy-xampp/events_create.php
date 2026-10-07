@@ -11,12 +11,12 @@ $note = trim($_POST['note'] ?? '');
 
 if ($startDate === '' || $endDate === '' || $type === '') {
     http_response_code(400);
-    echo json_encode(['error' => 'Wypelnij wymagane pola.']);
+    echo json_encode(['error' => 'Wypełnij wymagane pola.']);
     exit;
 }
 if ($endDate < $startDate) {
     http_response_code(400);
-    echo json_encode(['error' => 'Data zakonczenia nie moze byc wczesniejsza niz data rozpoczecia.']);
+    echo json_encode(['error' => 'Data zakończenia nie może być wcześniejsza niz data rozpoczęcia.']);
     exit;
 }
 
@@ -36,7 +36,7 @@ $recipients = array_column($stmt->fetchAll(), 'email');
 $link = event_link($id);
 
 $text = implode("\n", array_filter([
-    $user['name'] . ' dodal(a) nowy wpis w kalendarzu urlopow.',
+    $user['name'] . ' dodal(a) nowy wpis w kalendarzu urlopów.',
     '',
     'Typ: ' . event_type_label($type),
     'Od: ' . $startDate,
@@ -55,13 +55,13 @@ if ($approvalEnabled && $user['group_id']) {
     $managerEmails = array_column($stmt->fetchAll(), 'email');
     if (!empty($managerEmails)) {
         send_mail_to($managerEmails, 'Urlop do zatwierdzenia: ' . $user['name'], implode("\n", array_filter([
-            $user['name'] . ' zglosil(a) urlop oczekujacy na Twoje zatwierdzenie.',
+            $user['name'] . ' zgłosił(a) urlop oczekujący na Twoje zatwierdzenie.',
             '',
             'Typ: ' . event_type_label($type),
             'Od: ' . $startDate,
             'Do: ' . $endDate,
             '',
-            'Zatwierdz lub zobacz szczegoly: ' . $link,
+            'Zatwierdź lub zobacz szczegóły: ' . $link,
         ])));
     }
 }

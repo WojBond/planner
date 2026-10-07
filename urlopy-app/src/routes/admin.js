@@ -13,7 +13,7 @@ function usersWithGroupName() {
   }));
 }
 
-// --- Grupy (dzialy) ---
+// --- Grupy (działy) ---
 
 router.get('/admin/groups', (req, res) => {
   res.render('admin_groups', { groups: db.groups, error: null });
@@ -22,7 +22,7 @@ router.get('/admin/groups', (req, res) => {
 router.post('/admin/groups', (req, res) => {
   const name = (req.body.name || '').trim();
   if (!name) {
-    return res.status(400).render('admin_groups', { groups: db.groups, error: 'Nazwa dzialu jest wymagana.' });
+    return res.status(400).render('admin_groups', { groups: db.groups, error: 'Nazwa działu jest wymagana.' });
   }
   db.groups.push({ id: id(), name });
   persist();
@@ -34,7 +34,7 @@ router.post('/admin/groups/:id/delete', (req, res) => {
   if (inUse) {
     return res.status(400).render('admin_groups', {
       groups: db.groups,
-      error: 'Nie mozna usunac dzialu, ktory ma przypisanych uzytkownikow.',
+      error: 'Nie można usunąć działu, który ma przypisanych użytkowników.',
     });
   }
   db.groups = db.groups.filter((g) => g.id !== req.params.id);
@@ -42,7 +42,7 @@ router.post('/admin/groups/:id/delete', (req, res) => {
   res.redirect('/admin/groups');
 });
 
-// --- Uzytkownicy ---
+// --- Użytkownicy ---
 
 router.get('/admin/users', (req, res) => {
   res.render('admin_users', { users: usersWithGroupName(), groups: db.groups, error: null });
@@ -55,14 +55,14 @@ router.post('/admin/users', (req, res) => {
     return res.status(400).render('admin_users', {
       users: usersWithGroupName(),
       groups: db.groups,
-      error: 'Wypelnij wszystkie wymagane pola.',
+      error: 'Wypełnij wszystkie wymagane pola.',
     });
   }
   if (db.users.some((u) => u.email.toLowerCase() === cleanEmail)) {
     return res.status(400).render('admin_users', {
       users: usersWithGroupName(),
       groups: db.groups,
-      error: 'Uzytkownik z tym adresem e-mail juz istnieje.',
+      error: 'Użytkownik z tym adresem e-mail już istnieje.',
     });
   }
   db.users.push({
@@ -99,7 +99,7 @@ router.post('/admin/users/:id/delete', (req, res) => {
     return res.status(400).render('admin_users', {
       users: usersWithGroupName(),
       groups: db.groups,
-      error: 'Nie mozna usunac wlasnego konta.',
+      error: 'Nie można usunąć własnego konta.',
     });
   }
   db.users = db.users.filter((u) => u.id !== req.params.id);

@@ -1,4 +1,4 @@
-# Blokuje bezposredni dostep przez przegladarke do bibliotek PHP.
+# Blokuje bezpośredni dostęp przez przeglądarkę do bibliotek PHP.
 <IfModule mod_authz_core.c>
     Require all denied
 </IfModule>

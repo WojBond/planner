@@ -1,4 +1,4 @@
-# Blokuje bezposredni dostep przez przegladarke do plikow wewnetrznych.
+# Blokuje bezpośredni dostęp przez przeglądarkę do plików wewnętrznych.
 <IfModule mod_authz_core.c>
     Require all denied
 </IfModule>

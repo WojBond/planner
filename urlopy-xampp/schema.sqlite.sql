@@ -1,7 +1,7 @@
--- Schemat bazy danych "Planer urlopow" - SQLite (domyslny silnik).
--- Uwaga: aplikacja tworzy i migruje te tabele automatycznie przy kazdym
+-- Schemat bazy danych "Planer urlopów" - SQLite (domyślny silnik).
+-- Uwaga: aplikacja tworzy i migruje te tabele automatycznie przy każdym
 -- uruchomieniu (patrz includes/db.php: ensure_schema() / run_migrations()),
--- wiec recznego importu tego pliku NIE trzeba robic. Zostawiony wylacznie
+-- więc ręcznego importu tego pliku NIE trzeba robić. Zostawiony wyłącznie
 -- jako dokumentacja aktualnej struktury (wersja schematu 2).
 
 CREATE TABLE IF NOT EXISTS groups_ (
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS groups_ (
 );
 
 -- role: 'user' | 'kierownik' | 'admin' (bez CHECK - walidacja w PHP,
--- zeby latwo bylo dokladac kolejne role w przyszlosci).
+-- żeby łatwo bylo dokładać kolejne role w przyszłości).
 CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS events (
     FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE SET NULL
 );
 
--- Dzialy, ktorymi zarzadza dany kierownik (relacja wiele-do-wielu).
+-- Działy, którymi zarządza dany kierownik (relacja wiele-do-wielu).
 CREATE TABLE IF NOT EXISTS manager_groups (
     user_id TEXT NOT NULL,
     group_id TEXT NOT NULL,

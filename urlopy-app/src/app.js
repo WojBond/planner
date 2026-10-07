@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'dev-secret-zmien-mnie',
+    secret: process.env.SESSION_SECRET || 'dev-secret-zmień-mnie',
     resave: false,
     saveUninitialized: false,
     cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 8 },
@@ -37,11 +37,11 @@ app.use(adminRoutes);
 app.use(eventRoutes);
 
 app.use((req, res) => {
-  res.status(404).render('error', { message: 'Strona nie zostala znaleziona.' });
+  res.status(404).render('error', { message: 'Strona nie została znaleziona.' });
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Planer urlopow v${APP_VERSION} dziala na http://localhost:${PORT}`);
-  console.log('Domyslne konto administratora: admin@firma.local / admin123 (zmien haslo po zalogowaniu)');
+  console.log(`Planer urlopów v${APP_VERSION} działa na http://localhost:${PORT}`);
+  console.log('Domyślne konto administratora: admin@firma.local / admin123 (zmień hasło po zalogowaniu)');
 });

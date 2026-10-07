@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $approvalEnabled = is_approval_enabled();
 
-$pageTitle = 'Konfiguracja - Planer urlopow';
+$pageTitle = 'Konfiguracja - Planer urlopów';
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="card">
@@ -23,15 +23,15 @@ include __DIR__ . '/includes/header.php';
     <div class="form-row">
       <label style="display:flex; align-items:center; gap:10px; font-weight:600;">
         <input type="checkbox" name="approval_enabled" value="1" style="width:auto;" <?= $approvalEnabled ? 'checked' : '' ?> />
-        Modul zatwierdzania urlopow
+        Moduł zatwierdzania urlopów
       </label>
       <p class="muted" style="margin:6px 0 0;">
-        Po wlaczeniu: nowe zdarzenia urlopowe maja status "Wprowadzony" i
-        wymagaja zatwierdzenia przez kierownika danego dzialu (lub admina),
-        zanim zostana oznaczone jako "Zatwierdzony". Kierownikow i dzialy,
-        ktorymi zarzadzaja, przypisuje sie w
-        <a href="admin_users.php">Uzytkownicy</a>.
-        Po wylaczeniu nowe zdarzenia sa od razu zatwierdzone - bez dodatkowego kroku.
+        Po włączeniu: nowe zdarzenia urlopowe mają status "Wprowadzony" i
+        wymagają zatwierdzenia przez kierownika danego działu (lub admina),
+        zanim zostaną oznaczone jako "Zatwierdzony". Kierowników i działy,
+        którymi zarządzają, przypisuje się w
+        <a href="admin_users.php">Użytkownicy</a>.
+        Po wyłączeniu nowe zdarzenia są od razu zatwierdzone - bez dodatkowego kroku.
       </p>
     </div>
     <button class="btn" type="submit">Zapisz</button>

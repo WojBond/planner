@@ -1,6 +1,6 @@
 <?php
 if (!defined('APP_BOOTSTRAPPED')) { http_response_code(403); exit; }
-$pageTitle = $pageTitle ?? 'Planer urlopow';
+$pageTitle = $pageTitle ?? 'Planer urlopów';
 $containerClass = $containerClass ?? 'container';
 ?>
 <!DOCTYPE html>

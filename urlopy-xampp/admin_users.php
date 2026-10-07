@@ -41,12 +41,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!preg_match('/^#[0-9a-fA-F]{6}$/', $color)) $color = '#2563eb';
 
         if ($name === '' || $email === '' || $password === '' || $groupId === '') {
-            $error = 'Wypelnij wszystkie wymagane pola.';
+            $error = 'Wypełnij wszystkie wymagane pola.';
         } else {
             $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE email = ?');
             $stmt->execute([$email]);
             if ((int) $stmt->fetchColumn() > 0) {
-                $error = 'Uzytkownik z tym adresem e-mail juz istnieje.';
+                $error = 'Użytkownik z tym adresem e-mail już istnieje.';
             } else {
                 $newId = uuidv4();
                 $stmt = $pdo->prepare('INSERT INTO users (id, name, email, password_hash, role, group_id, color, must_change_password, leave_current_days, leave_backlog_days) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)');
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($formAction === 'delete') {
         $id = $_POST['id'] ?? '';
         if ($id === $currentAdmin['id']) {
-            $error = 'Nie mozna usunac wlasnego konta.';
+            $error = 'Nie można usunąć własnego konta.';
         } else {
             $stmt = $pdo->prepare('DELETE FROM users WHERE id = ?');
             $stmt->execute([$id]);
@@ -111,17 +111,17 @@ foreach ($pdo->query('SELECT user_id, group_id FROM manager_groups') as $row) {
     $managedGroupIdsByUser[$row['user_id']][] = $row['group_id'];
 }
 
-$pageTitle = 'Uzytkownicy - Planer urlopow';
+$pageTitle = 'Użytkownicy - Planer urlopów';
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="card">
-  <h1>Uzytkownicy</h1>
+  <h1>Użytkownicy</h1>
   <?php if ($error): ?><div class="alert error"><?= e($error) ?></div><?php endif; ?>
   <table>
     <thead>
       <tr>
-        <th>Kolor</th><th>Imie i nazwisko</th><th>E-mail</th><th>Dzial</th><th>Rola</th>
-        <th>Limit (biez./zaleg.)</th><th>Wykorzystano</th><th>Pozostalo</th><th>Akcje</th>
+        <th>Kolor</th><th>Imie i nazwisko</th><th>E-mail</th><th>Dział</th><th>Rola</th>
+        <th>Limit (biez./zaleg.)</th><th>Wykorzystano</th><th>Pozostało</th><th>Akcje</th>
       </tr>
     </thead>
     <tbody>
@@ -131,7 +131,7 @@ include __DIR__ . '/includes/header.php';
           <td>
             <?= e($u['name']) ?>
             <?php if ($u['role'] === 'kierownik' && !empty($managedGroupsByUser[$u['id']])): ?>
-              <div class="muted" style="font-size:0.78rem;">zarzadza: <?= e(implode(', ', $managedGroupsByUser[$u['id']])) ?></div>
+              <div class="muted" style="font-size:0.78rem;">zarządza: <?= e(implode(', ', $managedGroupsByUser[$u['id']])) ?></div>
             <?php endif; ?>
           </td>
           <td><?= e($u['email']) ?></td>
@@ -151,7 +151,7 @@ include __DIR__ . '/includes/header.php';
                   <input type="text" name="name" value="<?= e($u['name']) ?>" />
                 </div>
                 <div class="form-row">
-                  <label>Dzial (wlasny)</label>
+                  <label>Dział (własny)</label>
                   <select name="groupId">
                     <?php foreach ($groups as $g): ?>
                       <option value="<?= e($g['id']) ?>" <?= $g['id'] === $u['group_id'] ? 'selected' : '' ?>><?= e($g['name']) ?></option>
@@ -167,7 +167,7 @@ include __DIR__ . '/includes/header.php';
                   </select>
                 </div>
                 <div class="form-row managed-groups-row" style="<?= $u['role'] === 'kierownik' ? '' : 'display:none;' ?>">
-                  <label>Dzialy zarzadzane (kierownik)</label>
+                  <label>Działy zarządzane (kierownik)</label>
                   <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
                     <?php foreach ($groups as $g): ?>
                       <option value="<?= e($g['id']) ?>" <?= in_array($g['id'], $managedGroupIdsByUser[$u['id']] ?? [], true) ? 'selected' : '' ?>><?= e($g['name']) ?></option>
@@ -175,25 +175,25 @@ include __DIR__ . '/includes/header.php';
                   </select>
                 </div>
                 <div class="form-row">
-                  <label>Limit biezacy (dni)</label>
+                  <label>Limit bieżący (dni)</label>
                   <input type="text" name="leave_current_days" value="<?= e(format_days($u['leave_current_days'])) ?>" />
                 </div>
                 <div class="form-row">
-                  <label>Limit zalegly (dni)</label>
+                  <label>Limit zaległy (dni)</label>
                   <input type="text" name="leave_backlog_days" value="<?= e(format_days($u['leave_backlog_days'])) ?>" />
                 </div>
                 <div class="form-row">
-                  <label>Nowe haslo (opcjonalnie)</label>
-                  <input type="password" name="password" placeholder="pozostaw puste, aby nie zmieniac" />
+                  <label>Nowe hasło (opcjonalnie)</label>
+                  <input type="password" name="password" placeholder="pozostaw puste, aby nie zmieniać" />
                 </div>
                 <button class="btn" type="submit">Zapisz</button>
               </form>
             </details>
             <form method="POST" action="admin_users.php" style="margin-top:8px;"
-                  onsubmit="return confirm('Usunac uzytkownika <?= e($u['name']) ?>?');">
+                  onsubmit="return confirm('Usunąć użytkownika <?= e($u['name']) ?>?');">
               <input type="hidden" name="form_action" value="delete" />
               <input type="hidden" name="id" value="<?= e($u['id']) ?>" />
-              <button class="btn danger" type="submit">Usun</button>
+              <button class="btn danger" type="submit">Usuń</button>
             </form>
           </td>
         </tr>
@@ -203,7 +203,7 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <div class="card">
-  <h2>Dodaj uzytkownika</h2>
+  <h2>Dodaj użytkownika</h2>
   <form method="POST" action="admin_users.php" class="user-edit-form">
     <input type="hidden" name="form_action" value="create" />
     <div class="form-row">
@@ -215,11 +215,11 @@ include __DIR__ . '/includes/header.php';
       <input type="email" id="email" name="email" required />
     </div>
     <div class="form-row">
-      <label for="password">Haslo startowe</label>
+      <label for="password">Hasło startowe</label>
       <input type="password" id="password" name="password" required minlength="6" />
     </div>
     <div class="form-row">
-      <label for="groupId">Dzial (wlasny)</label>
+      <label for="groupId">Dział (własny)</label>
       <select id="groupId" name="groupId" required>
         <?php foreach ($groups as $g): ?>
           <option value="<?= e($g['id']) ?>"><?= e($g['name']) ?></option>
@@ -235,7 +235,7 @@ include __DIR__ . '/includes/header.php';
       </select>
     </div>
     <div class="form-row managed-groups-row" style="display:none;">
-      <label>Dzialy zarzadzane (kierownik)</label>
+      <label>Działy zarządzane (kierownik)</label>
       <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
         <?php foreach ($groups as $g): ?>
           <option value="<?= e($g['id']) ?>"><?= e($g['name']) ?></option>
@@ -243,18 +243,18 @@ include __DIR__ . '/includes/header.php';
       </select>
     </div>
     <div class="form-row">
-      <label for="leave_current_days">Limit biezacy (dni)</label>
+      <label for="leave_current_days">Limit bieżący (dni)</label>
       <input type="text" id="leave_current_days" name="leave_current_days" value="0" />
     </div>
     <div class="form-row">
-      <label for="leave_backlog_days">Limit zalegly (dni)</label>
+      <label for="leave_backlog_days">Limit zaległy (dni)</label>
       <input type="text" id="leave_backlog_days" name="leave_backlog_days" value="0" />
     </div>
     <div class="form-row">
       <label for="color">Kolor paska</label>
       <input type="color" id="color" name="color" value="#2563eb" />
     </div>
-    <button class="btn" type="submit">Dodaj uzytkownika</button>
+    <button class="btn" type="submit">Dodaj użytkownika</button>
   </form>
 </div>
 

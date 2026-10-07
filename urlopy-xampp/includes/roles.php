@@ -2,7 +2,7 @@
 if (!defined('APP_BOOTSTRAPPED')) { http_response_code(403); exit; }
 
 const ROLE_LABELS = [
-    'user' => 'Uzytkownik',
+    'user' => 'Użytkownik',
     'kierownik' => 'Kierownik',
     'admin' => 'Administrator',
 ];
@@ -12,8 +12,8 @@ const EVENT_STATUS_LABELS = [
     'zatwierdzony' => 'Zatwierdzony',
 ];
 
-// Typy zdarzen, ktore obciazaja roczny limit urlopowy (urlop wypoczynkowy
-// i urlop na zadanie sa czerpane z tej samej puli dni w polskim prawie pracy).
+// Typy zdarzeń, które obciążają roczny limit urlopowy (urlop wypoczynkowy
+// i urlop na żądanie są czerpane z tej samej puli dni w polskim prawie pracy).
 const LEAVE_LIMIT_TYPES = ['wypoczynkowy', 'na_zadanie'];
 
 function role_label($role) {
@@ -24,12 +24,12 @@ function event_status_label($status) {
     return EVENT_STATUS_LABELS[$status] ?? $status;
 }
 
-/** Czy modul zatwierdzania urlopow jest wlaczony w Konfiguracji. */
+/** Czy moduł zatwierdzania urlopów jest włączony w Konfiguracji. */
 function is_approval_enabled() {
     return get_setting('approval_enabled', '0') === '1';
 }
 
-/** Lista id dzialow, ktorymi zarzadza dany kierownik (puste dla innych rol). */
+/** Lista id działów, którymi zarządza dany kierownik (puste dla innych rol). */
 function manager_group_ids($user) {
     if ($user['role'] !== 'kierownik') return [];
     $pdo = get_pdo();
@@ -38,12 +38,12 @@ function manager_group_ids($user) {
     return array_column($stmt->fetchAll(), 'group_id');
 }
 
-/** Czy zdarzenie jest zablokowane do edycji/usuniecia dla $user (zatwierdzone, modul wlaczony, user nie jest adminem). */
+/** Czy zdarzenie jest zablokowane do edycji/usunięcia dla $user (zatwierdzone, moduł włączony, user nie jest adminem). */
 function event_is_locked($user, $event) {
     return is_approval_enabled() && $event['status'] === 'zatwierdzony' && $user['role'] !== 'admin';
 }
 
-/** Czy $user moze zatwierdzac urlopy w dziale $groupId. */
+/** Czy $user może zatwierdzać urlopy w dziale $groupId. */
 function can_approve_group($user, $groupId) {
     if (!$user) return false;
     if ($user['role'] === 'admin') return true;
@@ -52,11 +52,11 @@ function can_approve_group($user, $groupId) {
 }
 
 /**
- * Zbiory dzialow i uzytkownikow widocznych dla $user w kalendarzu:
+ * Zbiory działów i użytkowników widocznych dla $user w kalendarzu:
  * - admin: wszystko,
- * - kierownik: swoj dzial + wszystkie dzialy, ktorymi zarzadza,
- * - user: tylko swoj dzial.
- * Zwraca liste id dzialow.
+ * - kierownik: swoj dział + wszystkie działy, którymi zarządza,
+ * - user: tylko swoj dział.
+ * Zwraca liste id działów.
  */
 function visible_group_ids($user) {
     if ($user['role'] === 'admin') return null; // null = bez filtra (wszystkie)

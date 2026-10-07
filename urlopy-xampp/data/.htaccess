@@ -1,4 +1,4 @@
-# Blokuje bezposredni dostep przez przegladarke do pliku bazy SQLite.
+# Blokuje bezpośredni dostęp przez przeglądarkę do pliku bazy SQLite.
 <IfModule mod_authz_core.c>
     Require all denied
 </IfModule>
