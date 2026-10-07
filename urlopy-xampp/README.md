@@ -1,6 +1,6 @@
 # Planer urlopów (wersja pod XAMPP: PHP + SQLite)
 
-**Wersja: 1.8.2** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
+**Wersja: 1.8.3** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
 widoczny też w interfejsie obok nazwy aplikacji).
 
 To jest wersja aplikacji "Planer urlopów" przystosowana do uruchomienia na
@@ -79,9 +79,13 @@ poziomo, wypełniony danymi pracownika, działu, typu i zakresu dat urlopu —
 pole "Zastępstwo pełni" oraz podpisy zostają puste do ręcznego uzupełnienia.
 
 Przycisk jest widoczny tylko dla **bieżących i przyszłych** urlopów (nie dla
-już zakończonych) i tylko dla właściciela zdarzenia, kierownika danego
-działu albo administratora. Nazwę firmy i miejscowość widoczne na wydruku
-("Miejscowość, dnia ...") można ustawić w **Konfiguracja**.
+już zakończonych). Kierownik danego działu i administrator mogą drukować
+zawsze, niezależnie od statusu. Zwykły użytkownik może wydrukować wyłącznie
+**własny** wniosek i tylko **przed jego zatwierdzeniem** przez kierownika —
+po zatwierdzeniu (gdy moduł zatwierdzania jest włączony) przycisk znika,
+bo druk służy do uzyskania zatwierdzenia, które w systemie już się dokonało.
+Nazwę firmy i miejscowość widoczne na wydruku ("Miejscowość, dnia ...")
+można ustawić w **Konfiguracja**.
 
 ## Moduł zatwierdzania urlopów (opcjonalny)
 

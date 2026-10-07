@@ -58,16 +58,25 @@ function can_approve_group($user, $groupId) {
 
 /**
  * Czy $user może wydrukować wniosek urlopowy dla $event (wiersz z tabeli
- * events). Dostępne dla właściciela zdarzenia, admina lub kierownika danego
- * działu - i tylko dla zdarzeń bieżących/przyszłych (koniec nie wcześniej
+ * events) - i tylko dla zdarzeń bieżących/przyszłych (koniec nie wcześniej
  * niż dzisiaj), żeby nie drukować już zakończonych urlopów.
+ *
+ * Admin oraz kierownik danego działu mogą drukować zawsze (niezależnie od
+ * statusu). Zwykły użytkownik może wydrukować wyłącznie własny wniosek i
+ * tylko przed jego zatwierdzeniem przez kierownika - po zatwierdzeniu
+ * (gdy moduł zatwierdzania jest włączony) przycisk znika, bo druk służy
+ * do uzyskania podpisu/zatwierdzenia, które w systemie już się dokonało.
  */
 function can_print_event($user, $event) {
     if (!$user) return false;
-    $isOwner = $user['id'] === $event['user_id'];
+    if ($event['end_date'] < date('Y-m-d')) return false;
+
     $isAdmin = $user['role'] === 'admin';
-    if (!$isOwner && !$isAdmin && !can_approve_group($user, $event['group_id'])) return false;
-    return $event['end_date'] >= date('Y-m-d');
+    if ($isAdmin || can_approve_group($user, $event['group_id'])) return true;
+
+    if ($user['id'] !== $event['user_id']) return false;
+    if (is_approval_enabled() && $event['status'] === 'zatwierdzony') return false;
+    return true;
 }
 
 /**

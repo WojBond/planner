@@ -1,8 +1,17 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.8.2');
+define('APP_VERSION', '1.8.3');
 define('APP_CHANGELOG', [
+    '1.8.3' => [
+        'date' => '2026-10-07',
+        'changes' => [
+            'Doprecyzowano zasady drukowania wniosku urlopowego: zwykły',
+            'użytkownik może drukować wyłącznie własny wniosek i tylko przed',
+            'jego zatwierdzeniem przez kierownika. Kierownik danego działu i',
+            'administrator mogą drukować zawsze, niezależnie od statusu.',
+        ],
+    ],
     '1.8.2' => [
         'date' => '2026-10-07',
         'changes' => [
