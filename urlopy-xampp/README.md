@@ -1,6 +1,6 @@
 # Planer urlopów (wersja pod XAMPP: PHP + SQLite)
 
-**Wersja: 1.8.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
+**Wersja: 1.8.1** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
 widoczny też w interfejsie obok nazwy aplikacji).
 
 To jest wersja aplikacji "Planer urlopów" przystosowana do uruchomienia na
@@ -107,11 +107,12 @@ dodatkowego kroku, dokładnie jak przed wersja 1.4.0.
 ### Rola "kierownik"
 
 Kierownika tworzy/edytuje admin w **Użytkownicy** ([admin_users.php](admin_users.php)):
-wybierz rolę "Kierownik", a następnie w polu **"Działy zarządzane"**
-zaznacz jeden lub więcej działów (przytrzymaj Ctrl/Cmd, żeby zaznaczyć kilka).
-Kierownik ma też własny dział "macierzysty" (jak każdy użytkownik) — widzi w
-kalendarzu swoj dział oraz wszystkie działy, którymi zarządza, i może
-zatwierdzać urlopy wyłącznie w tych ostatnich.
+wybierz rolę "Kierownik", a opcjonalnie w polu **"Działy zarządzane"**
+zaznacz dodatkowe działy spoza swojego (przytrzymaj Ctrl/Cmd, żeby zaznaczyć
+kilka). Kierownik ma też własny dział "macierzysty" (jak każdy użytkownik) —
+widzi w kalendarzu swoj dział oraz wszystkie działy, którymi zarządza, i może
+zatwierdzać urlopy zarówno we własnym dziale, jak i w dodatkowych działach
+zarządzanych.
 
 ## Limity urlopowe
 

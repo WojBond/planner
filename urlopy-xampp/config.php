@@ -1,8 +1,16 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.8.0');
+define('APP_VERSION', '1.8.1');
 define('APP_CHANGELOG', [
+    '1.8.1' => [
+        'date' => '2026-10-07',
+        'changes' => [
+            'Poprawka: kierownik może teraz zatwierdzać urlopy również we',
+            'własnym dziale (do którego należy), nie tylko w dodatkowych',
+            'działach przypisanych mu w "Działy zarządzane".',
+        ],
+    ],
     '1.8.0' => [
         'date' => '2026-10-07',
         'changes' => [

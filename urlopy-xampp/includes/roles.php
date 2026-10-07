@@ -43,11 +43,16 @@ function event_is_locked($user, $event) {
     return is_approval_enabled() && $event['status'] === 'zatwierdzony' && $user['role'] !== 'admin';
 }
 
-/** Czy $user może zatwierdzać urlopy w dziale $groupId. */
+/**
+ * Czy $user może zatwierdzać urlopy w dziale $groupId - kierownik może to
+ * robić zarówno we własnym dziale (do którego należy), jak i w dodatkowych
+ * działach przypisanych mu w manager_groups.
+ */
 function can_approve_group($user, $groupId) {
     if (!$user) return false;
     if ($user['role'] === 'admin') return true;
     if ($user['role'] !== 'kierownik') return false;
+    if ($groupId && $user['group_id'] === $groupId) return true;
     return in_array($groupId, manager_group_ids($user), true);
 }
 

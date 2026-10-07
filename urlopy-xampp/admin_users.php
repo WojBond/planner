@@ -167,7 +167,7 @@ include __DIR__ . '/includes/header.php';
                   </select>
                 </div>
                 <div class="form-row managed-groups-row" style="<?= $u['role'] === 'kierownik' ? '' : 'display:none;' ?>">
-                  <label>Działy zarządzane (kierownik)</label>
+                  <label>Dodatkowe działy zarządzane (poza własnym)</label>
                   <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
                     <?php foreach ($groups as $g): ?>
                       <option value="<?= e($g['id']) ?>" <?= in_array($g['id'], $managedGroupIdsByUser[$u['id']] ?? [], true) ? 'selected' : '' ?>><?= e($g['name']) ?></option>
@@ -235,7 +235,7 @@ include __DIR__ . '/includes/header.php';
       </select>
     </div>
     <div class="form-row managed-groups-row" style="display:none;">
-      <label>Działy zarządzane (kierownik)</label>
+      <label>Dodatkowe działy zarządzane (poza własnym)</label>
       <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
         <?php foreach ($groups as $g): ?>
           <option value="<?= e($g['id']) ?>"><?= e($g['name']) ?></option>
