@@ -46,6 +46,8 @@ $inneLabel = $boxInne ? event_type_label($type) : '';
 $companyName = get_setting('print_company_name', '');
 $printCity = get_setting('print_city', '');
 $todayFormatted = date('d.m.Y');
+$logoFile = 'assets/img/logo-portos.png';
+$logoExists = is_file(__DIR__ . '/' . $logoFile);
 
 $pageTitle = 'Wydruk wniosku urlopowego';
 ?>
@@ -56,20 +58,21 @@ $pageTitle = 'Wydruk wniosku urlopowego';
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title><?= e($pageTitle) ?></title>
 <style>
-  @page { size: 148mm 105mm; margin: 6mm; }
+  @page { size: 210mm 148mm; margin: 10mm; }
   * { box-sizing: border-box; }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 9.5pt; color: #111; margin: 0; padding: 8mm; }
-  .row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5mm; gap: 6mm; }
-  .field { border-bottom: 1px dotted #333; min-width: 42mm; display: inline-block; padding: 0 2px 1px; }
-  .label-small { font-size: 7pt; color: #555; display: block; }
-  .company { font-weight: bold; font-size: 11pt; text-align: right; }
-  .intro { margin: 3mm 0 1.5mm; }
-  .types { margin: 1.5mm 0 3mm; }
-  .type-row { display: flex; align-items: center; gap: 4px; margin-bottom: 1.3mm; }
-  .box { display: inline-flex; align-items: center; justify-content: center; width: 3.2mm; height: 3.2mm; border: 1px solid #333; font-size: 8pt; line-height: 1; flex: none; }
-  .dates-row { display: flex; gap: 6mm; margin: 3mm 0; flex-wrap: wrap; }
-  .sig-row { display: flex; justify-content: space-between; margin-top: 5mm; gap: 6mm; }
-  .no-print { margin-bottom: 6px; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 12pt; color: #111; margin: 0; padding: 10mm; }
+  .row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 7mm; gap: 10mm; }
+  .field { border-bottom: 1px dotted #333; min-width: 55mm; display: inline-block; padding: 0 2px 2px; }
+  .label-small { font-size: 8.5pt; color: #555; display: block; }
+  .logo { height: 20mm; display: block; }
+  .company { font-weight: bold; font-size: 13pt; text-align: right; }
+  .intro { margin: 4mm 0 2mm; }
+  .types { margin: 2mm 0 4mm; }
+  .type-row { display: flex; align-items: center; gap: 6px; margin-bottom: 2mm; }
+  .box { display: inline-flex; align-items: center; justify-content: center; width: 4mm; height: 4mm; border: 1px solid #333; font-size: 10pt; line-height: 1; flex: none; }
+  .dates-row { display: flex; gap: 10mm; margin: 4mm 0; flex-wrap: wrap; }
+  .sig-row { display: flex; justify-content: space-between; margin-top: 7mm; gap: 10mm; }
+  .no-print { margin-bottom: 8px; }
   .no-print button { margin-right: 6px; }
   @media print { .no-print { display: none; } body { padding: 0; } }
 </style>
@@ -95,7 +98,11 @@ $pageTitle = 'Wydruk wniosku urlopowego';
     <span class="field"><?= e($group ? $group['name'] : '') ?></span>
     <span class="label-small">(Dział)</span>
   </div>
-  <?php if ($companyName !== ''): ?><div class="company"><?= e($companyName) ?></div><?php endif; ?>
+  <?php if ($logoExists): ?>
+    <img class="logo" src="<?= e($logoFile) ?>" alt="<?= e($companyName !== '' ? $companyName : 'Logo firmy') ?>" />
+  <?php elseif ($companyName !== ''): ?>
+    <div class="company"><?= e($companyName) ?></div>
+  <?php endif; ?>
 </div>
 
 <p class="intro">Proszę o udzielenie mi urlopu:</p>
@@ -122,8 +129,5 @@ $pageTitle = 'Wydruk wniosku urlopowego';
   <div>Podpis pracownika: <span class="field" style="min-width:35mm;"></span></div>
 </div>
 
-<script>
-window.addEventListener('load', () => { window.print(); });
-</script>
 </body>
 </html>

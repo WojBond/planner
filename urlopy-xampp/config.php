@@ -1,8 +1,20 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.8.3');
+define('APP_VERSION', '1.8.4');
 define('APP_CHANGELOG', [
+    '1.8.4' => [
+        'date' => '2026-10-08',
+        'changes' => [
+            'Wydruk wniosku urlopowego: zmieniono format z A6 na A5 poziomo',
+            '(więcej miejsca na czytelny układ) i dodano logo firmy',
+            '(assets/img/logo-portos.png) w prawym górnym rogu, tak jak na',
+            'oryginalnym papierowym wzorze. Usunięto automatyczne otwieranie',
+            'okna drukowania przy wejściu na stronę - teraz trzeba kliknąć',
+            'przycisk "Drukuj" na podglądzie (łatwiej najpierw sprawdzić',
+            'wygląd wydruku).',
+        ],
+    ],
     '1.8.3' => [
         'date' => '2026-10-07',
         'changes' => [
