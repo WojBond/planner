@@ -3,7 +3,7 @@
 -- Aplikacja tworzy i migruje baze/tabele automatycznie przy każdym uruchomieniu
 -- (patrz includes/db.php: ensure_schema() / run_migrations()) - ręcznego
 -- importu NIE trzeba robić. Zostawiony wyłącznie jako dokumentacja aktualnej
--- struktury (wersja schematu 2) / do ręcznego importu przez phpMyAdmin.
+-- struktury (wersja schematu 3) / do ręcznego importu przez phpMyAdmin.
 
 CREATE DATABASE IF NOT EXISTS urlopy CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE urlopy;
@@ -58,4 +58,14 @@ CREATE TABLE IF NOT EXISTS manager_groups (
 CREATE TABLE IF NOT EXISTS settings (
     setting_key VARCHAR(100) NOT NULL PRIMARY KEY,
     value TEXT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Typy urlopów definiowane przez administratora (Konfiguracja -> Typy
+-- urlopów). counts_toward_limit: czy dany typ obciąża roczny limit
+-- urlopowy użytkownika (patrz includes/leave.php).
+CREATE TABLE IF NOT EXISTS event_types (
+    type_key VARCHAR(50) NOT NULL PRIMARY KEY,
+    label VARCHAR(255) NOT NULL,
+    counts_toward_limit TINYINT(1) NOT NULL DEFAULT 0,
+    sort_order INT NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

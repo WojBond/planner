@@ -3,7 +3,8 @@ if (!defined('APP_BOOTSTRAPPED')) { http_response_code(403); exit; }
 
 /**
  * Podsumowanie limitu urlopowego użytkownika dla danego roku kalendarzowego.
- * Liczy dni z urlopu wypoczynkowego i na żądanie (LEAVE_LIMIT_TYPES),
+ * Liczy dni z typów urlopu oznaczonych w Konfiguracji jako "liczy się do
+ * limitu" (leave_limit_type_keys(), domyślnie wypoczynkowy i na żądanie),
  * niezależnie od statusu zdarzenia (wprowadzony/zatwierdzony) - to po prostu
  * suma dni WPROWADZONYCH do kalendarza, obcinana do granic danego roku.
  */
@@ -13,20 +14,24 @@ function compute_leave_summary($user, $year = null) {
     $yearEnd = sprintf('%04d-12-31', $year);
 
     $pdo = get_pdo();
-    $placeholders = implode(',', array_fill(0, count(LEAVE_LIMIT_TYPES), '?'));
-    $stmt = $pdo->prepare(
-        "SELECT start_date, end_date FROM events
-         WHERE user_id = ? AND type IN ($placeholders)
-           AND start_date <= ? AND end_date >= ?"
-    );
-    $stmt->execute(array_merge([$user['id']], LEAVE_LIMIT_TYPES, [$yearEnd, $yearStart]));
-
+    $limitTypes = leave_limit_type_keys();
     $used = 0;
-    foreach ($stmt->fetchAll() as $row) {
-        $s = max($row['start_date'], $yearStart);
-        $e = min($row['end_date'], $yearEnd);
-        $days = (strtotime($e) - strtotime($s)) / 86400 + 1;
-        if ($days > 0) $used += $days;
+
+    if (!empty($limitTypes)) {
+        $placeholders = implode(',', array_fill(0, count($limitTypes), '?'));
+        $stmt = $pdo->prepare(
+            "SELECT start_date, end_date FROM events
+             WHERE user_id = ? AND type IN ($placeholders)
+               AND start_date <= ? AND end_date >= ?"
+        );
+        $stmt->execute(array_merge([$user['id']], $limitTypes, [$yearEnd, $yearStart]));
+
+        foreach ($stmt->fetchAll() as $row) {
+            $s = max($row['start_date'], $yearStart);
+            $e = min($row['end_date'], $yearEnd);
+            $days = (strtotime($e) - strtotime($s)) / 86400 + 1;
+            if ($days > 0) $used += $days;
+        }
     }
 
     $limitCurrent = (float) $user['leave_current_days'];

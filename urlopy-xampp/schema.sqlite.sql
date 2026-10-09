@@ -2,7 +2,7 @@
 -- Uwaga: aplikacja tworzy i migruje te tabele automatycznie przy każdym
 -- uruchomieniu (patrz includes/db.php: ensure_schema() / run_migrations()),
 -- więc ręcznego importu tego pliku NIE trzeba robić. Zostawiony wyłącznie
--- jako dokumentacja aktualnej struktury (wersja schematu 2).
+-- jako dokumentacja aktualnej struktury (wersja schematu 3).
 
 CREATE TABLE IF NOT EXISTS groups_ (
     id TEXT PRIMARY KEY,
@@ -54,4 +54,14 @@ CREATE TABLE IF NOT EXISTS manager_groups (
 CREATE TABLE IF NOT EXISTS settings (
     setting_key TEXT PRIMARY KEY,
     value TEXT
+);
+
+-- Typy urlopów definiowane przez administratora (Konfiguracja -> Typy
+-- urlopów). counts_toward_limit: czy dany typ obciąża roczny limit
+-- urlopowy użytkownika (patrz includes/leave.php).
+CREATE TABLE IF NOT EXISTS event_types (
+    type_key TEXT PRIMARY KEY,
+    label TEXT NOT NULL,
+    counts_toward_limit INTEGER NOT NULL DEFAULT 0,
+    sort_order INTEGER NOT NULL DEFAULT 0
 );
