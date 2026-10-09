@@ -1,6 +1,6 @@
 # Planer urlopów (wersja pod XAMPP: PHP + SQLite)
 
-**Wersja: 1.8.5** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
+**Wersja: 1.9.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
 widoczny też w interfejsie obok nazwy aplikacji).
 
 To jest wersja aplikacji "Planer urlopów" przystosowana do uruchomienia na
@@ -254,7 +254,16 @@ aplikacji".
 
 ## Typy zdarzeń
 
-Urlop wypoczynkowy, Urlop na żądanie, Urlop z nadgodzin, Wizyta lekarska, Inne.
+Domyślnie: Urlop wypoczynkowy, Urlop na żądanie, Urlop z nadgodzin, Wizyta
+lekarska, Inne. Administrator może dodawać własne typy, zmieniać ich nazwy
+oraz usuwać nieużywane w **Konfiguracja -> Typy urlopów**
+([admin_event_types.php](admin_event_types.php)) - dla każdego typu można
+ustawić, czy jego dni liczą się do rocznego limitu urlopowego użytkownika.
+Typy "Urlop wypoczynkowy" i "Urlop na żądanie" można dowolnie przemianować,
+ale nie można ich usunąć - są strukturalnie powiązane z wydrukiem wniosku
+urlopowego (checkboxy "Wypoczynkowego" / "Na żądanie" na formularzu A5).
+Typ używany w istniejących zdarzeniach też nie może zostać usunięty, dopóki
+żadne zdarzenie go nie używa.
 
 ## Struktura projektu
 
@@ -272,7 +281,9 @@ urlopy-xampp/
   events_create.php, events_update.php, events_delete.php, events_approve.php
   profile.php, profile_color.php, profile_password.php
   admin_users.php, admin_groups.php, admin_mail.php, admin_mail_test.php
+  admin_event_types.php   - Konfiguracja: typy urlopów definiowane przez admina
   admin_settings.php      - Konfiguracja: włącznik modułu zatwierdzania urlopów
+  print_leave.php         - wydruk wniosku urlopowego (A5 na kartce A4)
   includes/               - połączenie z baza (wielosilnikowe + migracje),
                              autoryzacja, role/uprawnienia, limity urlopowe,
                              adres aplikacji do linków w mailach, layout

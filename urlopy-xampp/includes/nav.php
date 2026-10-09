@@ -10,6 +10,7 @@ $navUser = current_user();
     <?php if ($navUser && $navUser['role'] === 'admin'): ?>
       <a href="admin_users.php">Użytkownicy</a>
       <a href="admin_groups.php">Działy</a>
+      <a href="admin_event_types.php">Typy urlopów</a>
       <a href="admin_mail.php">Poczta</a>
       <a href="admin_settings.php">Konfiguracja</a>
     <?php endif; ?>

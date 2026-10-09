@@ -1,8 +1,22 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.8.5');
+define('APP_VERSION', '1.9.0');
 define('APP_CHANGELOG', [
+    '1.9.0' => [
+        'date' => '2026-10-09',
+        'changes' => [
+            'Nowa strona "Typy urlopów" (Konfiguracja -> Typy urlopów, tylko',
+            'admin): typy zdarzeń (wcześniej zaszyte na stałe w kodzie) można',
+            'teraz dowolnie dodawać, przemianowywać i usuwać, z osobnym',
+            'przełącznikiem "liczy się do rocznego limitu urlopowego" dla',
+            'każdego typu. Nie można usunąć typu używanego w istniejących',
+            'zdarzeniach, ani typów "Wypoczynkowy"/"Na żądanie" (wymaganych',
+            'przez wydruk wniosku).',
+            'Przyciski w górnym menu i przycisk "+ Dodaj / Edytuj" pod listą',
+            'kalendarzy mają teraz widoczną ramkę.',
+        ],
+    ],
     '1.8.5' => [
         'date' => '2026-10-09',
         'changes' => [

@@ -5,7 +5,7 @@
 -- Aplikacja tworzy i migruje tabele automatycznie przy każdym uruchomieniu
 -- (patrz includes/db.php: ensure_schema() / run_migrations()) - ręcznego
 -- importu NIE trzeba robić, o ile baza 'urlopy' już istnieje na serwerze.
--- Zostawiony wyłącznie jako dokumentacja aktualnej struktury (wersja schematu 2).
+-- Zostawiony wyłącznie jako dokumentacja aktualnej struktury (wersja schematu 3).
 
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'groups_')
 CREATE TABLE groups_ (
@@ -62,4 +62,15 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'settings')
 CREATE TABLE settings (
     setting_key NVARCHAR(100) NOT NULL PRIMARY KEY,
     value NVARCHAR(MAX)
+);
+
+-- Typy urlopów definiowane przez administratora (Konfiguracja -> Typy
+-- urlopów). counts_toward_limit: czy dany typ obciąża roczny limit
+-- urlopowy użytkownika (patrz includes/leave.php).
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'event_types')
+CREATE TABLE event_types (
+    type_key NVARCHAR(50) NOT NULL PRIMARY KEY,
+    label NVARCHAR(255) NOT NULL,
+    counts_toward_limit BIT NOT NULL DEFAULT 0,
+    sort_order INT NOT NULL DEFAULT 0
 );

@@ -5,7 +5,17 @@ require_once __DIR__ . '/uuid.php';
 
 // Numer wersji schematu. Podnies przy każdej zmianie struktury i dopisz
 // odpowiedni blok w run_migrations().
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
+
+// Domyślne typy urlopów zasiewane przy świeżej instalacji i przy migracji
+// z wersji schematu bez tabeli event_types (patrz migrate_to_v3()).
+const DEFAULT_EVENT_TYPES = [
+    ['wypoczynkowy', 'Urlop wypoczynkowy', 1, 1],
+    ['na_zadanie', 'Urlop na żądanie', 1, 2],
+    ['z_nadgodzin', 'Urlop z nadgodzin', 0, 3],
+    ['lekarz', 'Wizyta lekarska', 0, 4],
+    ['inne', 'Inne', 0, 5],
+];
 
 function get_pdo() {
     static $pdo = null;
@@ -136,6 +146,13 @@ function ensure_schema(PDO $pdo, string $driver) {
             setting_key TEXT PRIMARY KEY,
             value TEXT
         )");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS event_types (
+            type_key TEXT PRIMARY KEY,
+            label TEXT NOT NULL,
+            counts_toward_limit INTEGER NOT NULL DEFAULT 0,
+            sort_order INTEGER NOT NULL DEFAULT 0
+        )");
     } elseif ($driver === 'mysql') {
         $pdo->exec("CREATE TABLE IF NOT EXISTS groups_ (
             id CHAR(36) NOT NULL PRIMARY KEY,
@@ -183,6 +200,13 @@ function ensure_schema(PDO $pdo, string $driver) {
         $pdo->exec("CREATE TABLE IF NOT EXISTS settings (
             setting_key VARCHAR(100) NOT NULL PRIMARY KEY,
             value TEXT
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS event_types (
+            type_key VARCHAR(50) NOT NULL PRIMARY KEY,
+            label VARCHAR(255) NOT NULL,
+            counts_toward_limit TINYINT(1) NOT NULL DEFAULT 0,
+            sort_order INT NOT NULL DEFAULT 0
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     } elseif ($driver === 'sqlsrv') {
         $pdo->exec("IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'groups_')
@@ -237,6 +261,14 @@ function ensure_schema(PDO $pdo, string $driver) {
             setting_key NVARCHAR(100) NOT NULL PRIMARY KEY,
             value NVARCHAR(MAX)
         )");
+
+        $pdo->exec("IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'event_types')
+        CREATE TABLE event_types (
+            type_key NVARCHAR(50) NOT NULL PRIMARY KEY,
+            label NVARCHAR(255) NOT NULL,
+            counts_toward_limit BIT NOT NULL DEFAULT 0,
+            sort_order INT NOT NULL DEFAULT 0
+        )");
     } else {
         throw new RuntimeException("Nieznany DB_DRIVER: $driver");
     }
@@ -252,6 +284,14 @@ function ensure_schema(PDO $pdo, string $driver) {
         $stmt = $pdo->prepare('INSERT INTO users (id, name, email, password_hash, role, group_id, color, must_change_password) VALUES (?, ?, ?, ?, ?, ?, ?, 1)');
         $stmt->execute([$adminId, 'Administrator', DEFAULT_ADMIN_EMAIL, $hash, 'admin', $groupId, '#2563eb']);
     }
+
+    $typeCount = (int) $pdo->query('SELECT COUNT(*) FROM event_types')->fetchColumn();
+    if ($typeCount === 0) {
+        $stmt = $pdo->prepare('INSERT INTO event_types (type_key, label, counts_toward_limit, sort_order) VALUES (?, ?, ?, ?)');
+        foreach (DEFAULT_EVENT_TYPES as $row) {
+            $stmt->execute($row);
+        }
+    }
 }
 
 /**
@@ -265,6 +305,9 @@ function run_migrations(PDO $pdo, string $driver) {
 
     if ($current < 2) {
         migrate_to_v2($pdo, $driver);
+    }
+    if ($current < 3) {
+        migrate_to_v3($pdo, $driver);
     }
 
     set_schema_version($pdo, $driver, SCHEMA_VERSION);
@@ -400,5 +443,45 @@ function migrate_to_v2(PDO $pdo, string $driver) {
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
             FOREIGN KEY (group_id) REFERENCES groups_(id) ON DELETE CASCADE
         )");
+    }
+}
+
+/**
+ * v2 -> v3: tabela event_types, żeby administrator mógł sam definiować
+ * typy urlopów (dotąd zaszyte na stałe w includes/event_types.php).
+ * Zasiewa domyślne typy tylko, jeśli tabela jest pusta (bezpieczne do
+ * wielokrotnego uruchomienia).
+ */
+function migrate_to_v3(PDO $pdo, string $driver) {
+    if ($driver === 'sqlite') {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS event_types (
+            type_key TEXT PRIMARY KEY,
+            label TEXT NOT NULL,
+            counts_toward_limit INTEGER NOT NULL DEFAULT 0,
+            sort_order INTEGER NOT NULL DEFAULT 0
+        )");
+    } elseif ($driver === 'mysql') {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS event_types (
+            type_key VARCHAR(50) NOT NULL PRIMARY KEY,
+            label VARCHAR(255) NOT NULL,
+            counts_toward_limit TINYINT(1) NOT NULL DEFAULT 0,
+            sort_order INT NOT NULL DEFAULT 0
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    } elseif ($driver === 'sqlsrv') {
+        $pdo->exec("IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'event_types')
+        CREATE TABLE event_types (
+            type_key NVARCHAR(50) NOT NULL PRIMARY KEY,
+            label NVARCHAR(255) NOT NULL,
+            counts_toward_limit BIT NOT NULL DEFAULT 0,
+            sort_order INT NOT NULL DEFAULT 0
+        )");
+    }
+
+    $typeCount = (int) $pdo->query('SELECT COUNT(*) FROM event_types')->fetchColumn();
+    if ($typeCount === 0) {
+        $stmt = $pdo->prepare('INSERT INTO event_types (type_key, label, counts_toward_limit, sort_order) VALUES (?, ?, ?, ?)');
+        foreach (DEFAULT_EVENT_TYPES as $row) {
+            $stmt->execute($row);
+        }
     }
 }

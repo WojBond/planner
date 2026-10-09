@@ -33,7 +33,13 @@ a:hover { text-decoration: underline; }
 
 .topbar .brand { font-weight: 700; font-size: 1.1rem; }
 
-.topbar nav { display: flex; gap: 18px; align-items: center; }
+.topbar nav { display: flex; gap: 10px; align-items: center; }
+.topbar nav a {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+}
+.topbar nav a:hover { background: #eef1f5; text-decoration: none; }
 
 .topbar .user-badge {
   display: flex;
@@ -194,7 +200,11 @@ table th, table td {
   display: inline-block;
   margin-top: 12px;
   font-size: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
 }
+.sidebar-link:hover { background: #eef1f5; text-decoration: none; }
 
 .cal-main { flex: 1; min-width: 0; }
 

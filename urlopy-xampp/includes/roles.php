@@ -12,10 +12,6 @@ const EVENT_STATUS_LABELS = [
     'zatwierdzony' => 'Zatwierdzony',
 ];
 
-// Typy zdarzeń, które obciążają roczny limit urlopowy (urlop wypoczynkowy
-// i urlop na żądanie są czerpane z tej samej puli dni w polskim prawie pracy).
-const LEAVE_LIMIT_TYPES = ['wypoczynkowy', 'na_zadanie'];
-
 function role_label($role) {
     return ROLE_LABELS[$role] ?? $role;
 }
