@@ -1,6 +1,6 @@
 # Planer urlopów (wersja pod XAMPP: PHP + SQLite)
 
-**Wersja: 1.8.4** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
+**Wersja: 1.8.5** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
 widoczny też w interfejsie obok nazwy aplikacji).
 
 To jest wersja aplikacji "Planer urlopów" przystosowana do uruchomienia na
@@ -76,8 +76,12 @@ Przy zdarzeniu (popover po kliknięciu paska w widoku Rok, albo formularz
 edycji we wszystkich widokach) dostępny jest przycisk **"Drukuj wniosek"**.
 Otwiera on w nowej karcie gotowy do wydruku wniosek urlopowy w formacie A5
 poziomo (z logo firmy, jeśli plik `assets/img/logo-portos.png` jest obecny),
-wypełniony danymi pracownika, działu, typu i zakresu dat urlopu — pole
-"Zastępstwo pełni" oraz podpisy zostają puste do ręcznego uzupełnienia.
+wypełniony danymi pracownika, działu, typu i zakresu dat urlopu (wartości
+wyśrodkowane w polach) — pole "Zastępstwo pełni" oraz podpisy zostają puste
+do ręcznego uzupełnienia. Drukuje się na zwykłej kartce **A4 w pionie**,
+z treścią (w rozmiarze A5 poziomo) umieszczoną u góry strony — dolna połowa
+kartki zostaje pusta, więc nie trzeba ładować do drukarki osobnego papieru
+A5.
 
 Przycisk jest widoczny tylko dla **bieżących i przyszłych** urlopów (nie dla
 już zakończonych). Kierownik danego działu i administrator mogą drukować

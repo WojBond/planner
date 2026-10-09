@@ -1,8 +1,19 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.8.4');
+define('APP_VERSION', '1.8.5');
 define('APP_CHANGELOG', [
+    '1.8.5' => [
+        'date' => '2026-10-09',
+        'changes' => [
+            'Wydruk wniosku urlopowego: wartości pobrane z terminarza (imię i',
+            'nazwisko, dział, daty, liczba dni) są teraz wyśrodkowane w polach.',
+            'Drukuje się od teraz na zwykłej kartce A4 w pionie - treść',
+            '(w rozmiarze A5 poziomo) jest umieszczona u góry strony, dolna',
+            'połowa kartki zostaje pusta. Nie trzeba już ustawiać w drukarce',
+            'papieru A5.',
+        ],
+    ],
     '1.8.4' => [
         'date' => '2026-10-08',
         'changes' => [
