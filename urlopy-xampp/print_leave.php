@@ -58,12 +58,17 @@ $pageTitle = 'Wydruk wniosku urlopowego';
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title><?= e($pageTitle) ?></title>
 <style>
-  @page { size: 210mm 148mm; margin: 10mm; }
+  /* Kartka A4 pionowo w drukarce - tresc (w rozmiarze A5 poziomo) drukowana
+     od gornej krawedzi, dolna polowa kartki zostaje pusta. */
+  @page { size: 210mm 297mm; margin: 0; }
   * { box-sizing: border-box; }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 12pt; color: #111; margin: 0; padding: 10mm; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 12pt; color: #111; margin: 0; }
+  .no-print { margin: 10mm 10mm 0; }
+  .no-print button { margin-right: 6px; }
+  .sheet { width: 210mm; height: 148mm; padding: 10mm; }
   .row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 7mm; gap: 10mm; }
-  .field { border-bottom: 1px dotted #333; min-width: 55mm; display: inline-block; padding: 0 2px 2px; }
-  .label-small { font-size: 8.5pt; color: #555; display: block; }
+  .field { border-bottom: 1px dotted #333; min-width: 55mm; display: inline-block; padding: 0 2px 2px; text-align: center; }
+  .label-small { font-size: 8.5pt; color: #555; display: block; text-align: left; }
   .logo { height: 20mm; display: block; }
   .company { font-weight: bold; font-size: 13pt; text-align: right; }
   .intro { margin: 4mm 0 2mm; }
@@ -72,9 +77,7 @@ $pageTitle = 'Wydruk wniosku urlopowego';
   .box { display: inline-flex; align-items: center; justify-content: center; width: 4mm; height: 4mm; border: 1px solid #333; font-size: 10pt; line-height: 1; flex: none; }
   .dates-row { display: flex; gap: 10mm; margin: 4mm 0; flex-wrap: wrap; }
   .sig-row { display: flex; justify-content: space-between; margin-top: 7mm; gap: 10mm; }
-  .no-print { margin-bottom: 8px; }
-  .no-print button { margin-right: 6px; }
-  @media print { .no-print { display: none; } body { padding: 0; } }
+  @media print { .no-print { display: none; } }
 </style>
 </head>
 <body>
@@ -83,6 +86,7 @@ $pageTitle = 'Wydruk wniosku urlopowego';
   <button type="button" onclick="window.close()">Zamknij</button>
 </div>
 
+<div class="sheet">
 <div class="row">
   <div>
     <span class="field"><?= e($event['user_name'] ?? '') ?></span>
@@ -127,6 +131,7 @@ $pageTitle = 'Wydruk wniosku urlopowego';
 <div class="sig-row">
   <div>Akceptuję: <span class="field" style="min-width:35mm;"></span></div>
   <div>Podpis pracownika: <span class="field" style="min-width:35mm;"></span></div>
+</div>
 </div>
 
 </body>
