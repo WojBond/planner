@@ -143,15 +143,15 @@ include __DIR__ . '/includes/header.php';
         </tr>
         <tr class="user-detail-row" id="user-detail-<?= e($u['id']) ?>" style="display:none;">
           <td colspan="8">
-            <div class="form-horizontal">
-              <form method="POST" action="admin_users.php" class="user-edit-form" style="display:contents;">
-                <input type="hidden" name="form_action" value="update" />
-                <input type="hidden" name="id" value="<?= e($u['id']) ?>" />
-                <div class="form-row">
+            <form id="edit-form-<?= e($u['id']) ?>" method="POST" action="admin_users.php" class="user-edit-form">
+              <input type="hidden" name="form_action" value="update" />
+              <input type="hidden" name="id" value="<?= e($u['id']) ?>" />
+              <div class="form-horizontal">
+                <div class="form-row field-wide">
                   <label>Imie i nazwisko</label>
                   <input type="text" name="name" value="<?= e($u['name']) ?>" />
                 </div>
-                <div class="form-row">
+                <div class="form-row field-medium">
                   <label>Dział (własny)</label>
                   <select name="groupId">
                     <?php foreach ($groups as $g): ?>
@@ -159,7 +159,7 @@ include __DIR__ . '/includes/header.php';
                     <?php endforeach; ?>
                   </select>
                 </div>
-                <div class="form-row">
+                <div class="form-row field-narrow">
                   <label>Rola</label>
                   <select name="role" class="role-select">
                     <?php foreach (ROLE_LABELS as $value => $label): ?>
@@ -167,7 +167,7 @@ include __DIR__ . '/includes/header.php';
                     <?php endforeach; ?>
                   </select>
                 </div>
-                <div class="form-row managed-groups-row" style="<?= $u['role'] === 'kierownik' ? '' : 'display:none;' ?>">
+                <div class="form-row managed-groups-row field-wide" style="<?= $u['role'] === 'kierownik' ? '' : 'display:none;' ?>">
                   <label>Dodatkowe działy zarządzane (poza własnym)</label>
                   <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
                     <?php foreach ($groups as $g): ?>
@@ -175,27 +175,29 @@ include __DIR__ . '/includes/header.php';
                     <?php endforeach; ?>
                   </select>
                 </div>
-                <div class="form-row">
+                <div class="form-row field-tiny">
                   <label>Limit bieżący (dni)</label>
                   <input type="text" name="leave_current_days" value="<?= e(format_days($u['leave_current_days'])) ?>" />
                 </div>
-                <div class="form-row">
+                <div class="form-row field-tiny">
                   <label>Limit zaległy (dni)</label>
                   <input type="text" name="leave_backlog_days" value="<?= e(format_days($u['leave_backlog_days'])) ?>" />
                 </div>
-                <div class="form-row">
+                <div class="form-row field-medium">
                   <label>Nowe hasło (opcjonalnie)</label>
                   <input type="password" name="password" placeholder="pozostaw puste, aby nie zmieniać" />
                 </div>
-                <button class="btn" type="submit">Zapisz</button>
-              </form>
+              </div>
+            </form>
+            <form id="delete-form-<?= e($u['id']) ?>" method="POST" action="admin_users.php" style="display:none;"
+                  onsubmit="return confirm('Usunąć użytkownika <?= e($u['name']) ?>?');">
+              <input type="hidden" name="form_action" value="delete" />
+              <input type="hidden" name="id" value="<?= e($u['id']) ?>" />
+            </form>
+            <div class="form-actions-row">
+              <button class="btn" type="submit" form="edit-form-<?= e($u['id']) ?>">Zapisz</button>
               <button type="button" class="btn secondary btn-cancel-edit">Anuluj</button>
-              <form method="POST" action="admin_users.php" style="display:contents;"
-                    onsubmit="return confirm('Usunąć użytkownika <?= e($u['name']) ?>?');">
-                <input type="hidden" name="form_action" value="delete" />
-                <input type="hidden" name="id" value="<?= e($u['id']) ?>" />
-                <button class="btn danger" type="submit">Usuń</button>
-              </form>
+              <button class="btn danger" type="submit" form="delete-form-<?= e($u['id']) ?>">Usuń</button>
             </div>
           </td>
         </tr>
@@ -206,57 +208,61 @@ include __DIR__ . '/includes/header.php';
 
 <div class="card">
   <h2>Dodaj użytkownika</h2>
-  <form method="POST" action="admin_users.php" class="user-edit-form form-horizontal">
+  <form method="POST" action="admin_users.php" class="user-edit-form">
     <input type="hidden" name="form_action" value="create" />
-    <div class="form-row">
-      <label for="name">Imie i nazwisko</label>
-      <input type="text" id="name" name="name" required />
+    <div class="form-horizontal">
+      <div class="form-row field-wide">
+        <label for="name">Imie i nazwisko</label>
+        <input type="text" id="name" name="name" required />
+      </div>
+      <div class="form-row field-wide">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+      <div class="form-row field-medium">
+        <label for="password">Hasło startowe</label>
+        <input type="password" id="password" name="password" required minlength="6" />
+      </div>
+      <div class="form-row field-medium">
+        <label for="groupId">Dział (własny)</label>
+        <select id="groupId" name="groupId" required>
+          <?php foreach ($groups as $g): ?>
+            <option value="<?= e($g['id']) ?>"><?= e($g['name']) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="form-row field-narrow">
+        <label for="role">Rola</label>
+        <select id="role" name="role" class="role-select">
+          <?php foreach (ROLE_LABELS as $value => $label): ?>
+            <option value="<?= e($value) ?>"><?= e($label) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="form-row managed-groups-row field-wide" style="display:none;">
+        <label>Dodatkowe działy zarządzane (poza własnym)</label>
+        <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
+          <?php foreach ($groups as $g): ?>
+            <option value="<?= e($g['id']) ?>"><?= e($g['name']) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="form-row field-tiny">
+        <label for="leave_current_days">Limit bieżący (dni)</label>
+        <input type="text" id="leave_current_days" name="leave_current_days" value="0" />
+      </div>
+      <div class="form-row field-tiny">
+        <label for="leave_backlog_days">Limit zaległy (dni)</label>
+        <input type="text" id="leave_backlog_days" name="leave_backlog_days" value="0" />
+      </div>
+      <div class="form-row field-tiny">
+        <label for="color">Kolor paska</label>
+        <input type="color" id="color" name="color" value="#2563eb" />
+      </div>
     </div>
-    <div class="form-row">
-      <label for="email">E-mail</label>
-      <input type="email" id="email" name="email" required />
+    <div class="form-actions-row">
+      <button class="btn" type="submit">Dodaj użytkownika</button>
     </div>
-    <div class="form-row">
-      <label for="password">Hasło startowe</label>
-      <input type="password" id="password" name="password" required minlength="6" />
-    </div>
-    <div class="form-row">
-      <label for="groupId">Dział (własny)</label>
-      <select id="groupId" name="groupId" required>
-        <?php foreach ($groups as $g): ?>
-          <option value="<?= e($g['id']) ?>"><?= e($g['name']) ?></option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-    <div class="form-row">
-      <label for="role">Rola</label>
-      <select id="role" name="role" class="role-select">
-        <?php foreach (ROLE_LABELS as $value => $label): ?>
-          <option value="<?= e($value) ?>"><?= e($label) ?></option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-    <div class="form-row managed-groups-row" style="display:none;">
-      <label>Dodatkowe działy zarządzane (poza własnym)</label>
-      <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
-        <?php foreach ($groups as $g): ?>
-          <option value="<?= e($g['id']) ?>"><?= e($g['name']) ?></option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-    <div class="form-row">
-      <label for="leave_current_days">Limit bieżący (dni)</label>
-      <input type="text" id="leave_current_days" name="leave_current_days" value="0" />
-    </div>
-    <div class="form-row">
-      <label for="leave_backlog_days">Limit zaległy (dni)</label>
-      <input type="text" id="leave_backlog_days" name="leave_backlog_days" value="0" />
-    </div>
-    <div class="form-row">
-      <label for="color">Kolor paska</label>
-      <input type="color" id="color" name="color" value="#2563eb" />
-    </div>
-    <button class="btn" type="submit">Dodaj użytkownika</button>
   </form>
 </div>
 

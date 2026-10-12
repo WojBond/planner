@@ -1,8 +1,19 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.9.3');
+define('APP_VERSION', '1.9.4');
 define('APP_CHANGELOG', [
+    '1.9.4' => [
+        'date' => '2026-10-12',
+        'changes' => [
+            'Użytkownicy: przyciski "Zapisz"/"Anuluj"/"Usuń" przeniesione na',
+            'własny wspólny rząd pod polami edycyjnymi (zamiast mieszania się',
+            'z polami w tym samym rzędzie). Pola edycyjne (i pola formularza',
+            'dodawania użytkownika) rozmieszczone proporcjonalnie do ich',
+            'zawartości - np. "Imie i nazwisko" szersze, "Limit" i "Kolor',
+            'paska" węższe.',
+        ],
+    ],
     '1.9.3' => [
         'date' => '2026-10-12',
         'changes' => [
