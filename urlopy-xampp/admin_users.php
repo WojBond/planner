@@ -189,6 +189,7 @@ include __DIR__ . '/includes/header.php';
                 </div>
                 <button class="btn" type="submit">Zapisz</button>
               </form>
+              <button type="button" class="btn secondary btn-cancel-edit">Anuluj</button>
               <form method="POST" action="admin_users.php" style="display:contents;"
                     onsubmit="return confirm('Usunąć użytkownika <?= e($u['name']) ?>?');">
                 <input type="hidden" name="form_action" value="delete" />
@@ -205,7 +206,7 @@ include __DIR__ . '/includes/header.php';
 
 <div class="card">
   <h2>Dodaj użytkownika</h2>
-  <form method="POST" action="admin_users.php" class="user-edit-form">
+  <form method="POST" action="admin_users.php" class="user-edit-form form-horizontal">
     <input type="hidden" name="form_action" value="create" />
     <div class="form-row">
       <label for="name">Imie i nazwisko</label>
@@ -280,6 +281,18 @@ document.querySelectorAll('.user-row').forEach(function (row) {
       detail.style.display = '';
       row.classList.add('active');
     }
+  });
+});
+
+// "Anuluj" przy edycji: cofa niezapisane zmiany w polach i chowa wiersz z powrotem.
+document.querySelectorAll('.btn-cancel-edit').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var detail = btn.closest('.user-detail-row');
+    var form = detail.querySelector('.user-edit-form');
+    if (form) form.reset();
+    detail.style.display = 'none';
+    var row = document.querySelector('.user-row[data-target="' + detail.id + '"]');
+    if (row) row.classList.remove('active');
   });
 });
 </script>
