@@ -143,60 +143,59 @@ include __DIR__ . '/includes/header.php';
         </tr>
         <tr class="user-detail-row" id="user-detail-<?= e($u['id']) ?>" style="display:none;">
           <td colspan="8">
-            <div class="user-detail-actions">
-              <button type="button" class="btn secondary btn-edit-toggle">Edytuj</button>
-              <form method="POST" action="admin_users.php" style="margin:0;"
+            <div class="form-horizontal">
+              <form method="POST" action="admin_users.php" class="user-edit-form" style="display:contents;">
+                <input type="hidden" name="form_action" value="update" />
+                <input type="hidden" name="id" value="<?= e($u['id']) ?>" />
+                <div class="form-row">
+                  <label>Imie i nazwisko</label>
+                  <input type="text" name="name" value="<?= e($u['name']) ?>" />
+                </div>
+                <div class="form-row">
+                  <label>Dział (własny)</label>
+                  <select name="groupId">
+                    <?php foreach ($groups as $g): ?>
+                      <option value="<?= e($g['id']) ?>" <?= $g['id'] === $u['group_id'] ? 'selected' : '' ?>><?= e($g['name']) ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label>Rola</label>
+                  <select name="role" class="role-select">
+                    <?php foreach (ROLE_LABELS as $value => $label): ?>
+                      <option value="<?= e($value) ?>" <?= $u['role'] === $value ? 'selected' : '' ?>><?= e($label) ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <div class="form-row managed-groups-row" style="<?= $u['role'] === 'kierownik' ? '' : 'display:none;' ?>">
+                  <label>Dodatkowe działy zarządzane (poza własnym)</label>
+                  <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
+                    <?php foreach ($groups as $g): ?>
+                      <option value="<?= e($g['id']) ?>" <?= in_array($g['id'], $managedGroupIdsByUser[$u['id']] ?? [], true) ? 'selected' : '' ?>><?= e($g['name']) ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label>Limit bieżący (dni)</label>
+                  <input type="text" name="leave_current_days" value="<?= e(format_days($u['leave_current_days'])) ?>" />
+                </div>
+                <div class="form-row">
+                  <label>Limit zaległy (dni)</label>
+                  <input type="text" name="leave_backlog_days" value="<?= e(format_days($u['leave_backlog_days'])) ?>" />
+                </div>
+                <div class="form-row">
+                  <label>Nowe hasło (opcjonalnie)</label>
+                  <input type="password" name="password" placeholder="pozostaw puste, aby nie zmieniać" />
+                </div>
+                <button class="btn" type="submit">Zapisz</button>
+              </form>
+              <form method="POST" action="admin_users.php" style="display:contents;"
                     onsubmit="return confirm('Usunąć użytkownika <?= e($u['name']) ?>?');">
                 <input type="hidden" name="form_action" value="delete" />
                 <input type="hidden" name="id" value="<?= e($u['id']) ?>" />
                 <button class="btn danger" type="submit">Usuń</button>
               </form>
             </div>
-            <form method="POST" action="admin_users.php" class="user-edit-form form-horizontal" style="display:none; margin-top:14px;">
-              <input type="hidden" name="form_action" value="update" />
-              <input type="hidden" name="id" value="<?= e($u['id']) ?>" />
-              <div class="form-row">
-                <label>Imie i nazwisko</label>
-                <input type="text" name="name" value="<?= e($u['name']) ?>" />
-              </div>
-              <div class="form-row">
-                <label>Dział (własny)</label>
-                <select name="groupId">
-                  <?php foreach ($groups as $g): ?>
-                    <option value="<?= e($g['id']) ?>" <?= $g['id'] === $u['group_id'] ? 'selected' : '' ?>><?= e($g['name']) ?></option>
-                  <?php endforeach; ?>
-                </select>
-              </div>
-              <div class="form-row">
-                <label>Rola</label>
-                <select name="role" class="role-select">
-                  <?php foreach (ROLE_LABELS as $value => $label): ?>
-                    <option value="<?= e($value) ?>" <?= $u['role'] === $value ? 'selected' : '' ?>><?= e($label) ?></option>
-                  <?php endforeach; ?>
-                </select>
-              </div>
-              <div class="form-row managed-groups-row" style="<?= $u['role'] === 'kierownik' ? '' : 'display:none;' ?>">
-                <label>Dodatkowe działy zarządzane (poza własnym)</label>
-                <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
-                  <?php foreach ($groups as $g): ?>
-                    <option value="<?= e($g['id']) ?>" <?= in_array($g['id'], $managedGroupIdsByUser[$u['id']] ?? [], true) ? 'selected' : '' ?>><?= e($g['name']) ?></option>
-                  <?php endforeach; ?>
-                </select>
-              </div>
-              <div class="form-row">
-                <label>Limit bieżący (dni)</label>
-                <input type="text" name="leave_current_days" value="<?= e(format_days($u['leave_current_days'])) ?>" />
-              </div>
-              <div class="form-row">
-                <label>Limit zaległy (dni)</label>
-                <input type="text" name="leave_backlog_days" value="<?= e(format_days($u['leave_backlog_days'])) ?>" />
-              </div>
-              <div class="form-row">
-                <label>Nowe hasło (opcjonalnie)</label>
-                <input type="password" name="password" placeholder="pozostaw puste, aby nie zmieniać" />
-              </div>
-              <button class="btn" type="submit">Zapisz</button>
-            </form>
           </td>
         </tr>
       <?php endforeach; ?>
@@ -281,14 +280,6 @@ document.querySelectorAll('.user-row').forEach(function (row) {
       detail.style.display = '';
       row.classList.add('active');
     }
-  });
-});
-
-// Przycisk "Edytuj" w akcjach: pokazuje formularz edycji (poziomy układ pól).
-document.querySelectorAll('.btn-edit-toggle').forEach(function (btn) {
-  btn.addEventListener('click', function () {
-    var form = btn.closest('.user-detail-row').querySelector('.user-edit-form');
-    form.style.display = form.style.display === 'none' ? '' : 'none';
   });
 });
 </script>
