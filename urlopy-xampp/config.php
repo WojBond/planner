@@ -1,8 +1,17 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.9.1');
+define('APP_VERSION', '1.9.2');
 define('APP_CHANGELOG', [
+    '1.9.2' => [
+        'date' => '2026-10-12',
+        'changes' => [
+            'Użytkownicy: po kliknięciu wiersza pola edycji oraz przyciski',
+            '"Zapisz"/"Usuń" pokazują się teraz w jednym, wspólnym poziomym',
+            'rzędzie (usunięto oddzielny krok "Edytuj" - edycja otwiera się',
+            'od razu), lepiej wykorzystując dostępną szerokość ekranu.',
+        ],
+    ],
     '1.9.1' => [
         'date' => '2026-10-12',
         'changes' => [

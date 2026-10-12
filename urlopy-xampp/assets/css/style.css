@@ -110,7 +110,6 @@ table th, table td {
 .user-row:hover { background: #f8fafc; }
 .user-row.active { background: #eef1f5; }
 .user-detail-row td { background: #f8fafc; padding: 14px 10px; }
-.user-detail-actions { display: flex; gap: 8px; }
 
 .form-horizontal {
   display: flex;
@@ -118,9 +117,9 @@ table th, table td {
   align-items: flex-end;
   gap: 14px;
 }
-.form-horizontal .form-row { margin-bottom: 0; flex: 1 1 150px; min-width: 140px; }
-.form-horizontal .form-row.managed-groups-row { flex: 1 1 240px; }
-.form-horizontal button[type="submit"] { flex: 0 0 auto; }
+.form-horizontal .form-row { margin-bottom: 0; flex: 1 1 130px; min-width: 110px; }
+.form-horizontal .form-row.managed-groups-row { flex: 1 1 220px; }
+.form-horizontal button[type="submit"], .form-horizontal button.danger { flex: 0 0 auto; }
 
 .alert { padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; font-size: 0.9rem; }
 .alert.error { background: #fee2e2; color: #991b1b; }
