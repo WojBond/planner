@@ -121,12 +121,12 @@ include __DIR__ . '/includes/header.php';
     <thead>
       <tr>
         <th>Kolor</th><th>Imie i nazwisko</th><th>E-mail</th><th>Dział</th><th>Rola</th>
-        <th>Limit (biez./zaleg.)</th><th>Wykorzystano</th><th>Pozostało</th><th>Akcje</th>
+        <th>Limit (biez./zaleg.)</th><th>Wykorzystano</th><th>Pozostało</th>
       </tr>
     </thead>
     <tbody>
       <?php foreach ($users as $u): $summary = compute_leave_summary($u); ?>
-        <tr>
+        <tr class="user-row" data-target="user-detail-<?= e($u['id']) ?>">
           <td><span class="color-dot" style="background: <?= e($u['color']) ?>"></span></td>
           <td>
             <?= e($u['name']) ?>
@@ -140,60 +140,62 @@ include __DIR__ . '/includes/header.php';
           <td><?= e(format_days($summary['limit_current'])) ?> / <?= e(format_days($summary['limit_backlog'])) ?></td>
           <td><?= e(format_days($summary['used'])) ?></td>
           <td><?= e(format_days($summary['remaining'])) ?></td>
-          <td>
-            <details>
-              <summary class="muted" style="cursor:pointer;">Edytuj</summary>
-              <form method="POST" action="admin_users.php" style="margin-top:8px;" class="user-edit-form">
-                <input type="hidden" name="form_action" value="update" />
+        </tr>
+        <tr class="user-detail-row" id="user-detail-<?= e($u['id']) ?>" style="display:none;">
+          <td colspan="8">
+            <div class="user-detail-actions">
+              <button type="button" class="btn secondary btn-edit-toggle">Edytuj</button>
+              <form method="POST" action="admin_users.php" style="margin:0;"
+                    onsubmit="return confirm('Usunąć użytkownika <?= e($u['name']) ?>?');">
+                <input type="hidden" name="form_action" value="delete" />
                 <input type="hidden" name="id" value="<?= e($u['id']) ?>" />
-                <div class="form-row">
-                  <label>Imie i nazwisko</label>
-                  <input type="text" name="name" value="<?= e($u['name']) ?>" />
-                </div>
-                <div class="form-row">
-                  <label>Dział (własny)</label>
-                  <select name="groupId">
-                    <?php foreach ($groups as $g): ?>
-                      <option value="<?= e($g['id']) ?>" <?= $g['id'] === $u['group_id'] ? 'selected' : '' ?>><?= e($g['name']) ?></option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
-                <div class="form-row">
-                  <label>Rola</label>
-                  <select name="role" class="role-select">
-                    <?php foreach (ROLE_LABELS as $value => $label): ?>
-                      <option value="<?= e($value) ?>" <?= $u['role'] === $value ? 'selected' : '' ?>><?= e($label) ?></option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
-                <div class="form-row managed-groups-row" style="<?= $u['role'] === 'kierownik' ? '' : 'display:none;' ?>">
-                  <label>Dodatkowe działy zarządzane (poza własnym)</label>
-                  <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
-                    <?php foreach ($groups as $g): ?>
-                      <option value="<?= e($g['id']) ?>" <?= in_array($g['id'], $managedGroupIdsByUser[$u['id']] ?? [], true) ? 'selected' : '' ?>><?= e($g['name']) ?></option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
-                <div class="form-row">
-                  <label>Limit bieżący (dni)</label>
-                  <input type="text" name="leave_current_days" value="<?= e(format_days($u['leave_current_days'])) ?>" />
-                </div>
-                <div class="form-row">
-                  <label>Limit zaległy (dni)</label>
-                  <input type="text" name="leave_backlog_days" value="<?= e(format_days($u['leave_backlog_days'])) ?>" />
-                </div>
-                <div class="form-row">
-                  <label>Nowe hasło (opcjonalnie)</label>
-                  <input type="password" name="password" placeholder="pozostaw puste, aby nie zmieniać" />
-                </div>
-                <button class="btn" type="submit">Zapisz</button>
+                <button class="btn danger" type="submit">Usuń</button>
               </form>
-            </details>
-            <form method="POST" action="admin_users.php" style="margin-top:8px;"
-                  onsubmit="return confirm('Usunąć użytkownika <?= e($u['name']) ?>?');">
-              <input type="hidden" name="form_action" value="delete" />
+            </div>
+            <form method="POST" action="admin_users.php" class="user-edit-form form-horizontal" style="display:none; margin-top:14px;">
+              <input type="hidden" name="form_action" value="update" />
               <input type="hidden" name="id" value="<?= e($u['id']) ?>" />
-              <button class="btn danger" type="submit">Usuń</button>
+              <div class="form-row">
+                <label>Imie i nazwisko</label>
+                <input type="text" name="name" value="<?= e($u['name']) ?>" />
+              </div>
+              <div class="form-row">
+                <label>Dział (własny)</label>
+                <select name="groupId">
+                  <?php foreach ($groups as $g): ?>
+                    <option value="<?= e($g['id']) ?>" <?= $g['id'] === $u['group_id'] ? 'selected' : '' ?>><?= e($g['name']) ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="form-row">
+                <label>Rola</label>
+                <select name="role" class="role-select">
+                  <?php foreach (ROLE_LABELS as $value => $label): ?>
+                    <option value="<?= e($value) ?>" <?= $u['role'] === $value ? 'selected' : '' ?>><?= e($label) ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="form-row managed-groups-row" style="<?= $u['role'] === 'kierownik' ? '' : 'display:none;' ?>">
+                <label>Dodatkowe działy zarządzane (poza własnym)</label>
+                <select name="managed_groups[]" multiple size="<?= max(3, count($groups)) ?>">
+                  <?php foreach ($groups as $g): ?>
+                    <option value="<?= e($g['id']) ?>" <?= in_array($g['id'], $managedGroupIdsByUser[$u['id']] ?? [], true) ? 'selected' : '' ?>><?= e($g['name']) ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="form-row">
+                <label>Limit bieżący (dni)</label>
+                <input type="text" name="leave_current_days" value="<?= e(format_days($u['leave_current_days'])) ?>" />
+              </div>
+              <div class="form-row">
+                <label>Limit zaległy (dni)</label>
+                <input type="text" name="leave_backlog_days" value="<?= e(format_days($u['leave_backlog_days'])) ?>" />
+              </div>
+              <div class="form-row">
+                <label>Nowe hasło (opcjonalnie)</label>
+                <input type="password" name="password" placeholder="pozostaw puste, aby nie zmieniać" />
+              </div>
+              <button class="btn" type="submit">Zapisz</button>
             </form>
           </td>
         </tr>
@@ -266,6 +268,28 @@ document.querySelectorAll('.user-edit-form').forEach(function (form) {
   var toggle = function () { groupsRow.style.display = roleSelect.value === 'kierownik' ? '' : 'none'; };
   roleSelect.addEventListener('change', toggle);
   toggle();
+});
+
+// Wiersz użytkownika: kliknięcie pokazuje/ukrywa akcje (Edytuj/Usuń) pod nim.
+document.querySelectorAll('.user-row').forEach(function (row) {
+  row.addEventListener('click', function () {
+    var detail = document.getElementById(row.dataset.target);
+    var wasOpen = detail.style.display !== 'none';
+    document.querySelectorAll('.user-detail-row').forEach(function (d) { d.style.display = 'none'; });
+    document.querySelectorAll('.user-row').forEach(function (r) { r.classList.remove('active'); });
+    if (!wasOpen) {
+      detail.style.display = '';
+      row.classList.add('active');
+    }
+  });
+});
+
+// Przycisk "Edytuj" w akcjach: pokazuje formularz edycji (poziomy układ pól).
+document.querySelectorAll('.btn-edit-toggle').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var form = btn.closest('.user-detail-row').querySelector('.user-edit-form');
+    form.style.display = form.style.display === 'none' ? '' : 'none';
+  });
 });
 </script>
 <?php include __DIR__ . '/includes/footer.php'; ?>
