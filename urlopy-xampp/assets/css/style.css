@@ -118,8 +118,14 @@ table th, table td {
   gap: 14px;
 }
 .form-horizontal .form-row { margin-bottom: 0; flex: 1 1 130px; min-width: 110px; }
-.form-horizontal .form-row.managed-groups-row { flex: 1 1 220px; }
-.form-horizontal button[type="submit"], .form-horizontal button.danger { flex: 0 0 auto; }
+
+/* Proporcjonalna szerokość pól wg typu zawartości - zamiast rownych kolumn. */
+.form-horizontal .form-row.field-wide { flex: 2.2 1 200px; }
+.form-horizontal .form-row.field-medium { flex: 1.4 1 150px; }
+.form-horizontal .form-row.field-narrow { flex: 1 1 110px; }
+.form-horizontal .form-row.field-tiny { flex: 0.5 1 90px; min-width: 80px; }
+
+.form-actions-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 
 .alert { padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; font-size: 0.9rem; }
 .alert.error { background: #fee2e2; color: #991b1b; }
