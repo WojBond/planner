@@ -1,8 +1,18 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.9.5');
+define('APP_VERSION', '1.10.0');
 define('APP_CHANGELOG', [
+    '1.10.0' => [
+        'date' => '2026-10-13',
+        'changes' => [
+            'Aplikację można teraz "zainstalować" na telefonie (Android i iOS)',
+            'jako PWA (Progressive Web App) - bez Google Play/App Store, przez',
+            '"Dodaj do ekranu głównego" w przeglądarce. Dodano manifest.json,',
+            'service worker (cache statycznych plików, bez cache\'owania',
+            'dynamicznych/zależnych od sesji stron) oraz ikony aplikacji.',
+        ],
+    ],
     '1.9.5' => [
         'date' => '2026-10-13',
         'changes' => [

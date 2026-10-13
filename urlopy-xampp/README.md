@@ -1,6 +1,6 @@
 # Planer urlopów (wersja pod XAMPP: PHP + SQLite)
 
-**Wersja: 1.9.5** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
+**Wersja: 1.10.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
 widoczny też w interfejsie obok nazwy aplikacji).
 
 To jest wersja aplikacji "Planer urlopów" przystosowana do uruchomienia na
@@ -17,6 +17,26 @@ w wersji Node.js:
    za ich brzegi (zmiana liczby dni).
 6. Opcjonalny moduł zatwierdzania urlopów (włączany w Konfiguracji) oraz
    limity dni urlopowych (bieżący / zaległy) z automatycznym podliczaniem.
+
+## Aplikacja mobilna (PWA)
+
+Aplikację można "zainstalować" na telefonie (Android i iOS) jako Progressive
+Web App - bez Google Play / App Store:
+
+- **Android (Chrome)**: menu (⋮) -> "Dodaj do ekranu głównego" / "Zainstaluj
+  aplikację".
+- **iPhone/iPad (Safari)**: przycisk Udostępnij -> "Dodaj do ekranu
+  początkowego".
+
+Po instalacji aplikacja otwiera się w osobnym oknie (bez paska adresu
+przeglądarki), z własną ikoną i w kolorze firmowym. Działa to wyłącznie
+jako "opakowanie" tej samej aplikacji webowej - dane (kalendarz, urlopy)
+nadal wymagają połączenia z serwerem; offline cache'owane są tylko statyczne
+pliki (CSS, biblioteka kalendarza, ikony), żeby uniknąć pokazywania
+nieaktualnych/cudzych danych bez połączenia z siecią.
+
+Pliki: `manifest.json` (opis aplikacji, ikony), `sw.js` (service worker),
+`assets/img/icon-192.png` / `icon-512.png` / `apple-touch-icon.png`.
 
 ## Widoki kalendarza
 
@@ -288,7 +308,8 @@ urlopy-xampp/
                              autoryzacja, role/uprawnienia, limity urlopowe,
                              adres aplikacji do linków w mailach, layout
   libs/PHPMailer/          - biblioteka do wysyłki e-mail (SMTP)
-  assets/                  - CSS i biblioteka kalendarza (FullCalendar)
+  assets/                  - CSS, biblioteka kalendarza (FullCalendar), ikony PWA
+  manifest.json, sw.js     - PWA: instalacja na telefonie (patrz "Aplikacja mobilna")
   data/urlopy.sqlite       - plik bazy SQLite (tryb domyślny, tworzony automatycznie)
   logs/mail.log            - log wysłanych/próbowanych maili
 ```
