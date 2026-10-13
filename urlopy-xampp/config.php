@@ -1,8 +1,17 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.9.4');
+define('APP_VERSION', '1.9.5');
 define('APP_CHANGELOG', [
+    '1.9.5' => [
+        'date' => '2026-10-13',
+        'changes' => [
+            'Użytkownicy: formularz edycji miał brakujące pole "Kolor paska"',
+            '(dostępne dotąd tylko przy dodawaniu nowego użytkownika) - dodano',
+            'je przy pozostałych polach edycji, przed przyciskami Zapisz/',
+            'Anuluj/Usuń.',
+        ],
+    ],
     '1.9.4' => [
         'date' => '2026-10-12',
         'changes' => [

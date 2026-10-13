@@ -67,13 +67,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $managedGroups = $_POST['managed_groups'] ?? [];
         $leaveCurrent = parse_days($_POST['leave_current_days'] ?? 0);
         $leaveBacklog = parse_days($_POST['leave_backlog_days'] ?? 0);
+        $color = $_POST['color'] ?? '';
+        if (!preg_match('/^#[0-9a-fA-F]{6}$/', $color)) $color = null;
 
         if ($password !== '') {
-            $stmt = $pdo->prepare('UPDATE users SET name = ?, role = ?, group_id = ?, password_hash = ?, must_change_password = 1, leave_current_days = ?, leave_backlog_days = ? WHERE id = ?');
-            $stmt->execute([$name, $role, $groupId, password_hash($password, PASSWORD_DEFAULT), $leaveCurrent, $leaveBacklog, $id]);
+            $stmt = $pdo->prepare('UPDATE users SET name = ?, role = ?, group_id = ?, password_hash = ?, must_change_password = 1, leave_current_days = ?, leave_backlog_days = ?' . ($color !== null ? ', color = ?' : '') . ' WHERE id = ?');
+            $params = [$name, $role, $groupId, password_hash($password, PASSWORD_DEFAULT), $leaveCurrent, $leaveBacklog];
+            if ($color !== null) $params[] = $color;
+            $params[] = $id;
+            $stmt->execute($params);
         } else {
-            $stmt = $pdo->prepare('UPDATE users SET name = ?, role = ?, group_id = ?, leave_current_days = ?, leave_backlog_days = ? WHERE id = ?');
-            $stmt->execute([$name, $role, $groupId, $leaveCurrent, $leaveBacklog, $id]);
+            $stmt = $pdo->prepare('UPDATE users SET name = ?, role = ?, group_id = ?, leave_current_days = ?, leave_backlog_days = ?' . ($color !== null ? ', color = ?' : '') . ' WHERE id = ?');
+            $params = [$name, $role, $groupId, $leaveCurrent, $leaveBacklog];
+            if ($color !== null) $params[] = $color;
+            $params[] = $id;
+            $stmt->execute($params);
         }
         save_manager_groups($pdo, $id, $role, $managedGroups);
         header('Location: admin_users.php');
@@ -186,6 +194,10 @@ include __DIR__ . '/includes/header.php';
                 <div class="form-row field-medium">
                   <label>Nowe hasło (opcjonalnie)</label>
                   <input type="password" name="password" placeholder="pozostaw puste, aby nie zmieniać" />
+                </div>
+                <div class="form-row field-tiny">
+                  <label>Kolor paska</label>
+                  <input type="color" name="color" value="<?= e($u['color']) ?>" />
                 </div>
               </div>
             </form>
