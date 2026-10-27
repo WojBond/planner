@@ -1,8 +1,17 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.10.0');
+define('APP_VERSION', '1.10.1');
 define('APP_CHANGELOG', [
+    '1.10.1' => [
+        'date' => '2026-10-27',
+        'changes' => [
+            'Widok Rok: bieżący dzień jest teraz podświetlony (niebieska',
+            'obwódka wokół komórki dnia) - ułatwia szybkie odnalezienie',
+            'dzisiejszej daty. Widoki Miesiąc i Lista już wcześniej',
+            'podświetlały dziś (wbudowana funkcja FullCalendar).',
+        ],
+    ],
     '1.10.0' => [
         'date' => '2026-10-13',
         'changes' => [
