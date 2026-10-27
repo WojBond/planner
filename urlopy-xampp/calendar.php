@@ -598,6 +598,11 @@ function renderYear() {
 
   const events = visibleEvents();
 
+  const today = new Date();
+  const isCurrentYear = currentYear === today.getFullYear();
+  const todayMonth = today.getMonth() + 1;
+  const todayDate = today.getDate();
+
   for (let m = 1; m <= 12; m++) {
     const row = document.createElement('div');
     row.className = 'year-row';
@@ -622,6 +627,7 @@ function renderYear() {
       } else {
         const dow = new Date(currentYear, m - 1, d).getDay();
         if (dow === 0 || dow === 6) cell.classList.add('weekend');
+        if (isCurrentYear && m === todayMonth && d === todayDate) cell.classList.add('today');
         cell.classList.add('clickable');
         cell.title = 'Dodaj zdarzenie (przeciągnij, aby zaznaczyć kilka dni)';
         cell.dataset.day = d;

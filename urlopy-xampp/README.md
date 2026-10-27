@@ -1,6 +1,6 @@
 # Planer urlopów (wersja pod XAMPP: PHP + SQLite)
 
-**Wersja: 1.10.0** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
+**Wersja: 1.10.1** (numer wersji trzymany w `config.php` jako `APP_VERSION`,
 widoczny też w interfejsie obok nazwy aplikacji).
 
 To jest wersja aplikacji "Planer urlopów" przystosowana do uruchomienia na
@@ -43,9 +43,9 @@ Pliki: `manifest.json` (opis aplikacji, ikony), `sw.js` (service worker),
 Dostępne są trzy widoki, przełączane jednym przyciskiem w górnym pasku:
 
 - **Rok** (domyślny) — układ w stylu Teamup: wszystkie miesiące roku jako
-  wiersze, dni jako kolumny, zdarzenia jako kolorowe paski. Kliknięcie
-  paska pokazuje dymek ze szczegółami (typ, zakres dat, osoba, notatka) i
-  przyciskiem usuwania.
+  wiersze, dni jako kolumny, zdarzenia jako kolorowe paski. Bieżący dzień
+  jest podświetlony (niebieska obwódka). Kliknięcie paska pokazuje dymek ze
+  szczegółami (typ, zakres dat, osoba, notatka) i przyciskiem usuwania.
 - **Miesiąc** — klasyczna siatka miesięczna (FullCalendar).
 - **Lista** — chronologiczna lista zdarzeń w danym roku.
 

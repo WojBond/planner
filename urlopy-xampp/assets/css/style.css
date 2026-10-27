@@ -327,6 +327,7 @@ table th, table td {
 .year-day-cell.clickable { cursor: pointer; }
 .year-day-cell.clickable:hover { background: #dbeafe; }
 .year-day-cell.selecting { background: #93c5fd; }
+.year-day-cell.today { background: #dbeafe; box-shadow: inset 0 0 0 2px var(--primary); }
 
 .year-event-bar {
   position: absolute;
