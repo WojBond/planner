@@ -57,11 +57,11 @@ include __DIR__ . '/includes/header.php';
   <form method="POST" action="profile_password.php">
     <div class="form-row">
       <label for="currentPassword">Aktualne hasło</label>
-      <input type="password" id="currentPassword" name="currentPassword" required />
+      <input type="password" id="currentPassword" name="currentPassword" required autocomplete="current-password" />
     </div>
     <div class="form-row">
       <label for="newPassword">Nowe hasło (min. 6 znaków)</label>
-      <input type="password" id="newPassword" name="newPassword" required minlength="6" />
+      <input type="password" id="newPassword" name="newPassword" required minlength="6" autocomplete="new-password" />
     </div>
     <button class="btn" type="submit">Zmień hasło</button>
   </form>

@@ -193,7 +193,7 @@ include __DIR__ . '/includes/header.php';
                 </div>
                 <div class="form-row field-medium">
                   <label>Nowe hasło (opcjonalnie)</label>
-                  <input type="password" name="password" placeholder="pozostaw puste, aby nie zmieniać" />
+                  <input type="password" name="password" placeholder="pozostaw puste, aby nie zmieniać" autocomplete="new-password" />
                 </div>
                 <div class="form-row field-tiny">
                   <label>Kolor paska</label>
@@ -229,11 +229,11 @@ include __DIR__ . '/includes/header.php';
       </div>
       <div class="form-row field-wide">
         <label for="email">E-mail</label>
-        <input type="email" id="email" name="email" required />
+        <input type="email" id="email" name="email" required autocomplete="off" />
       </div>
       <div class="form-row field-medium">
         <label for="password">Hasło startowe</label>
-        <input type="password" id="password" name="password" required minlength="6" />
+        <input type="password" id="password" name="password" required minlength="6" autocomplete="new-password" />
       </div>
       <div class="form-row field-medium">
         <label for="groupId">Dział (własny)</label>

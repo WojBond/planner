@@ -12,6 +12,12 @@
 
 * { box-sizing: border-box; }
 
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
@@ -20,7 +26,27 @@ body {
 }
 
 a { color: var(--primary); text-decoration: none; }
-a:hover { text-decoration: underline; }
+
+button, a, [role="button"], .tappable {
+  touch-action: manipulation;
+}
+button, .btn, [role="button"] {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Stany hover tylko dla urządzeń z myszą - na dotyku ":hover" "przykleja się"
+   po tapnięciu, aż użytkownik dotknie czegoś innego. */
+@media (hover: hover) and (pointer: fine) {
+  a:hover { text-decoration: underline; }
+  .topbar nav a:hover { background: #eef1f5; text-decoration: none; }
+  .btn:hover { background: var(--primary-dark); }
+  .user-row:hover { background: #f8fafc; }
+  .sidebar-link:hover { background: #eef1f5; text-decoration: none; }
+  .year-day-cell.clickable:hover { background: #dbeafe; }
+  .year-event-bar:hover { filter: brightness(1.08); }
+}
 
 .topbar {
   display: flex;
@@ -39,7 +65,6 @@ a:hover { text-decoration: underline; }
   border-radius: 6px;
   padding: 6px 12px;
 }
-.topbar nav a:hover { background: #eef1f5; text-decoration: none; }
 
 .topbar .user-badge {
   display: flex;
@@ -80,7 +105,7 @@ h1, h2, h3 { margin-top: 0; }
   padding: 8px 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  font-size: 0.95rem;
+  font-size: 16px; /* min. 16px - ponizej tego iOS Safari zoomuje strone po dotknieciu pola */
 }
 .form-row input[type="color"] { width: 60px; height: 38px; padding: 2px; }
 
@@ -94,7 +119,6 @@ h1, h2, h3 { margin-top: 0; }
   cursor: pointer;
   font-size: 0.9rem;
 }
-.btn:hover { background: var(--primary-dark); }
 .btn.danger { background: var(--danger); }
 .btn.secondary { background: #6b7280; }
 
@@ -107,7 +131,6 @@ table th, table td {
 }
 
 .user-row { cursor: pointer; }
-.user-row:hover { background: #f8fafc; }
 .user-row.active { background: #eef1f5; }
 .user-detail-row td { background: #f8fafc; padding: 14px 10px; }
 
@@ -133,6 +156,7 @@ table th, table td {
 
 .login-wrap {
   min-height: 100vh;
+  min-height: 100svh; /* stabilne na telefonie - nie ucina sie pod paskiem adresu */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -225,7 +249,6 @@ table th, table td {
   border-radius: 6px;
   padding: 6px 10px;
 }
-.sidebar-link:hover { background: #eef1f5; text-decoration: none; }
 
 .cal-main { flex: 1; min-width: 0; }
 
@@ -325,7 +348,6 @@ table th, table td {
 .year-day-cell.weekend { background: #eef4fb; }
 .year-day-cell.out-of-month { background: repeating-linear-gradient(45deg, #f7f7f8, #f7f7f8 4px, #efefef 4px, #efefef 8px); }
 .year-day-cell.clickable { cursor: pointer; }
-.year-day-cell.clickable:hover { background: #dbeafe; }
 .year-day-cell.selecting { background: #93c5fd; }
 .year-day-cell.today { background: #dbeafe; box-shadow: inset 0 0 0 2px var(--primary); }
 
@@ -343,8 +365,6 @@ table th, table td {
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(0,0,0,0.15);
 }
-.year-event-bar:hover { filter: brightness(1.08); }
-
 .year-event-bar.draggable { cursor: grab; }
 .year-event-bar.dragging {
   cursor: grabbing;

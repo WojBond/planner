@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
   <title>Logowanie - Planer urlopów</title>
   <link rel="stylesheet" href="assets/css/style.css" />
   <link rel="manifest" href="manifest.json" />
@@ -56,11 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <input type="hidden" name="next" value="<?= e($next) ?>" />
       <div class="form-row">
         <label for="email">E-mail</label>
-        <input type="email" id="email" name="email" required autofocus />
+        <input type="email" id="email" name="email" required autofocus autocomplete="email" />
       </div>
       <div class="form-row">
         <label for="password">Hasło</label>
-        <input type="password" id="password" name="password" required />
+        <input type="password" id="password" name="password" required autocomplete="current-password" />
       </div>
       <button class="btn" type="submit" style="width:100%;">Zaloguj</button>
     </form>

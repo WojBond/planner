@@ -79,7 +79,7 @@ include __DIR__ . '/includes/header.php';
   </div>
 </div>
 
-<div class="modal-backdrop" id="modalAdd">
+<div class="modal-backdrop" id="modalAdd" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle">
   <div class="modal">
     <h2 id="eventModalTitle">Nowe zdarzenie</h2>
     <div id="formError" class="alert error" style="display:none;"></div>
@@ -342,6 +342,12 @@ document.addEventListener('click', (e) => {
   if (popover.classList.contains('open') && !popover.contains(e.target) && !e.target.closest('.year-event-bar')) {
     popover.classList.remove('open');
   }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (modalAdd.classList.contains('open')) modalAdd.classList.remove('open');
+  if (popover.classList.contains('open')) popover.classList.remove('open');
 });
 
 // --- Dane ---
