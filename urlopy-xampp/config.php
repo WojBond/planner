@@ -1,8 +1,21 @@
 <?php
 // Konfiguracja aplikacji "Planer urlopów" pod XAMPP.
 
-define('APP_VERSION', '1.10.1');
+define('APP_VERSION', '1.10.2');
 define('APP_CHANGELOG', [
+    '1.10.2' => [
+        'date' => '2026-11-16',
+        'changes' => [
+            'Poprawki mobilne i dostępności: pola formularzy nie powodują już',
+            'przybliżenia strony na iOS (czcionka min. 16px), stany hover nie',
+            '"przyklejają się" po dotknięciu na telefonie, usunięto szare',
+            'podświetlenie przy dotknięciu przycisków, dodano wsparcie dla',
+            'wcięcia pod notch (safe area) i klawiatury ekranowej.',
+            'Okno dodawania/edycji zdarzenia można teraz zamknąć klawiszem',
+            'Esc i jest poprawnie oznaczone dla czytników ekranu. Pola hasła',
+            'i e-mail mają atrybuty autocomplete (podpowiedzi menedżera haseł).',
+        ],
+    ],
     '1.10.1' => [
         'date' => '2026-10-27',
         'changes' => [
